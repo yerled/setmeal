@@ -2,9 +2,10 @@
   <ul>
     <li v-for="menu of menus" :key="menu">
       <router-link active-class="selected" :to="menu">
-        <svg class="icon" aria-hidden="true">
+        <!-- <svg class="icon" aria-hidden="true">
           <use :xlink:href="getIcon(menu)"></use>
-        </svg>
+        </svg> -->
+        <Iconfont :type="menu" />
         <span>{{$t(`menu.${menu}`)}}</span>
       </router-link>
     </li>

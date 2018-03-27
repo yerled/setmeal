@@ -1,2 +1,2 @@
-import './iconfont'
+// import './iconfont'
 import './style.less'

@@ -1,16 +1,21 @@
 <template>
   <div>
     <div class="buttonGroup">
-      <el-button plain v-for="button of buttons"
-          :type="getButtonType(button)"
-          :key="button.field">
+      <el-button v-for="button of buttons"
+          :type="button.type"
+          :key="button.field"
+          @click="doAction(button.action)">
+        <Iconfont v-if="button.icon" :type="button.icon"/>
         {{$t(`${module}.${button.field}`)}}
       </el-button>
     </div>
-      <el-table :data="tableData">
+      <el-table
+          :ref = "module"
+          :data="tableData"
+          @selection-change="handleSelectionChange">
         <el-table-column
             type="selection"
-            width="45">
+            width="35">
         </el-table-column>
         <el-table-column 
             v-for="column of columns" 
@@ -23,9 +28,8 @@
 </template>
 
 <style lang="less" scoped>
-@import '../styles/variable.less';
-.table {
-  margin-top: 20px;
+.buttonGroup {
+  padding: 10px 0;
 }
 </style>
 
@@ -34,7 +38,7 @@ export default {
   name: 'TableView',
   data () {
     return {
-
+      multipleSelection: [],
     }
   },
   props: {
@@ -54,8 +58,12 @@ export default {
     },
   },
   methods: {
-    getButtonType (button) {
-      return button.type === 'primary' ? 'primary' : 'info'
+    doAction (action) {
+      this.$emit(action, 'payload from TableView')
+    },
+    handleSelectionChange (val) {
+      console.log(val)
+      this.multipleSelection = val
     },
   },
 }

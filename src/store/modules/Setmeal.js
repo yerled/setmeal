@@ -16,6 +16,14 @@ export default {
         name: 'dev1',
         desc: 'just for dev',
         status: 'published',
+      }, {
+        name: 'dev2',
+        desc: 'just for dev~',
+        status: 'draft',
+      }, {
+        name: 'dev3',
+        desc: 'just for dev~~',
+        status: 'shelved',
       }]
       commit('updateSetmeal', dataForDev)
     }

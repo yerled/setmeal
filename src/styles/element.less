@@ -12,13 +12,50 @@
   }
 }
 
+.el-main {
+  padding-top: 10px;
+}
+
 .el-table {
   .el-table-column--selection .cell {
-    // padding: 4px;
+    padding: 0 11px;
+  }
+  thead {
+    border-bottom: none;
   }
   th {
-    background-color: #ecf0f2;
-    padding: 4px;
-    height: 28px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border-bottom: none !important;
+    .cell {
+      height: 36px;
+      line-height: 36px;
+      padding: 0 11px;
+      border-right: 1px solid #ffffff;
+      background-color: #ecf0f2;
+    }
+  }
+}
+
+.el-button {
+  border: none;
+  color: #ffffff !important;
+  &.disabled {
+    color: #a8b3be !important;
+    background-color: #d9e3e5 !important;
+    cursor: not-allowed;
+  }
+  background-color: #00afc8;
+  &:hover, &:focus {
+    background-color: #00a5bd;
+  }
+  &.el-button--primary {
+    background-color: #1eb9a5;
+    &:hover, &:focus {
+      background-color: #09b29c;
+    }
+  }
+  span {
+    line-height: 1.3em;
   }
 }
