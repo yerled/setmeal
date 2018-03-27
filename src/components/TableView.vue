@@ -7,11 +7,10 @@
         {{$t(`${module}.${button.field}`)}}
       </el-button>
     </div>
-    <div class="table">
       <el-table :data="tableData">
         <el-table-column
             type="selection"
-            width="55">
+            width="45">
         </el-table-column>
         <el-table-column 
             v-for="column of columns" 
@@ -20,7 +19,6 @@
             :label="$t(`${module}.${column.field}`)">
         </el-table-column>
       </el-table>
-    </div>
   </div>
 </template>
 
