@@ -2,16 +2,17 @@
   <div>
     <TableView
       :moduleName = "moduleName"
-      @create = "create"
-      @update = "update"
-      @purchase = "purchase">
+      @create = "showPop"
+      @update = "showPop"
+      @purchase = "showPop">
     </TableView>
-    <SetmealCreate :visible="CreatePopVisible" @done="createDone"></SetmealCreate>
+    <SetmealCreate :visible="popVisible.create"
+      @done="hidePop">
+    </SetmealCreate>
   </div>
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
 import SetmealCreate from './SetmealCreate'
 
 const moduleName = 'Setmeal'
@@ -24,23 +25,20 @@ export default {
   data () {
     return {
       moduleName: moduleName,
-      CreatePopVisible: false,
+      popVisible: {
+        create: false,
+      },
     }
-  },
-  getters: {
-    // ...mapGetters({
-    //   tableData: 'setmealTableData111111111',
-    // }),
   },
   methods: {
     refreshTable () {
       this.$store.dispatch('refreshSetmeal')
     },
-    create () {
-      this.CreatePopVisible = true
+    showPop ({field}) {
+      this.popVisible[field] = true
     },
-    createDone () {
-      this.CreatePopVisible = false
+    hidePop (field) {
+      this.popVisible[field] = false
     },
     update (items) {
       alert(`update ${items[0].name}`)

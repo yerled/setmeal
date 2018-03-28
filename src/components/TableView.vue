@@ -89,7 +89,7 @@ export default {
   methods: {
     doAction (action) {
       if (!this.buttonStatus[action]) {
-        this.$emit(action, this.multipleSelection)
+        this.$emit(action, {field: action, data: this.multipleSelection})
       }
     },
     handleSelectionChange (val) {

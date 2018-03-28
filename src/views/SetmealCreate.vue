@@ -89,16 +89,22 @@ export default {
     }
   },
   props: ['visible'],
+  watch: {
+    visible (value) {
+      if (!value) {
+        this.$emit('done', 'create')
+      }
+    }
+  },
   methods: {
     create () {
       this.$refs['SetmealCreateForm'].validate((valid) => {
         if (valid) {
-          console.log('create-----------')
-          console.dir(this.setmeal)
-          console.log('create-----------end')
-          this.$emit('done')
+          let data = Object.assign({status: 'drafted'}, this.setmeal)
+          this.$refs['SetmealCreateForm'].resetFields()
+          this.$store.dispatch('createSetmeal', data)
+          this.visible = false
         } else {
-          console.log('error submit!!')
           return false
         }
       })

@@ -39,6 +39,9 @@ export default {
     updateSetmeal (state, setmealList) {
       state.setmealList = setmealList
     },
+    addSetmeal (state, setmeal) {
+      state.setmealList.push(setmeal)
+    }
   },
   actions: {
     refreshSetmeal ({commit}) {
@@ -56,6 +59,9 @@ export default {
         status: 'shelved',
       }]
       commit('updateSetmeal', dataForDev)
-    }
+    },
+    createSetmeal ({commit}, setmeal) {
+      commit('addSetmeal', setmeal)
+    },
   }
 }
