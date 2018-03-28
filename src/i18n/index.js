@@ -1,8 +1,8 @@
 import base from './base'
 import menu from './menu'
-import setmeal from './setmeal'
+import Setmeal from './Setmeal'
 
-const modules = { menu, setmeal }
+const modules = { menu, Setmeal }
 let messages = {
   zh: {},
   en: {}

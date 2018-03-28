@@ -2,9 +2,6 @@
   <ul>
     <li v-for="menu of menus" :key="menu">
       <router-link active-class="selected" :to="menu">
-        <!-- <svg class="icon" aria-hidden="true">
-          <use :xlink:href="getIcon(menu)"></use>
-        </svg> -->
         <Iconfont :type="menu" />
         <span>{{$t(`menu.${menu}`)}}</span>
       </router-link>
@@ -27,7 +24,6 @@ export default {
   },
   created () {
     this.menus = ['setmeal', 'mySetmeal', 'record']
-    console.log('菜单加载完成')
   },
 }
 </script>

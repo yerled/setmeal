@@ -1,9 +1,39 @@
+const moduleName = 'Setmeal'
+
 export default {
   state: {
+    config: {
+      buttons: [{
+        field: 'create',
+        icon: 'add',
+        type: 'primary',
+      }, {
+        field: 'update',
+        icon: 'edit',
+        selection: 'single',
+        validStatus: ['drafted', 'shelved'],
+      }, {
+        field: 'purchase',
+        icon: 'purchase',
+        selection: 'single',
+        validStatus: ['published'],
+      }],
+      columns: [{
+        field: 'name',
+      }, {
+        field: 'desc',
+      }, {
+        field: 'status',
+      }],
+      rowClass: {
+        warn: ['shelved'],
+      },
+    },
     setmealList: [],
   },
   getters: {
-    setmealTableData: state => state.setmealList,
+    [`${moduleName}Config`]: state => state.config,
+    [`${moduleName}TableData`]: state => state.setmealList,
   },
   mutations: {
     updateSetmeal (state, setmealList) {
@@ -19,7 +49,7 @@ export default {
       }, {
         name: 'dev2',
         desc: 'just for dev~',
-        status: 'draft',
+        status: 'drafted',
       }, {
         name: 'dev3',
         desc: 'just for dev~~',

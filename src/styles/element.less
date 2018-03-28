@@ -17,6 +17,17 @@
 }
 
 .el-table {
+  // 部分页面中的表格可以通过检查某行所对应的数据来为其单独设置样式
+  .warning-row {
+    background: oldlace;
+  }
+  .success-row {
+    background: #f0f9eb;
+  }
+  .selected-row {
+    background: #b9f1f9;
+  }
+  // 调整部分样式，使其接近光环云中的表格
   .el-table-column--selection .cell {
     padding: 0 11px;
   }
@@ -35,6 +46,10 @@
       background-color: #ecf0f2;
     }
   }
+}
+// 调整row:hover颜色
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+  background-color: #e1f4f7;
 }
 
 .el-button {
@@ -57,5 +72,15 @@
   }
   span {
     line-height: 1.3em;
+  }
+}
+
+.el-dialog {
+  width: 550px;
+  .el-dialog__body {
+    padding-right: 48px;
+    .el-select {
+      width: 100%;
+    }
   }
 }

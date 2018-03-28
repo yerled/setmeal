@@ -22,7 +22,7 @@ const i18n = new VueI18n({
   messages
 })
 /* eslint-disable no-new */
-new Vue({
+window.yerled = new Vue({
   el: '#app',
   router,
   i18n,
