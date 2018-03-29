@@ -50,17 +50,76 @@
           </el-form-item>
         </el-form>
       </div>
-      <div class="item" v-show="stepName === 'instance'">
+      <div class="item resource"
+        v-for="(resourcesArr, resourceType) of resourcesDict"
+        :key="resourceType"
+        v-show="stepName === resourceType">
         <el-card class="box-card"
-          v-for="(instance, index) of resourcesDict.instance"
+          v-for="(resource, index) of resourcesArr"
           :key="index">
           <div slot="header" class="clearfix">
-            <span>{{$t('resource.instance') + ' ' + (index + 1)}}</span>
+            <span>{{$t(`resource.${resourceType}`) + ' ' + (index + 1)}}</span>
           </div>
-          默认的配置：{{instance.configuration.flavor_id}}
-          <el-form :model="instance">
-            <el-form-item :label="$t('resource.flavor')" :label-width="formLabelWidth">
-              <el-input v-model="setmeal.name" auto-complete="off"></el-input>
+          <el-form :model="resource">
+            <el-form-item :label="$t('resource.flavor')"
+              v-if="'flavor_id' in resourceConfig[resourceType].configuration"
+              :label-width="formLabelWidth">
+              <el-select v-model="resource.flavor_id">
+                <el-option
+                  v-for="item in flavors"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('resource.volume_type')"
+              v-if="'type' in resourceConfig[resourceType].configuration"
+              :label-width="formLabelWidth">
+              <el-select v-model="resource.type">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('resource.size')"
+              v-if="'size' in resourceConfig[resourceType].configuration"
+              :label-width="formLabelWidth">
+              <el-select v-model="resource.size">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('resource.line')"
+              v-if="'line' in resourceConfig[resourceType].configuration"
+              :label-width="formLabelWidth">
+              <el-select v-model="resource.type">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('resource.ratelimit')"
+              v-if="'ratelimit' in resourceConfig[resourceType].configuration"
+              :label-width="formLabelWidth">
+              <el-select v-model="resource.type">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-form>
         </el-card>
@@ -81,7 +140,12 @@
 }
 .body {
   height: 380px;
-    overflow: auto;
+  overflow: auto;
+  .resource {
+    .el-card {
+      margin-bottom: 10px;
+    }
+  }
 }
 .el-button {
   width: 70px;
@@ -93,14 +157,27 @@
 
 <script>
 import {mapState} from 'vuex'
-import { Vue } from 'vue/types/vue';
-let counter = {
-  instance: 0,
-}
+
 export default {
   name: 'SetmealCreate',
   data () {
     return {
+      options: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+      }],
       step: 0,
       resourceConfig: {
         instance: {
@@ -123,30 +200,23 @@ export default {
           max: 10,
           configuration: {
             line: '',
-            rateLimit: '',
+            ratelimit: '',
           },
         },
         router: {
-          type: 'router',
           min: 0,
           max: 1,
           configuration: {
             line: '',
-            rateLimit: '',
+            ratelimit: '',
           },
         },
       },
       counter: {
-        // instance: 0,
-        // volume: 0,
-        // floating_ip: 0,
-        // router: 0,
+        // init by this.created
       },
       resourcesDict: {
-        instance: [],
-        volume: [],
-        floating_ip: [],
-        router: [],
+        // init by this.created
       },
       setmeal: {
         name: '',
@@ -165,6 +235,41 @@ export default {
   props: ['visible'],
   computed: {
     ...mapState(['formLabelWidth']),
+    flavors () {
+      return [{
+        id: 'flavor1',
+        name: 'flavorName1',
+        vcpus: 1,
+        ram: 512,
+      }, {
+        id: 'flavor2',
+        name: 'flavorName2',
+        vcpus: 1,
+        ram: 1024,
+      }, {
+        id: 'flavor3',
+        name: 'flavorName3',
+        vcpus: 2,
+        ram: 2048,
+      }, {
+        id: 'flavor4',
+        name: 'flavorName4',
+        vcpus: 3,
+        ram: 4096,
+      }, ]
+    },
+    flavorCPU () {
+
+    },
+    flavorRAM () {
+      let obj = {}
+      this.flavors.forEach(e => {
+        if (!(e.vcpus in obj)) {
+          obj[e.vcpus] = []
+        }
+        obj[e.vcpus].push()
+      })
+    },
     stepLen () {
       return this.steps.length
     },
@@ -226,21 +331,14 @@ export default {
         this.$emit('done', 'create')
       }
     },
-    // 'counter.instance' (newVal, oldVal) {
-    //   console.log(newVal)
-    //   this.updateResourceCount('instance', newVal, oldVal)
-    // },
   },
-  // beforeCreate () {
-  //   this.$data.counter = counter
-  // },
   created () {
     // init counter and resourcesDict
     this.resourceNames.forEach(e => {
-      this.$set('counter', e, 1)
-      this.$watch('counter.instance', function (newVal, oldVal) {
-        console.log(newVal)
-        this.updateResourceCount('instance', newVal, oldVal)
+      this.$set(this.counter, e, 0)
+      this.$set(this.resourcesDict, e, [])
+      this.$watch(`counter.${e}`, function (newVal, oldVal) {
+        this.updateResourceCount(e, newVal, oldVal)
       })
     })
   },
