@@ -54,72 +54,86 @@
         v-for="(resourcesArr, resourceType) of resourcesDict"
         :key="resourceType"
         v-show="stepName === resourceType">
-        <el-card class="box-card"
+        <el-card class="resource"
           v-for="(resource, index) of resourcesArr"
           :key="index">
-          <div slot="header" class="clearfix">
-            <span>{{$t(`resource.${resourceType}`) + ' ' + (index + 1)}}</span>
+          <div slot="header">
+            <label>{{$t(`resource.${resourceType}`) + ' ' + (index + 1)}}</label>
           </div>
           <el-form :model="resource">
-            <el-form-item :label="$t('resource.flavor')"
-              v-if="'flavor_id' in resourceConfig[resourceType].configuration"
+            <template v-if="'flavor_id' in resourceConfig[resourceType].configuration">
+              <el-form-item :label="$t('resource.flavor')"
+                :label-width="formLabelWidth">
+                <el-select
+                  v-model="resource.flavor_id"
+                  @change="updateFlavor(resource, 'flavor_id')">
+                  <el-option
+                    v-for="flavor in flavorList"
+                    :key="flavor.flavor_id"
+                    :label="flavor.name"
+                    :value="flavor.flavor_id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item :label-width="formLabelWidth">
+                <el-radio-group size="medium" class="tab-radio-group"
+                  v-model="resource.vcpus"
+                  @change="updateFlavor(resource, 'vcpus')">
+                  <el-radio-button v-for="cpu of flavorCPU"
+                    :key="cpu"
+                    :label="cpu">{{`${cpu}vCPU`}}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item :label-width="formLabelWidth">
+                <el-radio-group size="medium" class="tab-radio-group"
+                  v-model="resource.ram"
+                  @change="updateFlavor(resource, 'ram')">
+                  <el-radio-button v-for="flavor of flavorList"
+                    v-show="resource.vcpus == flavor.vcpus"
+                    :key="flavor.flavor_id"
+                    :label="flavor.ram">{{convertSize(flavor.ram, 'M')}}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+            </template>
+            <el-form-item v-if="'volume_type' in resourceConfig[resourceType].configuration"
+              :label="$t('resource.volume_type')"
               :label-width="formLabelWidth">
-              <el-select v-model="resource.flavor_id">
+              <el-radio-group size="medium" class="tab-radio-group"
+                v-model="resource.volume_type">
+                <el-radio-button v-for="type of volume_type"
+                  :key="type"
+                  :label="type">{{$t(`resource.${type}`)}}</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item v-if="'size' in resourceConfig[resourceType].configuration"
+              :label="`${$t('resource.size')}(G)`"
+              :label-width="formLabelWidth">
+              <el-slider show-input
+                v-model="resource.size"
+                :format-tooltip="convertSizeG"
+                :min="10" :max="860">
+              </el-slider>
+            </el-form-item>
+            <el-form-item v-if="'line' in resourceConfig[resourceType].configuration"
+              :label="$t('resource.line')"
+              :label-width="formLabelWidth">
+              <el-select v-model="resource.line">
                 <el-option
-                  v-for="item in flavors"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                  v-for="line in lineList"
+                  :key="line.name"
+                  :label="$t(`resource.${line.name}`)"
+                  :value="line.name">
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item :label="$t('resource.volume_type')"
-              v-if="'type' in resourceConfig[resourceType].configuration"
+            <el-form-item v-if="'ratelimit' in resourceConfig[resourceType].configuration"
+              :label="`${$t('resource.ratelimit')}(M)`"
               :label-width="formLabelWidth">
-              <el-select v-model="resource.type">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label="$t('resource.size')"
-              v-if="'size' in resourceConfig[resourceType].configuration"
-              :label-width="formLabelWidth">
-              <el-select v-model="resource.size">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label="$t('resource.line')"
-              v-if="'line' in resourceConfig[resourceType].configuration"
-              :label-width="formLabelWidth">
-              <el-select v-model="resource.type">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label="$t('resource.ratelimit')"
-              v-if="'ratelimit' in resourceConfig[resourceType].configuration"
-              :label-width="formLabelWidth">
-              <el-select v-model="resource.type">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+              <el-slider show-input
+                v-model="resource.ratelimit"
+                :format-tooltip="convertSizeM"
+                :min="10" :max="1024">
+              </el-slider>
             </el-form-item>
           </el-form>
         </el-card>
@@ -157,41 +171,28 @@
 
 <script>
 import {mapState} from 'vuex'
+import {convertSize} from '../utils'
 
 export default {
   name: 'SetmealCreate',
   data () {
     return {
-      options: [{
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
-      }],
       step: 0,
       resourceConfig: {
         instance: {
           min: 0,
           max: 10,
           configuration: {
-            flavor_id: 'flavor_id  demo',
+            flavor_id: '',
+            vcpus: 0,
+            ram: 0,
           },
         },
         volume: {
           min: 0,
           max: 10,
           configuration: {
-            type: '',
+            volume_type: 'ssd',
             size: 0,
           },
         },
@@ -200,7 +201,7 @@ export default {
           max: 10,
           configuration: {
             line: '',
-            ratelimit: '',
+            ratelimit: 0,
           },
         },
         router: {
@@ -208,7 +209,7 @@ export default {
           max: 1,
           configuration: {
             line: '',
-            ratelimit: '',
+            ratelimit: 0,
           },
         },
       },
@@ -235,6 +236,18 @@ export default {
   props: ['visible'],
   computed: {
     ...mapState(['formLabelWidth']),
+    volume_type () {
+      return ['ssd', 'sata']
+    },
+    lineList () {
+      return [{
+        name: 'doubleLine',
+      }, {
+        name: '3LINE_BGP'
+      }, {
+        name: 'ALLLINE_BGP'
+      }]
+    },
     flavors () {
       return [{
         id: 'flavor1',
@@ -258,17 +271,18 @@ export default {
         ram: 4096,
       }, ]
     },
-    flavorCPU () {
-
-    },
-    flavorRAM () {
-      let obj = {}
-      this.flavors.forEach(e => {
-        if (!(e.vcpus in obj)) {
-          obj[e.vcpus] = []
+    flavorList () {
+      return this.flavors.map(({id, name, vcpus, ram}) => {
+        return {
+          flavor_id: id,
+          vcpus,
+          ram,
+          name: `${name} (${vcpus}vCPU/${convertSize(ram, 'M')})`,
         }
-        obj[e.vcpus].push()
       })
+    },
+    flavorCPU () {
+      return Array.from(new Set(this.flavors.map(e => e.vcpus)))
     },
     stepLen () {
       return this.steps.length
@@ -289,14 +303,64 @@ export default {
     resourceNames () {
       return Object.keys(this.resourceConfig)
     },
+    defaultResource () {
+      return {
+        instance: this.flavorList[0],
+        volume: {
+          volume_type: this.volume_type[0],
+          size: 50,
+        },
+        floating_ip: {
+          line: this.lineList[0].name,
+          ratelimit: 10,
+        },
+        router: {
+          line: this.lineList[0].name,
+          ratelimit: 10,
+        },
+      }
+    },
   },
   methods: {
+    convertSize,
+    convertSizeM (value) {
+      return this.convertSize(value, 'M')
+    },
+    convertSizeG (value) {
+      return this.convertSize(value, 'G')
+    },
+    updateFlavor (target, type) {
+      if (type === 'flavor_id') {
+        this.flavorList.some(e => {
+          if (e.flavor_id === target.flavor_id) {
+            target.vcpus = e.vcpus
+            target.ram = e.ram
+            return true
+          }
+        })
+      } else if (type === 'vcpus') {
+        this.flavorList.some(e => {
+          if (e.vcpus === target.vcpus) {
+            target.flavor_id = e.flavor_id
+            target.ram = e.ram
+            return true
+          }
+        })
+      } else if (type === 'ram') {
+        this.flavorList.some(e => {
+          if (e.vcpus === target.vcpus && e.ram === target.ram) {
+            target.flavor_id = e.flavor_id
+            return true
+          }
+        })
+      }
+    },
     updateResourceCount (resourceType, newVal, oldVal) {
       let dict = this.resourcesDict[resourceType]
       let difference = newVal - oldVal
       if (difference > 0) {
         for (let i = 0; i < difference; i++) {
-          dict.push(this.resourceConfig[resourceType])
+          dict.push(Object.assign({}, this.defaultResource[resourceType]))
         }
       } else {
         dict.length = newVal
@@ -335,8 +399,8 @@ export default {
   created () {
     // init counter and resourcesDict
     this.resourceNames.forEach(e => {
-      this.$set(this.counter, e, 0)
-      this.$set(this.resourcesDict, e, [])
+      this.$set(this.counter, e, 1)
+      this.$set(this.resourcesDict, e, [Object.assign({}, this.defaultResource[e])])
       this.$watch(`counter.${e}`, function (newVal, oldVal) {
         this.updateResourceCount(e, newVal, oldVal)
       })

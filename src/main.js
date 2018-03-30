@@ -6,13 +6,13 @@ import router from './router'
 import Element from 'element-ui'
 import VueI18n from 'vue-i18n'
 import messages from './i18n'
+import store from './store'
 
 // import 'element-ui/lib/theme-chalk/index.css'
 import './theme/index_44afbc.css'
 import './styles/index.less'
 import './iconfont'
 import './components'
-import store from './store'
 
 Vue.config.productionTip = false
 Vue.use(Element, {size: 'small'})

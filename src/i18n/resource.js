@@ -11,6 +11,9 @@ export default {
     image: '镜像',
     flavor: '配置',
     line: '线路',
+    'doubleLine': '双线线路',
+    '3LINE_BGP': '三线BGP线路',
+    'ALLLINE_BGP': '全网BGP线路',
     ratelimit: '带宽',
   },
   en: {}
