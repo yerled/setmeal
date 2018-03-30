@@ -138,6 +138,36 @@
           </el-form>
         </el-card>
       </div>
+      <div class="item price" v-show="stepName === 'price'">
+        <el-collapse>
+          <el-collapse-item
+            v-for="(prices, type) of setmeal_price"
+            :key="type">
+            <template slot="title">
+              <div class="price_title">
+                <span>{{`${$t(`resource.${type}`)}${$t('Setmeal.popCreate.total_price')}`}}</span>
+                <span>{{`￥ ${prices.total} ${$t('Setmeal.popCreate.rmb')} / ${$t('Setmeal.popCreate.day')}`}}</span>
+              </div>
+            </template>
+            <div class="price_items">
+              <div class="price_item"
+                v-for="(price, index) of prices.items"
+                :key="index">
+                <span>{{`${$t(`resource.${type}`)} ${index + 1}:`}}</span>
+                <span>{{price}}</span>
+              </div>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+      </div>
     </div>
     <div slot="footer">
       <el-button class="back" v-show="step > 0" @click="back">{{$t('Setmeal.popCreate.back')}}</el-button>
@@ -148,6 +178,10 @@
 </template>
 
 <style lang="less" scoped>
+.el-collapse {
+  margin-left: 20px;
+  width: 666px;
+}
 .el-steps {
   margin-left: 25px;
   margin-bottom: 15px;
@@ -219,13 +253,15 @@ export default {
       resourcesDict: {
         // init by this.created
       },
+      setmeal_price: {
+        // init by this.created
+      },
       setmeal: {
         name: '',
         desc: '',
         unlimited: true,
         limit: 1,
       },
-      price: [],
       rules: {
         name: [
           { required: true, message: this.$t('Setmeal.popCreate.nameRequired'), trigger: 'blur' },
@@ -236,6 +272,9 @@ export default {
   props: ['visible'],
   computed: {
     ...mapState(['formLabelWidth']),
+    instance_price () {
+      return 
+    },
     volume_type () {
       return ['ssd', 'sata']
     },
@@ -296,7 +335,9 @@ export default {
     resources () {
       let arr = []
       this.resourceNames.forEach(e => {
-        arr = arr.concat(this.resourcesDict[e])
+        this.resourcesDict[e].forEach(e2 => {
+          arr.push({type: e, configuration: e2})
+        })
       })
       return arr
     },
@@ -374,7 +415,28 @@ export default {
     next () {
       if (this.step < this.stepLen - 1) {
         this.step++
+        // 动态绑定价格可能很麻烦，我打算在跳转到价格页面时再手动计算
+        if (this.step === this.stepLen - 1) {
+          this.calcPrice()
+        }
       }
+    },
+    resetPrice () {
+      this.resourceNames.forEach(e => {
+        this.$set(this.setmeal_price, e, {total: 0, items: []})
+      })
+    },
+    calcPrice () {
+      this.resetPrice()
+      this.resources.forEach(e => {
+        let price = this._calcSinglePrice(e)
+        this.setmeal_price[e.type].items.push(price)
+        this.setmeal_price[e.type].total += price
+      })
+    },
+    _calcSinglePrice (resource) {
+      console.log(`假设该${resource.type}的单价为￥1`)
+      return 1
     },
     create () {
       this.$refs['SetmealCreateForm'].validate((valid) => {
@@ -397,6 +459,7 @@ export default {
     },
   },
   created () {
+    this.resetPrice()
     // init counter and resourcesDict
     this.resourceNames.forEach(e => {
       this.$set(this.counter, e, 1)
