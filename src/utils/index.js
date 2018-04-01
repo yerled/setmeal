@@ -12,3 +12,11 @@ export function convertSize (value = 0, base = '', step = 1024) {
   let unit = units[index]
   return temp + unit
 }
+
+export function initDictFromList (list = [], key = 'id') {
+  let dict = {}
+  list.forEach(e => {
+    dict[e[key]] = e
+  })
+  return dict
+}

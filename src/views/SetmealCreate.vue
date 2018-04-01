@@ -58,11 +58,11 @@
           v-for="(resource, index) of resourcesArr"
           :key="index">
           <div slot="header">
-            <label>{{$t(`resource.${resourceType}`) + ' ' + (index + 1)}}</label>
+            <label>{{`${$t(resourceType)} ${index + 1}`}}</label>
           </div>
           <el-form :model="resource">
             <template v-if="'flavor_id' in resourceConfig[resourceType].configuration">
-              <el-form-item :label="$t('resource.flavor')"
+              <el-form-item :label="$t('flavor')"
                 :label-width="formLabelWidth">
                 <el-select
                   v-model="resource.flavor_id"
@@ -96,17 +96,17 @@
               </el-form-item>
             </template>
             <el-form-item v-if="'volume_type' in resourceConfig[resourceType].configuration"
-              :label="$t('resource.volume_type')"
+              :label="$t('volume_type')"
               :label-width="formLabelWidth">
               <el-radio-group size="medium" class="tab-radio-group"
                 v-model="resource.volume_type">
                 <el-radio-button v-for="type of volume_type"
                   :key="type"
-                  :label="type">{{$t(`resource.${type}`)}}</el-radio-button>
+                  :label="type">{{$t(type)}}</el-radio-button>
               </el-radio-group>
             </el-form-item>
             <el-form-item v-if="'size' in resourceConfig[resourceType].configuration"
-              :label="`${$t('resource.size')}(G)`"
+              :label="`${$t('size')}(G)`"
               :label-width="formLabelWidth">
               <el-slider show-input
                 v-model="resource.size"
@@ -115,19 +115,19 @@
               </el-slider>
             </el-form-item>
             <el-form-item v-if="'line' in resourceConfig[resourceType].configuration"
-              :label="$t('resource.line')"
+              :label="$t('line')"
               :label-width="formLabelWidth">
               <el-select v-model="resource.line">
                 <el-option
                   v-for="line in lineList"
                   :key="line.name"
-                  :label="$t(`resource.${line.name}`)"
+                  :label="$t(line.name)"
                   :value="line.name">
                 </el-option>
               </el-select>
             </el-form-item>
             <el-form-item v-if="'ratelimit' in resourceConfig[resourceType].configuration"
-              :label="`${$t('resource.ratelimit')}(M)`"
+              :label="`${$t('ratelimit')}(M)`"
               :label-width="formLabelWidth">
               <el-slider show-input
                 v-model="resource.ratelimit"
@@ -145,16 +145,21 @@
             :key="type">
             <template slot="title">
               <div class="price_title">
-                <span>{{`${$t(`resource.${type}`)}${$t('Setmeal.popCreate.total_price')}`}}</span>
-                <span>{{`￥ ${prices.total} ${$t('Setmeal.popCreate.rmb')} / ${$t('Setmeal.popCreate.day')}`}}</span>
+                <span class="resource_name">{{`${$t(type)}${$t('Setmeal.popCreate.total_price')}`}}</span>
+                <span class="price">
+                  <Money :class="['big']" prefix="￥" :money="prices.total" unit="day"></Money>
+                </span>
               </div>
             </template>
             <div class="price_items">
               <div class="price_item"
-                v-for="(price, index) of prices.items"
+                v-for="(item, index) of prices.items"
                 :key="index">
-                <span>{{`${$t(`resource.${type}`)} ${index + 1}:`}}</span>
-                <span>{{price}}</span>
+                <span class="resource_name">{{`${$t(type)} ${index + 1} `}}</span>
+                <span class="configDesc">{{item.configDesc}}</span>
+                <span class="price">
+                  <Money :class="['zero']" prefix="￥" :money="item.price" unit="day"></Money>
+                </span>
               </div>
             </div>
           </el-collapse-item>
@@ -179,6 +184,12 @@
 
 <style lang="less" scoped>
 .el-collapse {
+  span {
+    display: inline-block;
+  }
+  .resource_name, .price {
+    width: 100px;
+  }
   margin-left: 20px;
   width: 666px;
 }
@@ -205,7 +216,7 @@
 
 <script>
 import {mapState} from 'vuex'
-import {convertSize} from '../utils'
+import {convertSize, initDictFromList} from '../utils'
 
 export default {
   name: 'SetmealCreate',
@@ -272,9 +283,6 @@ export default {
   props: ['visible'],
   computed: {
     ...mapState(['formLabelWidth']),
-    instance_price () {
-      return 
-    },
     volume_type () {
       return ['ssd', 'sata']
     },
@@ -308,7 +316,7 @@ export default {
         name: 'flavorName4',
         vcpus: 3,
         ram: 4096,
-      }, ]
+      }]
     },
     flavorList () {
       return this.flavors.map(({id, name, vcpus, ram}) => {
@@ -319,6 +327,9 @@ export default {
           name: `${name} (${vcpus}vCPU/${convertSize(ram, 'M')})`,
         }
       })
+    },
+    flavorDict () {
+      return this.initDictFromList(this.flavorList, 'flavor_id')
     },
     flavorCPU () {
       return Array.from(new Set(this.flavors.map(e => e.vcpus)))
@@ -339,6 +350,7 @@ export default {
           arr.push({type: e, configuration: e2})
         })
       })
+
       return arr
     },
     resourceNames () {
@@ -364,6 +376,7 @@ export default {
   },
   methods: {
     convertSize,
+    initDictFromList,
     convertSizeM (value) {
       return this.convertSize(value, 'M')
     },
@@ -430,13 +443,41 @@ export default {
       this.resetPrice()
       this.resources.forEach(e => {
         let price = this._calcSinglePrice(e)
-        this.setmeal_price[e.type].items.push(price)
+        let configDesc = this._initDescFromConfig(e.configuration)
+
+        this.setmeal_price[e.type].items.push({
+          price,
+          configDesc,
+        })
         this.setmeal_price[e.type].total += price
       })
     },
     _calcSinglePrice (resource) {
-      console.log(`假设该${resource.type}的单价为￥1`)
       return 1
+    },
+    _initDescFromConfig (config) {
+      let arr = []
+      if ('flavor_id' in config) {
+        arr.push(`${this.$t('flavor')}:
+          ${this.flavorDict[config.flavor_id].name}`)
+      }
+      if ('volume_type' in config) {
+        arr.push(`${this.$t('volume_type')}:
+          ${this.$t(config.volume_type)}`)
+      }
+      if ('size' in config) {
+        arr.push(`${this.$t('size')}:
+          ${config.size} GB`)
+      }
+      if ('line' in config) {
+        arr.push(`${this.$t('line')}:
+          ${this.$t(config.line)}`)
+      }
+      if ('ratelimit' in config) {
+        arr.push(`${this.$t('ratelimit')}:
+          ${config.ratelimit} MB`)
+      }
+      return arr.join('; ')
     },
     create () {
       this.$refs['SetmealCreateForm'].validate((valid) => {
