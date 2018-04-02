@@ -15,6 +15,7 @@ import './styles/index.less'
 import './iconfont'
 import './components'
 import './filter'
+import './plugin'
 
 Vue.config.productionTip = false
 Vue.use(Element, {size: 'small'})

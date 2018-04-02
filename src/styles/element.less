@@ -16,7 +16,19 @@
   padding-top: 10px;
 }
 
+.el-table--border::after, .el-table--group::after {
+  width: 0;
+}
 .el-table {
+  border-left: none;
+  border-right: none;
+  td, th {
+    border-right: none;
+  }
+  tr {
+    border-left: none;
+    border-right: none;
+  }
   // 部分页面中的表格可以通过检查某行所对应的数据来为其单独设置样式
   .warning-row {
     background: oldlace;

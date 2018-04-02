@@ -14,6 +14,7 @@
           :ref = "moduleName"
           :data="tableData"
           :row-class-name="tableRowClassName"
+          :border="true"
           @selection-change="handleSelectionChange">
         <el-table-column
             type="selection"

@@ -74,7 +74,7 @@ export default {
         status: 'draft',
       }, {
         name: 'dev1',
-        description: 'just for dev',
+        description: 'just for devvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv',
         status: 'issue',
       }, {
         name: 'dev2',
