@@ -7,6 +7,7 @@ import Element from 'element-ui'
 import VueI18n from 'vue-i18n'
 import messages from './i18n'
 import store from './store'
+import moment from 'moment'
 
 // import 'element-ui/lib/theme-chalk/index.css'
 import './theme/index_44afbc.css'
@@ -19,6 +20,7 @@ Vue.config.productionTip = false
 Vue.use(Element, {size: 'small'})
 Vue.use(VueI18n)
 
+console.dir(moment)
 const i18n = new VueI18n({
   locale: 'zh',
   messages

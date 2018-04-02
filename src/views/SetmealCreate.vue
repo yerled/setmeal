@@ -19,12 +19,12 @@
             :label-width="formLabelWidth">
             <el-input v-model="setmeal.name" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item :label="$t('Setmeal.popCreate.desc')"
+          <el-form-item :label="$t('description')"
             :label-width="formLabelWidth">
             <el-input
               type="textarea"
               :rows="2"
-              v-model="setmeal.desc">
+              v-model="setmeal.description">
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('Setmeal.popCreate.limit')"
@@ -39,7 +39,7 @@
               :min="0" :max="10">
             </el-input-number>
           </el-form-item>
-          <el-form-item :label="$t(`Setmeal.popCreate.counter.${key}`)"
+          <el-form-item :label="$t(`Setmeal.${key}_count`)"
             :label-width="formLabelWidth"
             v-for="(item, key) of resourceConfig"
             :key="key">
@@ -141,11 +141,11 @@
       <div class="item price" v-show="stepName === 'price'">
         <el-collapse>
           <el-collapse-item
-            v-for="(prices, type) of setmeal_price"
+            v-for="(prices, type) of setmeal_resource_price"
             :key="type">
             <template slot="title">
               <div class="price_title">
-                <span class="resource_name">{{`${$t(type)}${$t('Setmeal.popCreate.total_price')}`}}</span>
+                <span class="resource_name">{{`${$t(type)}${$t('total_price')}`}}</span>
                 <span class="price">
                   <Money :class="['big']" prefix="￥" :money="prices.total" unit="day"></Money>
                 </span>
@@ -164,34 +164,65 @@
             </div>
           </el-collapse-item>
         </el-collapse>
-        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
-        <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        <div class="total_price">
+          <div class="price_title">
+            <span class="resource_name">
+              {{`${$t('Setmeal.setmeal')}${$t('total_price')}`}}
+            </span>
+            <span class="price">
+              <Money :class="['big']" prefix="￥" :money="total_price" unit="day"></Money>
+            </span>
+          </div>
+          <div class="period"
+            v-for="(period, index) of periodList"
+            :key="index">
+            <span class="discount_title">
+              {{`${$t(period)}${$t('discount')}`}}
+            </span>
+            <el-input-number :max="100" v-model="discountList[index]"></el-input-number>%
+            <Money :class="['big']" prefix="￥" :money="discountPriceList[index]" :unit="period"></Money>
+          </div>
+        </div>
       </div>
     </div>
     <div slot="footer">
-      <el-button class="back" v-show="step > 0" @click="back">{{$t('Setmeal.popCreate.back')}}</el-button>
-      <el-button v-show="step < stepLen - 1" @click="next">{{$t('Setmeal.popCreate.next')}}</el-button>
-      <el-button type="primary" v-show="step > stepLen - 2" @click="create">{{$t('Setmeal.popCreate.confirm')}}</el-button>
+      <el-button class="back" v-show="step > 0" @click="back">{{$t('back')}}</el-button>
+      <el-button v-show="step < stepLen - 1" @click="next">{{$t('next')}}</el-button>
+      <el-button type="primary" v-show="step > stepLen - 2" @click="create">{{$t('confirm')}}</el-button>
     </div>
   </el-dialog>
 </template>
 
 <style lang="less" scoped>
-.el-collapse {
+.el-collapse, .total_price {
+  margin-left: 20px;
+  width: 666px;
   span {
     display: inline-block;
   }
-  .resource_name, .price {
+  .resource_name {
     width: 100px;
   }
-  margin-left: 20px;
-  width: 666px;
+  .configDesc {
+    margin-right: 30px;
+  }
+  .discount_title {
+    width: 130px;
+    text-align: right;
+  }
+}
+.total_price {
+  .price_title {
+    height: 50px;
+    line-height: 50px;
+    .resource_name {
+      font-weight: bold;
+      font-size: 18px;
+    }
+  }
+  .period {
+    margin-top: 10px;
+  }
 }
 .el-steps {
   margin-left: 25px;
@@ -223,6 +254,8 @@ export default {
   data () {
     return {
       step: 0,
+      periodList: ['month1', 'month2', 'month3', 'month6', 'month12'],
+      discountList: [],
       resourceConfig: {
         instance: {
           min: 0,
@@ -264,12 +297,12 @@ export default {
       resourcesDict: {
         // init by this.created
       },
-      setmeal_price: {
+      setmeal_resource_price: {
         // init by this.created
       },
       setmeal: {
         name: '',
-        desc: '',
+        description: '',
         unlimited: true,
         limit: 1,
       },
@@ -278,11 +311,17 @@ export default {
           { required: true, message: this.$t('Setmeal.popCreate.nameRequired'), trigger: 'blur' },
         ]
       },
+      total_price: 0,
     }
   },
   props: ['visible'],
   computed: {
     ...mapState(['formLabelWidth']),
+    discountPriceList () {
+      return this.periodList.map((e, i) => {
+        return this.total_price * 30 * e.replace('month', '') * this.discountList[i] / 100 
+      })
+    },
     volume_type () {
       return ['ssd', 'sata']
     },
@@ -350,7 +389,6 @@ export default {
           arr.push({type: e, configuration: e2})
         })
       })
-
       return arr
     },
     resourceNames () {
@@ -436,8 +474,9 @@ export default {
     },
     resetPrice () {
       this.resourceNames.forEach(e => {
-        this.$set(this.setmeal_price, e, {total: 0, items: []})
+        this.$set(this.setmeal_resource_price, e, {total: 0, items: []})
       })
+      this.total_price = 0
     },
     calcPrice () {
       this.resetPrice()
@@ -445,11 +484,12 @@ export default {
         let price = this._calcSinglePrice(e)
         let configDesc = this._initDescFromConfig(e.configuration)
 
-        this.setmeal_price[e.type].items.push({
+        this.setmeal_resource_price[e.type].items.push({
           price,
           configDesc,
         })
-        this.setmeal_price[e.type].total += price
+        this.setmeal_resource_price[e.type].total += price
+        this.total_price += price
       })
     },
     _calcSinglePrice (resource) {
@@ -508,6 +548,10 @@ export default {
       this.$watch(`counter.${e}`, function (newVal, oldVal) {
         this.updateResourceCount(e, newVal, oldVal)
       })
+    })
+    // init discountList
+    this.periodList.forEach(e => {
+      this.discountList.push(100)
     })
   },
 }

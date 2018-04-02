@@ -14,13 +14,12 @@ baseArr.forEach(e => {
   Object.assign(messages.zh, e.zh)
   Object.assign(messages.en, e.en)
 })
-console.dir(messages)
 
 // add modules
 const modules = { menu, Setmeal }
 for (let key in modules) {
-  messages.zh[key] = modules[key].zh
-  messages.en[key] = modules[key].en
+  messages.zh[key] = Object.setPrototypeOf(modules[key].zh, messages.zh)
+  messages.en[key] = Object.setPrototypeOf(modules[key].en, messages.en)
 }
 
 export default messages

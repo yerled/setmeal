@@ -19,11 +19,18 @@
             type="selection"
             width="35">
         </el-table-column>
-        <el-table-column 
-            v-for="column of config.columns" 
+        <el-table-column
+            v-for="column of config.columns"
             :key="column.field"
-            :prop="column.field" 
+            :prop="column.field"
+            :sortable="true"
+            :filters="column.filters"
+            :filter-method="column.filter_method"
             :label="$t(`${moduleName}.${column.field}`)">
+            <template slot-scope="scope">
+              <ColumnIcon :field="column.field" :value="scope.row[column.field]"/>
+              <span>{{ formatter(scope.row[column.field], column.field) }}</span>
+            </template>
         </el-table-column>
       </el-table>
   </div>
@@ -53,7 +60,22 @@ export default {
   },
   computed: {
     config () {
-      return this.$store.getters[`${this.moduleName}Config`]
+      let config = this.$store.getters[`${this.moduleName}Config`]
+      config.columns.some(e => {
+        if (e.field === 'status') {
+          e.formatter = this.formatter
+          if (config.initStatusFilter) {
+            e.filter_method = this.filter_method
+            e.filters = config.initStatusFilter.map(status => {
+              return {
+                text: this.$t(status),
+                value: status,
+              }
+            })
+          }
+        }
+      })
+      return config
     },
     tableData () {
       const tableData = this.$store.getters[`${this.moduleName}TableData`]
@@ -87,6 +109,15 @@ export default {
     },
   },
   methods: {
+    formatter (value, type) {
+      if (type === 'status') {
+        return this.$t(value)
+      }
+      return value
+    },
+    filter_method (value, row, column) {
+      return row[column.property] === value
+    },
     doAction (action) {
       if (!this.buttonStatus[action]) {
         this.$emit(action, {field: action, data: this.multipleSelection})

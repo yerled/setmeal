@@ -11,23 +11,34 @@ export default {
         field: 'update',
         icon: 'edit',
         selection: 'single',
-        validStatus: ['drafted', 'shelved'],
+        validStatus: ['draft', 'off_shelve'],
       }, {
         field: 'purchase',
         icon: 'purchase',
         selection: 'single',
-        validStatus: ['published'],
+        validStatus: ['issue'],
       }],
       columns: [{
         field: 'name',
       }, {
-        field: 'desc',
+        field: 'description',
+      }, {
+        field: 'price',
       }, {
         field: 'status',
+      }, {
+        field: 'instance_count',
+      }, {
+        field: 'volume_count',
+      }, {
+        field: 'floating_ip_count',
+      }, {
+        field: 'router_count',
       }],
       rowClass: {
-        warn: ['shelved'],
+        warn: ['off_shelve'],
       },
+      initStatusFilter: ['draft', 'issue', 'off_shelve'],
     },
     setmealList: [],
   },
@@ -47,16 +58,32 @@ export default {
     refreshSetmeal ({commit}) {
       const dataForDev = [{
         name: 'dev1',
-        desc: 'just for dev',
-        status: 'published',
+        description: 'just for dev',
+        status: 'issue',
       }, {
         name: 'dev2',
-        desc: 'just for dev~',
-        status: 'drafted',
+        description: 'just for dev~',
+        status: 'draft',
+      }, {
+        name: 'dev1',
+        description: 'just for dev',
+        status: 'issue',
+      }, {
+        name: 'dev2',
+        description: 'just for dev~',
+        status: 'draft',
+      }, {
+        name: 'dev1',
+        description: 'just for dev',
+        status: 'issue',
+      }, {
+        name: 'dev2',
+        description: 'just for dev~',
+        status: 'draft',
       }, {
         name: 'dev3',
-        desc: 'just for dev~~',
-        status: 'shelved',
+        description: 'just for dev~~',
+        status: 'off_shelve',
       }]
       commit('updateSetmeal', dataForDev)
     },
