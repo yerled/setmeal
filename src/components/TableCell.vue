@@ -1,18 +1,20 @@
 <template>
-  <span class="cell" :class="{caption: column.type === 'caption'}">
+  <span class="cell" @click="click" :class="{caption: column.type === 'caption'}">
     <i v-if="icon" :class="`el-icon-${icon}`"></i>
     {{ content }}
   </span>
 </template>
 
 <style lang="less" scoped>
-  .cell {
-    white-space: nowrap;
-    .caption {
-      cursor: pointer;
-      color: blue;
-    }
+@import '../styles/variable.less';
+
+.cell {
+  white-space: nowrap;
+  .caption {
+    cursor: pointer;
+    color: @color_link;
   }
+}
 </style>
 
 <script>
@@ -63,6 +65,13 @@ export default {
       }
       return value
     }
+  },
+  methods: {
+    click () {
+      if (this.type === 'caption') {
+        this.$emit('captionClick', this.$props.row)
+      }
+    },
   },
 }
 </script>

@@ -1,7 +1,6 @@
 <template>
   <div class="content">
     <div class="buttonGroup">
-      <el-button @click="show3 = !show3">show detail</el-button>
       <el-button v-for="button of config.buttons"
           :type="button.type"
           :key="button.field"
@@ -30,17 +29,11 @@
           :filter-method="column.filter_method"
           :label="$t(`${moduleName}.${column.field}`)">
           <template slot-scope="scope">
-            <TableCell :row="scope.row" :column="column" @showDetail="showDetail"></TableCell>
+            <TableCell :row="scope.row" :column="column" @captionClick="captionClick"></TableCell>
           </template>
       </el-table-column>
     </el-table>
-    <transition 
-      enter-active-class="slideInRight"
-      leave-active-class="bounceOutRight">
-      <div v-show="show3" :key="moduleName" class="detailView">
-        haha  wo shi detail
-      </div>
-    </transition>
+    <DetailView :detail="detailView.data" :visible.sync="detailView.visible"></DetailView>
   </div>
 </template>
 
@@ -53,29 +46,20 @@
   .buttonGroup {
     padding: 10px 0;
   }
-  .detailView {
-    position: absolute;
-    &.slideInRight {
-      animation-duration: 0.7s;
-    }
-    top: 56px;
-    left: 200px;
-    right: 0px;
-    bottom: 0px;
-      background-color: gray;
-  }
 }
 
 </style>
 
 <script>
-// import {mapGetters} from 'vuex'
-
 export default {
   name: 'TableView',
   data () {
     return {
-      show3: true,
+      detailView: {
+        visible: false,
+        activeId: '',
+        data: {},
+      },
       multipleSelection: [],
     }
   },
@@ -135,8 +119,27 @@ export default {
     },
   },
   methods: {
-    showDetail () {
-      this.show3 = !this.show3
+    captionClick (row) {
+      let detailView = this.detailView
+      if (row.id === detailView.activeId && detailView.visible) {
+        this.resetDetailView()
+      } else {
+        this.setDetailView(row)
+      }
+    },
+    resetDetailView () {
+      this.detailView = {
+        visible: false,
+        activeId: '',
+        data: {},
+      }
+    },
+    setDetailView (data) {
+      this.detailView = {
+        visible: true,
+        activeId: data.id,
+        data: Object.assign({}, data),
+      }
     },
     filter_method (value, row, column) {
       return row[column.property] === value

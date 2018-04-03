@@ -59,30 +59,37 @@ export default {
   actions: {
     refreshSetmeal ({commit}) {
       const dataForDev = [{
+        id: 1,
         name: 'dev1',
         description: 'just for dev',
         status: 'issue',
       }, {
+        id: 2,
         name: 'dev2',
         description: 'just for dev~',
         status: 'draft',
       }, {
+        id: 3,
         name: 'dev1',
         description: 'just for dev',
         status: 'issue',
       }, {
+        id: 4,
         name: 'dev2',
         description: 'just for dev~',
         status: 'draft',
       }, {
+        id: 5,
         name: 'dev1',
         description: 'just for devvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv',
         status: 'issue',
       }, {
+        id: 6,
         name: 'dev2',
         description: 'just for dev~',
         status: 'draft',
       }, {
+        id: 7,
         name: 'dev3',
         description: 'just for dev~~',
         status: 'off_shelve',
