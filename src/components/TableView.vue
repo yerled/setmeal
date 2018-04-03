@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="content">
     <div class="buttonGroup">
+      <el-button @click="show3 = !show3">show detail</el-button>
       <el-button v-for="button of config.buttons"
           :type="button.type"
           :key="button.field"
@@ -10,37 +11,61 @@
         {{$t(`${moduleName}.${button.field}`)}}
       </el-button>
     </div>
-      <el-table
-          :ref = "moduleName"
-          :data="tableData"
-          :row-class-name="tableRowClassName"
-          :border="true"
-          @selection-change="handleSelectionChange">
-        <el-table-column
-            type="selection"
-            width="35">
-        </el-table-column>
-        <el-table-column
-            v-for="column of config.columns"
-            :key="column.field"
-            :prop="column.field"
-            :sortable="true"
-            :filters="column.filters"
-            :filter-method="column.filter_method"
-            :label="$t(`${moduleName}.${column.field}`)">
-            <template slot-scope="scope">
-              <ColumnIcon :field="column.field" :value="scope.row[column.field]"/>
-              <span>{{ formatter(scope.row[column.field], column.field) }}</span>
-            </template>
-        </el-table-column>
-      </el-table>
+    <el-table
+        :ref = "moduleName"
+        :data="tableData"
+        :row-class-name="tableRowClassName"
+        :border="true"
+        @selection-change="handleSelectionChange">
+      <el-table-column
+          type="selection"
+          width="35">
+      </el-table-column>
+      <el-table-column
+          v-for="column of config.columns"
+          :key="column.field"
+          :prop="column.field"
+          :sortable="true"
+          :filters="column.filters"
+          :filter-method="column.filter_method"
+          :label="$t(`${moduleName}.${column.field}`)">
+          <template slot-scope="scope">
+            <TableCell :row="scope.row" :column="column" @showDetail="showDetail"></TableCell>
+          </template>
+      </el-table-column>
+    </el-table>
+    <transition 
+      enter-active-class="slideInRight"
+      leave-active-class="bounceOutRight">
+      <div v-show="show3" :key="moduleName" class="detailView">
+        haha  wo shi detail
+      </div>
+    </transition>
   </div>
 </template>
 
 <style lang="less" scoped>
-.buttonGroup {
-  padding: 10px 0;
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .buttonGroup {
+    padding: 10px 0;
+  }
+  .detailView {
+    position: absolute;
+    &.slideInRight {
+      animation-duration: 0.7s;
+    }
+    top: 56px;
+    left: 200px;
+    right: 0px;
+    bottom: 0px;
+      background-color: gray;
+  }
 }
+
 </style>
 
 <script>
@@ -50,6 +75,7 @@ export default {
   name: 'TableView',
   data () {
     return {
+      show3: true,
       multipleSelection: [],
     }
   },
@@ -64,7 +90,6 @@ export default {
       let config = this.$store.getters[`${this.moduleName}Config`]
       config.columns.some(e => {
         if (e.field === 'status') {
-          e.formatter = this.formatter
           if (config.initStatusFilter) {
             e.filter_method = this.filter_method
             e.filters = config.initStatusFilter.map(status => {
@@ -110,11 +135,8 @@ export default {
     },
   },
   methods: {
-    formatter (value, type) {
-      if (type === 'status') {
-        return this.$t(value)
-      }
-      return value
+    showDetail () {
+      this.show3 = !this.show3
     },
     filter_method (value, row, column) {
       return row[column.property] === value

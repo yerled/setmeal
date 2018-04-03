@@ -14,8 +14,6 @@ export default {
     off_shelve: '下架',
   },
   en: {
-    status: 'Status',
-    cofirm: 'Confirm',
-    cancle: 'Cancle',
+    
   }
 }

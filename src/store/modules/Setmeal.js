@@ -20,12 +20,14 @@ export default {
       }],
       columns: [{
         field: 'name',
+        type: 'caption',
       }, {
         field: 'description',
       }, {
         field: 'price',
       }, {
         field: 'status',
+        type: 'status',
       }, {
         field: 'instance_count',
       }, {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="module setmeal">
     <TableView
       :moduleName = "moduleName"
       @create = "showPop"
@@ -11,6 +11,12 @@
     </SetmealCreate>
   </div>
 </template>
+
+<style lang="less" scoped>
+.module {
+  height: 100%;
+}
+</style>
 
 <script>
 import SetmealCreate from './SetmealCreate'

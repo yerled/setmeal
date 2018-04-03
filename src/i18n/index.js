@@ -2,10 +2,11 @@ import common from './common'
 import resource from './resource'
 import price from './price'
 import menu from './menu'
+import tips from './tips'
 import Setmeal from './Setmeal'
 
 // init base
-const baseArr = [common, resource, price]
+const baseArr = [common, resource, price, tips]
 let messages = {
   zh: {},
   en: {},

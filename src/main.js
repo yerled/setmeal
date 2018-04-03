@@ -11,6 +11,7 @@ import moment from 'moment'
 
 // import 'element-ui/lib/theme-chalk/index.css'
 import './theme/index_44afbc.css'
+import 'vue2-animate/dist/vue2-animate.min.css'
 import './styles/index.less'
 import './iconfont'
 import './components'
