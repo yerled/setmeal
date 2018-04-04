@@ -12,6 +12,7 @@ export default {
     draft: '草稿',
     issue: '发布',
     off_shelve: '下架',
+    details: '详细信息',
   },
   en: {
     

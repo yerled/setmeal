@@ -1,5 +1,3 @@
-const moduleName = 'Setmeal'
-
 export default {
   state: {
     config: {
@@ -42,11 +40,16 @@ export default {
       },
       initStatusFilter: ['draft', 'issue', 'off_shelve'],
     },
+    popVisible: {
+      create: false,
+      detail: false,
+    },
     setmealList: [],
   },
   getters: {
-    [`${moduleName}Config`]: state => state.config,
-    [`${moduleName}TableData`]: state => state.setmealList,
+    SetmealConfig: state => state.config,
+    SetmealTableData: state => state.setmealList,
+    SetmealPopVisible: state => state.popVisible,
   },
   mutations: {
     updateSetmeal (state, setmealList) {
@@ -54,7 +57,10 @@ export default {
     },
     addSetmeal (state, setmeal) {
       state.setmealList.push(setmeal)
-    }
+    },
+    updateSetmealPopVisible (state, {key, value}) {
+      state.popVisible[key] = value
+    },
   },
   actions: {
     refreshSetmeal ({commit}) {

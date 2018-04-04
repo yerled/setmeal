@@ -21,6 +21,11 @@ export default new Router({
       component: Setmeal
     },
     {
+      path: '/setmeal/:id',
+      name: 'SetmealDetail',
+      component: Setmeal
+    },
+    {
       path: '/mySetmeal',
       name: 'MySetmeal',
       component: MySetmeal

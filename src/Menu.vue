@@ -1,9 +1,9 @@
 <template>
   <ul>
-    <li v-for="menu of menus" :key="menu">
-      <router-link active-class="selected" :to="menu">
-        <Iconfont :type="menu" />
-        <span>{{$t(`menu.${menu}`)}}</span>
+    <li v-for="menu of menus" :key="menu.label">
+      <router-link active-class="selected" :to="menu.router">
+        <Iconfont :type="menu.label" />
+        <span>{{$t(`menu.${menu.label}`)}}</span>
       </router-link>
     </li>
   </ul>
@@ -23,7 +23,22 @@ export default {
     },
   },
   created () {
-    this.menus = ['setmeal', 'mySetmeal', 'record']
+    this.menus = [{
+      label: 'setmeal',
+      router: {
+        name: 'Setmeal'
+      },
+    }, {
+      label: 'mySetmeal',
+      router: {
+        name: 'MySetmeal'
+      },
+    }, {
+      label: 'record',
+      router: {
+        name: 'Record'
+      },
+    }]
   },
 }
 </script>

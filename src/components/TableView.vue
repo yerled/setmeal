@@ -15,6 +15,8 @@
         :data="tableData"
         :row-class-name="tableRowClassName"
         :border="true"
+        @select="handleSelect"
+        @select-all="handleSelectAll"
         @selection-change="handleSelectionChange">
       <el-table-column
           type="selection"
@@ -33,7 +35,7 @@
           </template>
       </el-table-column>
     </el-table>
-    <DetailView :detail="detailView.data" :visible.sync="detailView.visible"></DetailView>
+    <slot name="detialView"></slot>
   </div>
 </template>
 
@@ -47,19 +49,14 @@
     padding: 10px 0;
   }
 }
-
 </style>
 
 <script>
+import {mapState} from 'vuex'
 export default {
   name: 'TableView',
   data () {
     return {
-      detailView: {
-        visible: false,
-        activeId: '',
-        data: {},
-      },
       multipleSelection: [],
     }
   },
@@ -68,8 +65,12 @@ export default {
       type: String,
       required: true,
     },
+    detailTabs: {
+      type: Array,
+    },
   },
   computed: {
+    ...mapState(['detailVisible', 'detail']),
     config () {
       let config = this.$store.getters[`${this.moduleName}Config`]
       config.columns.some(e => {
@@ -120,26 +121,20 @@ export default {
   },
   methods: {
     captionClick (row) {
-      let detailView = this.detailView
-      if (row.id === detailView.activeId && detailView.visible) {
+      if (row.id === this.detail.id && this.detailVisible) {
         this.resetDetailView()
       } else {
         this.setDetailView(row)
       }
     },
     resetDetailView () {
-      this.detailView = {
-        visible: false,
-        activeId: '',
-        data: {},
-      }
+      this.$refs[this.moduleName].clearSelection()
+      this.$emit('leaveDetail')
     },
     setDetailView (data) {
-      this.detailView = {
-        visible: true,
-        activeId: data.id,
-        data: Object.assign({}, data),
-      }
+      this.$refs[this.moduleName].clearSelection()
+      this.$refs[this.moduleName].toggleRowSelection(data)
+      this.$emit('enterDetail')
     },
     filter_method (value, row, column) {
       return row[column.property] === value
@@ -149,8 +144,18 @@ export default {
         this.$emit(action, {field: action, data: this.multipleSelection})
       }
     },
-    handleSelectionChange (val) {
-      this.multipleSelection = val
+    handleSelect (selection) {
+      if (selection.length === 0 && this.detailVisible) {
+        this.resetDetailView()
+      }
+    },
+    handleSelectAll (selection) {
+      if (selection.length === 0) {
+        this.resetDetailView()
+      }
+    },
+    handleSelectionChange (selection) {
+      this.multipleSelection = selection
     },
     tableRowClassName ({row}) {
       if (this.multipleSelection.includes(row)) {

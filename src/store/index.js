@@ -6,7 +6,16 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    formLabelWidth: '100px',
+    detailVisible: false,
+    detail: {},
+  },
+  mutations: {
+    updateDetail (state, detail) {
+      state.detail = detail
+    },
+    toggleDetailVisible (state) {
+      state.detailVisible = !state.detailVisible
+    },
   },
   modules,
   strict: process.env.NODE_ENV !== 'production',
