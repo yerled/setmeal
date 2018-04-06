@@ -1,9 +1,9 @@
 <template>
   <el-dialog  width="800px"
     :title="$t('Setmeal.popCreate.title')"
-    :close-on-click-modal="!visible"
-    :append-to-body="visible"
-    :visible.sync="visible">
+    :close-on-click-modal="false"
+    :visible="visible"
+    @close="close">
     <el-steps :active="step" finish-status="success">
       <el-step v-for="item of steps"
         :key="item"
@@ -312,9 +312,13 @@ export default {
       },
     }
   },
-  props: ['visible'],
   computed: {
-    ...mapState(['formLabelWidth']),
+    ...mapState({
+      formLabelWidth: 'formLabelWidth',
+    }),
+    visible () {
+      return this.$store.getters.SetmealPopVisible.create
+    },
     discount_price () {
       return this.set_meal_periods.map(e => {
         return this.setmeal.price * 30 * e.period * e.discount / 100
@@ -533,7 +537,7 @@ export default {
       let data = this.generateData()
       this.$store.dispatch('createSetmeal', data)
       this.errorTip = this.$t('createFailed')
-      // this.visible = false
+      // this.close()
     },
     generateData () {
       let set_meal = {
@@ -566,6 +570,9 @@ export default {
         set_meal_resources,
         set_meal_periods,
       }
+    },
+    close () {
+      this.$store.commit('updateSetmealPopVisible', {name: 'create', visible: false})
     },
   },
   watch: {

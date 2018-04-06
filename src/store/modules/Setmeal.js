@@ -42,7 +42,6 @@ export default {
     },
     popVisible: {
       create: false,
-      detail: false,
     },
     setmealList: [],
   },
@@ -58,8 +57,8 @@ export default {
     addSetmeal (state, setmeal) {
       state.setmealList.push(setmeal)
     },
-    updateSetmealPopVisible (state, {key, value}) {
-      state.popVisible[key] = value
+    updateSetmealPopVisible (state, {name, visible}) {
+      state.popVisible[name] = visible
     },
   },
   actions: {

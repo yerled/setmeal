@@ -9,9 +9,9 @@
       </el-aside>
       <el-main>
         <router-view/>
+        <router-view name="detail"/>
       </el-main>
     </el-container>
-    
   </div>
 </template>
 

@@ -9,15 +9,12 @@
       @enterDetail="enterDetail"
       @leaveDetail="leaveDetail">
     </TableView>
-    <SetmealDetail
+    <!-- <SetmealDetail
       :detail="detail"
-      :visible="visibleCenter.detail"
+      :visible="popVisible.detail"
       @leaveDetail="leaveDetail">
-    </SetmealDetail>
-    <SetmealCreate 
-      :visible="popVisible.create"
-      @done="hidePop">
-    </SetmealCreate>
+    </SetmealDetail> -->
+    <SetmealCreate :visible="popVisible.create"></SetmealCreate>
   </div>
 </template>
 
@@ -40,7 +37,7 @@ export default {
   },
   data () {
     return {
-      detail: {id: 'id1111'},
+      
     }
   },
   computed: {
@@ -52,10 +49,10 @@ export default {
     refreshTable () {
       this.$store.dispatch('refreshSetmeal')
     },
-    showPop ({field}) {
-      this.$store.commit('updateSetmealVisibleCenter', {
-        type: 'create',
-        value: true,
+    showPop ({name}) {
+      this.$store.commit('updateSetmealPopVisible', {
+        name,
+        visible: true,
       })
     },
     update (items) {
@@ -64,25 +61,19 @@ export default {
     purchase (items) {
       alert(`purchase ${items[0].name}`)
     },
-    enterDetail () {
-      this.$router.push({name: 'Setmeal'})
-    },
-    leaveDetail (data) {
+    enterDetail (data) {
+      this.$store.commit('updateDetailVisible', true)
+      this.$store.commit('updateDetail', data)
       this.$router.push({name: 'SetmealDetail', params: {id: data.id}})
+    },
+    leaveDetail () {
+      this.$store.commit('updateDetailVisible', false)
+      this.$store.commit('updateDetail', {})
+      this.$router.push({name: 'Setmeal'})
     },
   },
   created () {
     this.refreshTable()
-  },
-  beforeRouteEnter: (to, from, next) => {
-    console.log('enter')
-    console.dir(to)
-    next()
-  },
-  beforeRouteUpdate: (to, from, next) => {
-    console.log('update')
-    console.dir(to)
-    next()
   },
 }
 </script>

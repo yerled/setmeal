@@ -6,6 +6,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
+    formLabelWidth: '100px',
     detailVisible: false,
     detail: {},
   },
@@ -13,8 +14,8 @@ const store = new Vuex.Store({
     updateDetail (state, detail) {
       state.detail = detail
     },
-    toggleDetailVisible (state) {
-      state.detailVisible = !state.detailVisible
+    updateDetailVisible (state, visible) {
+      state.detailVisible = visible
     },
   },
   modules,

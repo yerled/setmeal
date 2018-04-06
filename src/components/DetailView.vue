@@ -14,7 +14,6 @@
           :key="tab"
           :name="tab"
           :label="$t(tab)">
-          {{$t(tab)}}
           <slot :name="tab"></slot>
         </el-tab-pane>
       </el-tabs>
@@ -30,8 +29,8 @@
 
 .detailView {
   position: absolute;
-  top: 56px;
-  left: 200px;
+  top: 116px;
+  left: 480px;
   right: 0px;
   bottom: 0px;
   &.slideInRight {
@@ -41,7 +40,7 @@
     width: 20px;
     height: 100%;
     position: absolute;
-    left: 0;
+    left: -20px;
     top: 0;
     background-color: @color_gray;
     cursor: pointer;
@@ -52,7 +51,7 @@
   }
   .el-tabs {
     border-left: none;
-    padding-left: 20px;
+    // padding-left: 20px;
     width: 100%;
     height: 100%;
   }

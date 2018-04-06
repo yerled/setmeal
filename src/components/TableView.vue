@@ -65,9 +65,6 @@ export default {
       type: String,
       required: true,
     },
-    detailTabs: {
-      type: Array,
-    },
   },
   computed: {
     ...mapState(['detailVisible', 'detail']),
@@ -134,14 +131,14 @@ export default {
     setDetailView (data) {
       this.$refs[this.moduleName].clearSelection()
       this.$refs[this.moduleName].toggleRowSelection(data)
-      this.$emit('enterDetail')
+      this.$emit('enterDetail', data)
     },
     filter_method (value, row, column) {
       return row[column.property] === value
     },
     doAction (action) {
       if (!this.buttonStatus[action]) {
-        this.$emit(action, {field: action, data: this.multipleSelection})
+        this.$emit(action, {name: action, data: this.multipleSelection})
       }
     },
     handleSelect (selection) {

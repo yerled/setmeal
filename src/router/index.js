@@ -1,14 +1,16 @@
 import Vue from 'vue'
+import $store from '../store'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import NotFound from '../NotFound'
 import Setmeal from '../views/Setmeal'
+import SetmealDetail from '../views/SetmealDetail'
 import MySetmeal from '../views/MySetmeal'
 import Record from '../views/Record'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -18,12 +20,18 @@ export default new Router({
     {
       path: '/setmeal',
       name: 'Setmeal',
-      component: Setmeal
+      components: {
+        default: Setmeal,
+        detail: SetmealDetail,
+      },
     },
     {
       path: '/setmeal/:id',
       name: 'SetmealDetail',
-      component: Setmeal
+      components: {
+        default: Setmeal,
+        detail: SetmealDetail,
+      },
     },
     {
       path: '/mySetmeal',
@@ -46,3 +54,12 @@ export default new Router({
     },
   ]
 })
+router.beforeEach((to, from, next) => {
+  if (!/Detail/.test(to.name)) {
+    $store.commit('updateDetail', {})
+    $store.commit('updateDetailVisible', false)
+  }
+  next()
+})
+
+export default router
