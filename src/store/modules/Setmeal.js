@@ -104,5 +104,28 @@ export default {
     createSetmeal ({commit}, setmeal) {
       commit('addSetmeal', setmeal)
     },
+    refreshSetmealDetail ({commit, rootState}) {
+      let detail = rootState.detail
+      console.log(`更新${detail.id}的详细信息`)
+      commit('updateDetail', {
+        id: 111,
+        name: '套餐 来自setmeal.js',
+        resources: [
+          {
+            type: 'instance',
+            configuration: {
+              flavor_id: 'flavor1',
+            },
+          }, {
+            type: 'volume',
+            configuration: {
+              volume_type: 'ssd',
+              size: '50',
+            },
+          },
+        ],
+
+      })
+    },
   }
 }

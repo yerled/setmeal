@@ -4,9 +4,11 @@ import Iconfont from './Iconfont'
 import Money from './Money'
 import TableCell from './TableCell'
 import DetailView from './DetailView'
+import Dict from './Dict'
 
 Vue.component('TableView', TableView)
 Vue.component('Iconfont', Iconfont)
 Vue.component('Money', Money)
 Vue.component('TableCell', TableCell)
 Vue.component('DetailView', DetailView)
+Vue.component('Dict', Dict)

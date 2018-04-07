@@ -16,7 +16,7 @@
         <el-form ref="SetmealCreateForm"
           :model="setmeal"
           :rules="rules">
-          <el-form-item :label="$t('Setmeal.popCreate.name')" prop="name"
+          <el-form-item :label="$t('Setmeal.name')" prop="name"
             :label-width="formLabelWidth">
             <el-input v-model="setmeal.name" auto-complete="off"></el-input>
           </el-form-item>
@@ -28,7 +28,7 @@
               v-model="setmeal.description">
             </el-input>
           </el-form-item>
-          <el-form-item :label="$t('Setmeal.popCreate.limit')"
+          <el-form-item :label="$t('Setmeal.limit')"
             :label-width="formLabelWidth">
             <el-switch
               v-model="setmeal.unlimited"
@@ -178,7 +178,7 @@
             v-for="(item, index) of set_meal_periods"
             :key="index">
             <span class="discount_title">
-              {{`${$t(`month${item.period}`)}${$t('discount')}`}}
+              {{`${$t(`discount${item.period}`)}`}}
             </span>
             <el-input-number :max="100" :min="1" v-model="item.discount"></el-input-number>%
             <Money :class="['big']" prefix="￥" :money="discount_price[index]" :unit="`month${item.period}`"></Money>
@@ -315,7 +315,14 @@ export default {
   computed: {
     ...mapState({
       formLabelWidth: 'formLabelWidth',
+      flavors: 'flavors',
     }),
+    flavorList () {
+      return this.$store.getters.flavorList.map(e => {
+        e.name = e.__nameAndDesc
+        return e
+      })
+    },
     visible () {
       return this.$store.getters.SetmealPopVisible.create
     },
@@ -335,39 +342,6 @@ export default {
       }, {
         name: 'ALLLINE_BGP'
       }]
-    },
-    flavors () {
-      return [{
-        id: 'flavor1',
-        name: 'flavorName1',
-        vcpus: 1,
-        ram: 512,
-      }, {
-        id: 'flavor2',
-        name: 'flavorName2',
-        vcpus: 1,
-        ram: 1024,
-      }, {
-        id: 'flavor3',
-        name: 'flavorName3',
-        vcpus: 2,
-        ram: 2048,
-      }, {
-        id: 'flavor4',
-        name: 'flavorName4',
-        vcpus: 3,
-        ram: 4096,
-      }]
-    },
-    flavorList () {
-      return this.flavors.map(({id, name, vcpus, ram}) => {
-        return {
-          flavor_id: id,
-          vcpus,
-          ram,
-          name: `${name} (${vcpus}vCPU/${convertSize(ram, 'M')})`,
-        }
-      })
     },
     flavorDict () {
       return this.initDictFromList(this.flavorList, 'flavor_id')

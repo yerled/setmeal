@@ -8,11 +8,11 @@ export default {
     volume_count: '云硬盘数量',
     floating_ip_count: '公网IP数量',
     router_count: '路由器数量',
+    name: '套餐名称',
+    limit: '购买次数',
     popCreate: {
       title: '新建套餐',
-      name: '套餐名称',
       unlimited: '无限制',
-      limit: '购买次数',
       nameRequired: '请输入套餐名称',
       step_main: '基本信息',
       step_instance: '云主机',
