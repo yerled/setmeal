@@ -15,6 +15,12 @@ export default {
         icon: 'purchase',
         selection: 'single',
         validStatus: ['issue'],
+      }, {
+        field: 'delete',
+        icon: 'delete',
+        selection: 'single',
+        type: 'danger',
+        validStatus: ['issue', 'draft', 'off_shelve'],
       }],
       columns: [{
         field: 'name',
@@ -42,90 +48,60 @@ export default {
     },
     popVisible: {
       create: false,
+      update: false,
+      purchase: false,
     },
     setmealList: [],
   },
   getters: {
     SetmealConfig: state => state.config,
-    SetmealTableData: state => state.setmealList,
+    SetmealTableData: state => {
+      let setmealList = JSON.parse(JSON.stringify(state.setmealList))
+      setmealList.forEach(setmeal => {
+        setmeal.instance_count = setmeal.volume_count = setmeal.floating_ip_count = setmeal.router_count = 0
+        setmeal.resources.forEach(resource => {
+          let type = resource.type
+          let count = `${type}_count`
+          setmeal[count]++
+          resource.configuration = JSON.parse(resource.configuration)
+        })
+      })
+      return setmealList
+    },
     SetmealPopVisible: state => state.popVisible,
   },
   mutations: {
-    updateSetmeal (state, setmealList) {
+    updateSetmealList (state, setmealList) {
       state.setmealList = setmealList
-    },
-    addSetmeal (state, setmeal) {
-      state.setmealList.push(setmeal)
     },
     updateSetmealPopVisible (state, {name, visible}) {
       state.popVisible[name] = visible
     },
   },
   actions: {
-    refreshSetmeal ({commit}) {
-      const dataForDev = [{
-        id: 1,
-        name: 'dev1',
-        description: 'just for dev',
-        status: 'issue',
-      }, {
-        id: 2,
-        name: 'dev2',
-        description: 'just for dev~',
-        status: 'draft',
-      }, {
-        id: 3,
-        name: 'dev1',
-        description: 'just for dev',
-        status: 'issue',
-      }, {
-        id: 4,
-        name: 'dev2',
-        description: 'just for dev~',
-        status: 'draft',
-      }, {
-        id: 5,
-        name: 'dev1',
-        description: 'just for devvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv',
-        status: 'issue',
-      }, {
-        id: 6,
-        name: 'dev2',
-        description: 'just for dev~',
-        status: 'draft',
-      }, {
-        id: 7,
-        name: 'dev3',
-        description: 'just for dev~~',
-        status: 'off_shelve',
-      }]
-      commit('updateSetmeal', dataForDev)
-    },
-    createSetmeal ({commit}, setmeal) {
-      commit('addSetmeal', setmeal)
-    },
-    refreshSetmealDetail ({commit, rootState}) {
-      let detail = rootState.detail
-      console.log(`更新${detail.id}的详细信息`)
-      commit('updateDetail', {
-        id: 111,
-        name: '套餐 来自setmeal.js',
-        resources: [
-          {
-            type: 'instance',
-            configuration: {
-              flavor_id: 'flavor1',
-            },
-          }, {
-            type: 'volume',
-            configuration: {
-              volume_type: 'ssd',
-              size: '50',
-            },
-          },
-        ],
-
+    SelectSetmealList ({commit}) {
+      return window.axios.get('/us/bill/v3/setmeals').then(res => {
+        commit('updateSetmealList', res.data.set_meal_list)
+      }).catch(err => {
+        console.log(err)
       })
+    },
+    CreateSetmeal ({commit, dispatch}, setmeal) {
+      return window.axios.post('/us/bill/v3/setmeals', setmeal)
+    },
+    DeleteSetmeal (context, id) {
+      return window.axios.delete(`/us/bill/v3/setmeals/${id}`)
+    },
+    SelectSetmealDetail (context, id) {
+      return window.axios.get(`/us/bill/v3/setmeals/${id}/detail`)
+    },
+    async UpdateSetmealDetail ({commit, dispatch, rootState}) {
+      let detailId = rootState.detail.set_meal_id
+      if (!detailId) {
+        return
+      }
+      console.log(`更新${detailId}的详细信息`)
+      commit('updateDetail', (await dispatch('SelectSetmealDetail', detailId)).data)
     },
   }
 }

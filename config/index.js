@@ -4,13 +4,45 @@
 
 const path = require('path')
 
+let host = 'http://10.0.30.10:'
+let changeOrigin = true
+let proxyTable = {
+  // '/us/bill': {
+  //   target: host + '9975',
+  //   pathRewrite: {
+  //     '^/us/bill': '',
+  //   },
+  //   changeOrigin,
+  // },
+  '/os/network': {
+    target: host + '9696',
+    pathRewrite: {
+      '^/os/network': '',
+    },
+    changeOrigin,
+  },
+}
+let urls = [
+  '/login',
+  '/us/bill',
+  '/us/manage',
+  '/os/network',
+]
+let target = host + '5556'
+urls.forEach(e => {
+  proxyTable[e] = {
+    target,
+    changeOrigin,
+  }
+})
+
 module.exports = {
   dev: {
 
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable,
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

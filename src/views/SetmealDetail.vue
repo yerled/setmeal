@@ -4,9 +4,10 @@
     :visible="visible"
     :tabs="tabs"
     @close="leaveDetail">
-    <el-collapse :value="['basic_attributes']">
+    <el-collapse 
+      :value="['basic_attributes', 'instance', 'volume', 'floating_ip', 'router']">
       <el-collapse-item name="basic_attributes">
-        <span slot="title" class="resource_name">{{$t('basic_attributes')}}</span>
+        <span slot="title">{{$t('basic_attributes')}}</span>
         <el-row>
           <el-col :span="12">
             <Dict :data="basic_attributes"></Dict>
@@ -20,6 +21,7 @@
         v-for="(dict, type) of resourceDict"
         :key="type"
         :name="type">
+        <span slot="title">{{$t(type)}}</span>
         <Dict :data="dict"></Dict>
       </el-collapse-item>
     </el-collapse>
@@ -37,6 +39,12 @@ export default {
   data () {
     return {
       tabs: [],
+      counter: {
+        instance: 0,
+        volume: 0,
+        floating_ip: 0,
+        router: 0,
+      },
     }
   },
   computed: {
@@ -47,53 +55,65 @@ export default {
     ...mapGetters({
       flavorList: 'flavorList',
     }),
+    detail () {
+      let detail = JSON.parse(JSON.stringify(this.$store.state.detail))
+      detail.resources && detail.resources.forEach(resource => {
+        if (typeof resource.configuration === 'string') {
+          resource.configuration = JSON.parse(resource.configuration)
+        }
+      })
+      return detail
+    },
     flavorDict () {
       return this.initDictFromList(this.flavorList, 'flavor_id')
     },
     basic_attributes () {
       let detail = this.detail
-      let attrs = ['name', 'instance_count', 'volume_count', 'floating_ip_count', 'router_count']
+      let attrs = ['instance', 'volume', 'floating_ip', 'router']
       let result = {}
       attrs.forEach(attr => {
-        result[this.$t(`Setmeal.${attr}`)] = detail[attr]
+        result[this.$t(`Setmeal.${attr}_count`)] = this.counter[attr]
       })
-      return result
+      return Object.assign({[this.$t('Setmeal.name')]: detail.name}, result)
     },
     periodDict () {
-      let dict = {}
       let periods = this.detail.periods || []
+      let dict = {}
       periods.forEach(e => {
-        dict[e.period] = {
-          discount: e.discount * 100,
-          discount_price: e.discount_price,
-        }
+        dict[this.$t(`discount${e.period}`)] = `${this.$t('discount')} ${e.discount * 100}% ￥${e.discount_price}${this.$t('rmb')}`
       })
       return dict
     },
-    periods () {
-      let detail = this.detail.period
-      let attrs = Object.keys(this.periodDict).sort((a, b) => a - b)
-      let result = {}
-      attrs.forEach(attr => {
-        result[this.$t(`discount${attr}`)] = periodDict[attr]
-      })
-      return {}
-    },
     resourceDict () {
       let dict = {}
-      let counter = {}
+      let counter = this.counter
       let resources = this.detail.resources || []
       resources.forEach(e => {
         let type = e.type
+        let configuration = e.configuration
         if (dict[type] === undefined) {
           dict[type] = {}
           counter[type] = 0
         }
         counter[type]++
-        console.log(e.configuration.flavor_id)
-        let flavor_id = e.configuration.flavor_id
-        let desc = this.flavorDict[flavor_id] ? this.flavorDict[flavor_id].__desc : flavor_id
-        dict[type][`${this.$t(type)} ${counter[type]}`] = desc
+        let descArr = []
+        if ('flavor_id' in configuration) {
+          let flavor_id = configuration.flavor_id
+          descArr.push(this.flavorDict[flavor_id] ? this.flavorDict[flavor_id].__desc : flavor_id)
+        }
+        if ('volume_type' in configuration) {
+          descArr.push(this.$t(configuration.volume_type))
+        }
+        if ('size' in configuration) {
+          descArr.push(`${configuration.size}G`)
+        }
+        if ('line' in configuration) {
+          descArr.push(this.$t(configuration.line))
+        }
+        if ('ratelimit' in configuration) {
+          descArr.push(`${configuration.ratelimit}M`)
+        }
+        dict[type][`${this.$t(type)} ${counter[type]}`] = descArr.join(' ')
       })
       return dict
     },
@@ -105,9 +125,18 @@ export default {
       this.$store.commit('updateDetail', {})
       this.$router.push({name: 'Setmeal'})
     },
+    update () {
+      this.$store.dispatch('UpdateSetmealDetail')
+    },
   },
-  mounted () {
-    this.$store.dispatch('refreshSetmealDetail')
+  beforeRouteUpdate (to, from, next) {
+    this.update()
+    next()
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      vm.update()
+    })
   },
 }
 </script>

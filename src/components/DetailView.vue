@@ -42,12 +42,13 @@
     position: absolute;
     left: -20px;
     top: 0;
-    background-color: @color_gray;
+    background-color: #c7ccce;
     cursor: pointer;
     z-index: 2;
     display: flex;
     align-items: center;
     color: #1a5b5e;
+    border-radius: 50px 0 0 50px;
   }
   .el-tabs {
     border-left: none;

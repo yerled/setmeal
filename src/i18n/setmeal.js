@@ -10,8 +10,7 @@ export default {
     router_count: '路由器数量',
     name: '套餐名称',
     limit: '购买次数',
-    popCreate: {
-      title: '新建套餐',
+    pop: {
       unlimited: '无限制',
       nameRequired: '请输入套餐名称',
       step_main: '基本信息',
@@ -20,7 +19,13 @@ export default {
       step_floating_ip: '公网IP',
       step_router: '路由器',
       step_price: '价格',
-    }
+      create: {
+        title: '新建套餐',
+      },
+      update: {
+        title: '编辑套餐',
+      },
+    },
   },
   en: {
     

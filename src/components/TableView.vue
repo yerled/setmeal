@@ -9,6 +9,10 @@
         <Iconfont v-if="button.icon" :type="button.icon"/>
         {{$t(`${moduleName}.${button.field}`)}}
       </el-button>
+      <el-button class="refresh"
+        @click="refresh">
+        <Iconfont type="refresh"/>
+      </el-button>
     </div>
     <el-table
         :ref = "moduleName"
@@ -48,6 +52,9 @@
   .buttonGroup {
     padding: 10px 0;
   }
+}
+.refresh {
+  padding: 9px 9.5px;
 }
 </style>
 
@@ -117,8 +124,21 @@ export default {
     },
   },
   methods: {
+    refresh () {
+      if (this.detailVisible) {
+        this.refreshDetail()
+      } else {
+        this.refreshTable()
+      }
+    },
+    refreshDetail () {
+      this.$emit('refreshDetail')
+    },
+    refreshTable () {
+      this.$emit('refreshTable')
+    },
     captionClick (row) {
-      if (row.id === this.detail.id && this.detailVisible) {
+      if (row.set_meal_id === this.detail.set_meal_id && this.detailVisible) {
         this.resetDetailView()
       } else {
         this.setDetailView(row)
@@ -152,6 +172,7 @@ export default {
       }
     },
     handleSelectionChange (selection) {
+      this.$emit('updateSelection', selection)
       this.multipleSelection = selection
     },
     tableRowClassName ({row}) {

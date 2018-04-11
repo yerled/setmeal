@@ -14,6 +14,7 @@ export default {
     off_shelve: '下架',
     details: '详细信息',
     basic_attributes: '基本属性',
+    delete: '删除',
   },
   en: {
     
