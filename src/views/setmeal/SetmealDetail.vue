@@ -33,7 +33,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
-import { initDictFromList } from '../utils'
+import { initDictFromList } from '../../utils'
 
 export default {
   data () {

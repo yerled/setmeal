@@ -12,7 +12,7 @@ export default {
 .NotFound {
   width: 100%;
   height: 100%;
-  background: url('./assets/NotFound.png') no-repeat center;
+  background: url('../../assets/NotFound.png') no-repeat center;
   background-size: 500px 500px;
 }
 </style>

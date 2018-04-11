@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import Menu from './Menu'
-import Header from './Header'
+import Menu from './views/layout/Menu'
+import Header from './views/layout/Header'
 
 export default {
   name: 'App',

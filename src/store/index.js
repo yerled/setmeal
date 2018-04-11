@@ -48,6 +48,18 @@ const store = new Vuex.Store({
         }
       })
     },
+    volumeTypeList () {
+      return ['ssd', 'sata']
+    },
+    lineList () {
+      return [{
+        name: 'doubleLine',
+      }, {
+        name: '3LINE_BGP'
+      }, {
+        name: 'ALLLINE_BGP'
+      }]
+    },
   },
   mutations: {
     updateDetail (state, detail) {

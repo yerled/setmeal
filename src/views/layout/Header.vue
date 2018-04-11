@@ -24,7 +24,7 @@ export default {
       margin-top: 8px;
       width: 100%;
       height: 34px;
-      background: url('./assets/logo.png') 0 center no-repeat;
+      background: url('../../assets/logo.png') 0 center no-repeat;
       background-size: contain;
     }
   }

@@ -14,7 +14,7 @@
       @leaveDetail="leaveDetail">
     </TableView>
     <SetmealCreate></SetmealCreate>
-    <SetmealUpdate :data="singleSelection"></SetmealUpdate>
+    <!-- <SetmealUpdate :data="singleSelection"></SetmealUpdate> -->
   </div>
 </template>
 

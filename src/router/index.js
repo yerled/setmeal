@@ -2,11 +2,11 @@ import Vue from 'vue'
 import $store from '../store'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
-import NotFound from '../NotFound'
-import Setmeal from '../views/Setmeal'
-import SetmealDetail from '../views/SetmealDetail'
-import MySetmeal from '../views/MySetmeal'
-import Record from '../views/Record'
+import NotFound from '../views/404/NotFound'
+import Setmeal from '../views/setmeal/Setmeal'
+import SetmealDetail from '../views/setmeal/SetmealDetail'
+import MySetmeal from '../views/mysetmeal/MySetmeal'
+import Record from '../views/record/Record'
 
 Vue.use(Router)
 

@@ -1,144 +1,148 @@
 <template>
   <el-dialog  width="800px"
-    :title="$t('Setmeal.popCreate.title')"
+    :title="$t(`Setmeal.pop.${mode}.title`)"
     :close-on-click-modal="false"
     :visible="visible"
     @close="close">
-    <el-steps :active="step" finish-status="success">
+    <el-steps finish-status="success"
+      :active="step"
+      v-if="!onlyUpdatePeriod">
       <el-step v-for="item of steps"
         :key="item"
-        :title="$t(`Setmeal.popCreate.step_${item}`)">
+        :title="$t(`Setmeal.pop.step_${item}`)">
       </el-step>
     </el-steps>
     <el-alert type="error" v-show="errorTip" :title="errorTip" show-icon :closable="false"></el-alert>
     <div class="body">
-      <div class="item main" v-show="stepName === 'main'">
-        <el-form ref="SetmealCreateForm"
-          :model="setmeal"
-          :rules="rules">
-          <el-form-item :label="$t('Setmeal.name')" prop="name"
-            :label-width="formLabelWidth">
-            <el-input v-model="setmeal.name" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('description')"
-            :label-width="formLabelWidth">
-            <el-input
-              type="textarea"
-              :rows="2"
-              v-model="setmeal.description">
-            </el-input>
-          </el-form-item>
-          <el-form-item :label="$t('Setmeal.limit')"
-            :label-width="formLabelWidth">
-            <el-switch
-              v-model="setmeal.unlimited"
-              :active-text="$t('Setmeal.popCreate.unlimited')">
-            </el-switch>
-            <el-input-number
-              v-show="!setmeal.unlimited"
-              v-model="setmeal.limit"
-              :min="0" :max="10">
-            </el-input-number>
-          </el-form-item>
-          <el-form-item :label="$t(`Setmeal.${type}_count`)"
-            :label-width="formLabelWidth"
-            v-for="(item, type) of counter"
-            :key="type">
-            <el-input-number
-              v-model="item.value"
-              :min="item.min" :max="item.max">
-            </el-input-number>
-          </el-form-item>
-        </el-form>
-      </div>
-      <div class="item resource"
-        v-for="(resourcesArr, resourceType) of resourcesDict"
-        :key="resourceType"
-        v-show="stepName === resourceType">
-        <el-card class="resource"
-          v-for="(resource, index) of resourcesArr"
-          :key="index">
-          <div slot="header">
-            <label>{{`${$t(resourceType)} ${index + 1}`}}</label>
-          </div>
-          <el-form :model="resource">
-            <template v-if="'flavor_id' in resource.configuration">
-              <el-form-item :label="$t('flavor')"
+      <template v-if="!onlyUpdatePeriod">
+        <div class="item main" v-show="stepName === 'main'">
+          <el-form ref="SetmealCreateForm"
+            :model="setmeal"
+            :rules="rules">
+            <el-form-item :label="$t('Setmeal.name')" prop="name"
+              :label-width="formLabelWidth">
+              <el-input v-model="setmeal.name" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item :label="$t('description')"
+              :label-width="formLabelWidth">
+              <el-input
+                type="textarea"
+                :rows="2"
+                v-model="setmeal.description">
+              </el-input>
+            </el-form-item>
+            <el-form-item :label="$t('Setmeal.limit')"
+              :label-width="formLabelWidth">
+              <el-switch
+                v-model="setmeal.unlimited"
+                :active-text="$t('Setmeal.pop.unlimited')">
+              </el-switch>
+              <el-input-number
+                v-show="!setmeal.unlimited"
+                v-model="setmeal.limit"
+                :min="0" :max="10">
+              </el-input-number>
+            </el-form-item>
+            <el-form-item :label="$t(`Setmeal.${type}_count`)"
+              :label-width="formLabelWidth"
+              v-for="(item, type) of counter"
+              :key="type">
+              <el-input-number
+                v-model="item.value"
+                :min="item.min" :max="item.max">
+              </el-input-number>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="item resource"
+          v-for="(resourcesArr, resourceType) of resourcesDict"
+          :key="resourceType"
+          v-show="stepName === resourceType">
+          <el-card class="resource"
+            v-for="(resource, index) of resourcesArr"
+            :key="index">
+            <div slot="header">
+              <label>{{`${$t(resourceType)} ${index + 1}`}}</label>
+            </div>
+            <el-form :model="resource">
+              <template v-if="'flavor_id' in resource.configuration">
+                <el-form-item :label="$t('flavor')"
+                  :label-width="formLabelWidth">
+                  <el-select
+                    v-model="resource.configuration.flavor_id"
+                    @change="updateFlavor(resource, 'flavor_id')">
+                    <el-option
+                      v-for="flavor in flavorList"
+                      :key="flavor.flavor_id"
+                      :label="flavor.name"
+                      :value="flavor.flavor_id">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth">
+                  <el-radio-group size="medium" class="tab-radio-group"
+                    v-model="resource.vcpus"
+                    @change="updateFlavor(resource, 'vcpus')">
+                    <el-radio-button v-for="cpu of flavorCPU"
+                      :key="cpu"
+                      :label="cpu">{{`${cpu}vCPU`}}</el-radio-button>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth">
+                  <el-radio-group size="medium" class="tab-radio-group"
+                    v-model="resource.ram" 
+                    @change="updateFlavor(resource, 'ram')">
+                    <el-radio-button v-for="flavor of flavorList"
+                      v-show="resource.vcpus == flavor.vcpus"
+                      :key="flavor.flavor_id"
+                      :label="flavor.ram">{{convertSize(flavor.ram, 'M')}}</el-radio-button>
+                  </el-radio-group>
+                </el-form-item>
+              </template>
+              <el-form-item v-if="'volume_type' in resource.configuration"
+                :label="$t('volume_type')"
                 :label-width="formLabelWidth">
-                <el-select
-                  v-model="resource.configuration.flavor_id"
-                  @change="updateFlavor(resource, 'flavor_id')">
+                <el-radio-group size="medium" class="tab-radio-group"
+                  v-model="resource.configuration.volume_type">
+                  <el-radio-button v-for="type of volume_type"
+                    :key="type"
+                    :label="type">{{$t(type)}}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item v-if="'size' in resource.configuration"
+                :label="`${$t('size')}(G)`"
+                :label-width="formLabelWidth">
+                <el-slider show-input
+                  v-model="resource.configuration.size"
+                  :format-tooltip="convertSizeG"
+                  :min="10" :max="860">
+                </el-slider>
+              </el-form-item>
+              <el-form-item v-if="'line' in resource.configuration"
+                :label="$t('line')"
+                :label-width="formLabelWidth">
+                <el-select v-model="resource.configuration.line">
                   <el-option
-                    v-for="flavor in flavorList"
-                    :key="flavor.flavor_id"
-                    :label="flavor.name"
-                    :value="flavor.flavor_id">
+                    v-for="line in lineList"
+                    :key="line.name"
+                    :label="$t(line.name)"
+                    :value="line.name">
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item :label-width="formLabelWidth">
-                <el-radio-group size="medium" class="tab-radio-group"
-                  v-model="resource.vcpus"
-                  @change="updateFlavor(resource, 'vcpus')">
-                  <el-radio-button v-for="cpu of flavorCPU"
-                    :key="cpu"
-                    :label="cpu">{{`${cpu}vCPU`}}</el-radio-button>
-                </el-radio-group>
+              <el-form-item v-if="'ratelimit' in resource.configuration"
+                :label="`${$t('ratelimit')}(M)`"
+                :label-width="formLabelWidth">
+                <el-slider show-input
+                  v-model="resource.configuration.ratelimit"
+                  :format-tooltip="convertSizeM"
+                  :min="10" :max="1024">
+                </el-slider>
               </el-form-item>
-              <el-form-item :label-width="formLabelWidth">
-                <el-radio-group size="medium" class="tab-radio-group"
-                  v-model="resource.ram" 
-                  @change="updateFlavor(resource, 'ram')">
-                  <el-radio-button v-for="flavor of flavorList"
-                    v-show="resource.vcpus == flavor.vcpus"
-                    :key="flavor.flavor_id"
-                    :label="flavor.ram">{{convertSize(flavor.ram, 'M')}}</el-radio-button>
-                </el-radio-group>
-              </el-form-item>
-            </template>
-            <el-form-item v-if="'volume_type' in resource.configuration"
-              :label="$t('volume_type')"
-              :label-width="formLabelWidth">
-              <el-radio-group size="medium" class="tab-radio-group"
-                v-model="resource.configuration.volume_type">
-                <el-radio-button v-for="type of volume_type"
-                  :key="type"
-                  :label="type">{{$t(type)}}</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item v-if="'size' in resource.configuration"
-              :label="`${$t('size')}(G)`"
-              :label-width="formLabelWidth">
-              <el-slider show-input
-                v-model="resource.configuration.size"
-                :format-tooltip="convertSizeG"
-                :min="10" :max="860">
-              </el-slider>
-            </el-form-item>
-            <el-form-item v-if="'line' in resource.configuration"
-              :label="$t('line')"
-              :label-width="formLabelWidth">
-              <el-select v-model="resource.configuration.line">
-                <el-option
-                  v-for="line in lineList"
-                  :key="line.name"
-                  :label="$t(line.name)"
-                  :value="line.name">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item v-if="'ratelimit' in resource.configuration"
-              :label="`${$t('ratelimit')}(M)`"
-              :label-width="formLabelWidth">
-              <el-slider show-input
-                v-model="resource.configuration.ratelimit"
-                :format-tooltip="convertSizeM"
-                :min="10" :max="1024">
-              </el-slider>
-            </el-form-item>
-          </el-form>
-        </el-card>
-      </div>
+            </el-form>
+          </el-card>
+        </div>
+      </template>
       <div class="item price" v-show="stepName === 'price'">
         <el-collapse>
           <el-collapse-item
@@ -189,7 +193,7 @@
     <div slot="footer">
       <el-button class="back" v-show="step > 0" @click="back">{{$t('back')}}</el-button>
       <el-button v-show="step < stepLen - 1" @click="next">{{$t('next')}}</el-button>
-      <el-button type="primary" v-show="step > stepLen - 2" @click="create">{{$t('confirm')}}</el-button>
+      <el-button type="primary" v-show="step > stepLen - 2" @click="clickConfirm">{{$t('confirm')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -248,10 +252,10 @@
 
 <script>
 import {mapState} from 'vuex'
-import {convertSize, initDictFromList} from '../utils'
+import {convertSize, initDictFromList} from '../../utils'
 
 export default {
-  name: 'SetmealCreate',
+  name: 'SetmealPop',
   data () {
     return {
       step: 0,
@@ -275,22 +279,22 @@ export default {
       discountList: [],
       counter: {
         instance: {
-          value: 1,
+          value: 0,
           min: 0,
           max: 10,
         },
         volume: {
-          value: 1,
+          value: 0,
           min: 0,
           max: 10,
         },
         floating_ip: {
-          value: 1,
+          value: 0,
           min: 0,
           max: 10,
         },
         router: {
-          value: 1,
+          value: 0,
           min: 0,
           max: 1,
         },
@@ -307,16 +311,28 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: this.$t('Setmeal.popCreate.nameRequired'), trigger: 'blur' },
+          { required: true, message: this.$t('Setmeal.pop.nameRequired'), trigger: 'blur' },
         ]
       },
     }
+  },
+  props: {
+    mode: {
+      type: String,
+      default: 'create',
+    },
+    data: {
+      type: Object,
+    },
   },
   computed: {
     ...mapState({
       formLabelWidth: 'formLabelWidth',
       flavors: 'flavors',
     }),
+    onlyUpdatePeriod () {
+      return this.mode === 'update' && this.$props.data.status === 'off_shelve'
+    },
     flavorList () {
       return this.$store.getters.flavorList.map(e => {
         e.name = e.__nameAndDesc
@@ -324,7 +340,7 @@ export default {
       })
     },
     visible () {
-      return this.$store.getters.SetmealPopVisible.create
+      return this.$store.getters.SetmealPopVisible[this.mode]
     },
     discount_price () {
       return this.set_meal_periods.map(e => {
@@ -395,6 +411,39 @@ export default {
             ratelimit: 10,
           },
         },
+      }
+    },
+    dataForCommit () {
+      let set_meal = {
+        name: this.setmeal.name,
+        price: this.setmeal.price,
+        description: this.setmeal.description,
+        limit: this.setmeal.unlimited ? 0 : this.setmeal.limit,
+      }
+
+      let resources = []
+      this.resourceNames.forEach(e => {
+        this.resourcesDict[e].forEach(ee => {
+          let e2 = Object.assign({}, ee)
+          resources.push({
+            type: e,
+            configuration: JSON.stringify(e2.configuration),
+            price: e2.price,
+          })
+        })
+      })
+      let periods = this.set_meal_periods.map((e, i) => {
+        return {
+          period: e.period,
+          discount: e.discount / 100,
+          discount_price: this.discount_price[i],
+        }
+      })
+
+      return {
+        set_meal,
+        resources,
+        periods,
       }
     },
   },
@@ -506,59 +555,81 @@ export default {
       }
       return arr.join('; ')
     },
-    create () {
-      // this.$refs['SetmealCreateForm'].resetFields()
-      let data = this.generateData()
-      this.$store.dispatch('createSetmeal', data)
-      this.errorTip = this.$t('createFailed')
-      // this.close()
+    clickConfirm () {
+      let mode = this.mode
+      if (mode === 'create') {
+        this.create()
+      } else if (mode === 'update') {
+        this.update()
+      }
     },
-    generateData () {
-      let set_meal = {
-        name: this.setmeal.name,
-        price: this.setmeal.price,
-        description: this.setmeal.description,
-        limit: this.setmeal.unlimited ? 0 : this.setmeal.limit,
-      }
-
-      let set_meal_resources = []
-      this.resourceNames.forEach(e => {
-        this.resourcesDict[e].forEach(e2 => {
-          set_meal_resources.push({
-            type: e,
-            configuration: Object.assign({}, e2.configuration),
-            price: e2.price,
-          })
+    refreshTable () {
+      this.$store.dispatch('SelectSetmealList')
+    },
+    create () {
+      this.$store.dispatch('CreateSetmeal', this.dataForCommit)
+        .then(res => {
+          this.refreshTable()
+          this.close()
+          this.$refs['SetmealCreateForm'].resetFields()
+        }).catch(err => {
+          console.log(err)
+          this.errorTip = this.$t('createFailed')
         })
-      })
-      let set_meal_periods = this.set_meal_periods.map((e, i) => {
-        return {
-          period: e.period,
-          discount: e.discount / 100,
-          discount_price: this.discount_price[i],
-        }
-      })
+    },
+    update () {
+      let propData = this.props.data
+      let id = this.props.data.id
+      let {set_meal, set_meal_resources, set_meal_periods} = this.dataForCommit
 
-      return {
-        set_meal,
-        set_meal_resources,
-        set_meal_periods,
+      this.$store.dispatch('UpdateSetmealResource', {
+        id,
+        data: set_meal_periods
+      })
+      if (propData.status === 'off_shelve') {
+        return
       }
+      this.$store.dispatch('UpdateSetmeal', {
+        id,
+        data: set_meal
+      })
+      this.$store.dispatch('UpdateSetmealResource', {
+        id,
+        data: set_meal_resources
+      })
     },
     close () {
-      this.$store.commit('updateSetmealPopVisible', {name: 'create', visible: false})
+      this.$store.commit('updateSetmealPopVisible', {name: this.mode, visible: false})
+    },
+    initDataForUpdate () {
+      this.data.resources && this.data.resources.forEach(e => {
+        this.resourcesDict[e.type].push(Object.assign({}, this.defaultResource[e.type], e))
+        this.counter[e.type].value++
+      })
     },
   },
   watch: {
     visible (value) {
       if (!value) {
-        this.$emit('done', 'create')
+        this.$emit('done', this.mode)
       }
     },
   },
   created () {
+    let mode = this.mode
     this.resourceNames.forEach(e => {
-      this.$set(this.resourcesDict, e, [Object.assign({}, this.defaultResource[e])])
+      this.$set(this.resourcesDict, e, [])
+      if (mode === 'create') {
+        this.resourcesDict[e].push(Object.assign({}, this.defaultResource[e]))
+        this.counter[e].value = 1
+      }
+    })
+    if (mode === 'update') {
+      this.initDataForUpdate()
+    }
+  },
+  mounted () {
+    this.resourceNames.forEach(e => {
       this.$watch(`counter.${e}.value`, function (newVal, oldVal) {
         this.updateResourceCount(e, newVal, oldVal)
       })
