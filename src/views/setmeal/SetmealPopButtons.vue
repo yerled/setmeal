@@ -1,5 +1,5 @@
 <template>
-  <div slot="footer">
+  <div>
     <el-button class="back" v-show="step > 0" @click="back">{{$t('back')}}</el-button>
     <el-button v-show="step < stepLen - 1" @click="next">{{$t('next')}}</el-button>
     <el-button type="primary" v-show="step > stepLen - 2" @click="confirm">{{$t('confirm')}}</el-button>
@@ -56,4 +56,3 @@ export default {
   }
 }
 </script>
-
