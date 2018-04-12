@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import {convertSize} from '../../utils'
 
 export default {
@@ -64,6 +64,8 @@ export default {
   computed: {
     ...mapState({
       formLabelWidth: 'formLabelWidth',
+    }),
+    ...mapGetters({
       flavors: 'flavors',
     }),
     flavorList () {
@@ -73,6 +75,7 @@ export default {
       })
     },
     flavorCPU () {
+      console.log(this.flavors)
       return Array.from(new Set(this.flavors.map(e => e.vcpus)))
     },
   },

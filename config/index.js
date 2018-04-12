@@ -27,6 +27,7 @@ let urls = [
   '/us/bill',
   '/us/manage',
   '/os/network',
+  '/os/compute',
 ]
 let target = host + '5556'
 urls.forEach(e => {

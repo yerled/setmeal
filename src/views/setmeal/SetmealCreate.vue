@@ -146,9 +146,9 @@ export default {
       return this.initDictFromList(this.flavorList, 'flavor_id')
     },
     defaultResource () {
-      let defaultFlavor = this.$store.getters.flavorList[0]
-      let defaultVolumeType = this.$store.getters.volumeTypeList[0]
-      let defaultLine = this.$store.getters.lineList[0]
+      let defaultFlavor = this.$store.getters.flavorList[0] || {}
+      let defaultVolumeType = this.$store.getters.volumeTypeList[0] || {}
+      let defaultLine = this.$store.getters.lineList[0] || {}
       return {
         instance: {
           type: 'instance',
