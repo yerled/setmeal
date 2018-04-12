@@ -1,20 +1,22 @@
 <template>
   <div class="module setmeal">
     <TableView
-      moduleName = "Setmeal"
-      :detailTabs = "['tab2', 'tab3']"
-      @refreshTable = "refreshTable"
-      @refreshDetail = "refreshDetail"
-      @updateSelection = "updateSelection"
-      @create = "showPop"
-      @update = "showPop"
-      @purchase = "showPop"
-      @delete = "deleteSetmeal"
+      moduleName="Setmeal"
+      :detailTabs="['tab2', 'tab3']"
+      @refreshTable="refreshTable"
+      @refreshDetail="refreshDetail"
+      @updateSelection="updateSelection"
+      @create="create"
+      @update="update"
+      @issue="issue"
+      @shelve="shelve"
+      @purchase="showPop"
+      @delete="deleteSetmeal"
       @enterDetail="enterDetail"
       @leaveDetail="leaveDetail">
     </TableView>
     <SetmealCreate></SetmealCreate>
-    <SetmealUpdate :data="singleSelection"></SetmealUpdate>
+    <SetmealUpdate ref="popUpdate"></SetmealUpdate>
   </div>
 </template>
 
@@ -63,15 +65,72 @@ export default {
     updateSelection (selection) {
       this.multipleSelection = selection
     },
+    create () {
+      this.$store.commit('updateSetmealPopVisible', {name: 'create', visible: true})
+    },
+    update () {
+      this.$store.commit('updateSetmealPopVisible', {name: 'update', visible: true})
+      this.$refs.popUpdate.initData(JSON.parse(JSON.stringify(this.singleSelection)))
+    },
+    issue () {
+      let title = this.$t('Setmeal.issue')
+      let content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('issue'))
+      this.$confirm(content, title, {
+        confirmButtonText: this.$t('confirm'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.$store.dispatch('UpdateSetmealStatus', {
+          id: this.singleSelection.set_meal_id,
+          status: 'issue',
+        }).then(() => {
+          this.$message.success(this.$t('Setmeal.issueSuccess'))
+        }).catch(err => {
+          console.log(err)
+          this.$message.error(this.$t('Setmeal.issueFaild'))
+        })
+      })
+    },
+    shelve () {
+      let title = this.$t('Setmeal.shelve')
+      let content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('shelve'))
+      this.$confirm(content, title, {
+        confirmButtonText: this.$t('confirm'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.$store.dispatch('UpdateSetmealStatus', {
+          id: this.singleSelection.set_meal_id,
+          status: 'issue',
+        }).then(() => {
+          this.$message.success(this.$t('Setmeal.shelveSuccess'))
+        }).catch(err => {
+          console.log(err)
+          this.$message.error(this.$t('Setmeal.shelveFaild'))
+        })
+      })
+    },
+    deleteSetmeal () {
+      let title = this.$t('Setmeal.delete')
+      let content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('delete'))
+      this.$confirm(content, title, {
+        confirmButtonText: this.$t('confirm'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'error'
+      }).then(() => {
+        this.$store.dispatch('DeleteSetmeal', this.singleSelection.set_meal_id).then(res => {
+          this.$message.success(this.$t('deleteSuccess'))
+          this.refreshTable()
+        }).catch(err => {
+          console.log(err)
+          this.$message.error(this.$t('deleteFaild'))
+        })
+      })
+    },
     showPop ({name}) {
       this.$store.commit('updateSetmealPopVisible', {
         name,
         visible: true,
-      })
-    },
-    deleteSetmeal ({data}) {
-      this.$store.dispatch('DeleteSetmeal', data[0].set_meal_id).then(res => {
-        this.refreshTable()
       })
     },
     enterDetail (data) {

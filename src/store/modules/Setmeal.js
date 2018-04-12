@@ -11,6 +11,16 @@ export default {
         selection: 'single',
         validStatus: ['draft', 'off_shelve'],
       }, {
+        field: 'issue',
+        icon: 'issue',
+        selection: 'single',
+        validStatus: ['draft', 'off_shelve'],
+      }, {
+        field: 'shelve',
+        icon: 'shelve',
+        selection: 'single',
+        validStatus: ['issue'],
+      }, {
         field: 'purchase',
         icon: 'purchase',
         selection: 'single',
@@ -63,7 +73,14 @@ export default {
           let type = resource.type
           let count = `${type}_count`
           setmeal[count]++
-          resource.configuration = JSON.parse(resource.configuration)
+          let configuration = resource.configuration
+          try {
+            configuration = JSON.parse(resource.configuration)
+          } catch (e) {
+            console.log('非法的JSON: ' + configuration)
+            console.log(e)
+          }
+          resource.configuration = configuration
         })
       })
       return setmealList
@@ -86,8 +103,14 @@ export default {
         console.log(err)
       })
     },
-    CreateSetmeal ({commit, dispatch}, setmeal) {
+    CreateSetmeal (context, setmeal) {
       return window.axios.post('/us/bill/v3/setmeals', setmeal)
+    },
+    UpdateSetmeal (context, {id, data}) {
+      return window.axios.put(`/us/bill/v3/setmeals/${id}`, data)
+    },
+    UpdateSetmealStatus (context, {id, status}) {
+      return window.axios.put(`/us/bill/v3/setmeals/${id}/update_set_meal`, {status})
     },
     DeleteSetmeal (context, id) {
       return window.axios.delete(`/us/bill/v3/setmeals/${id}`)

@@ -293,6 +293,7 @@ export default {
     create () {
       this.$store.dispatch('CreateSetmeal', this.dataForCommit)
         .then(res => {
+          this.$message.success(this.$t('createSuccess'))
           this.refreshTable()
           this.close()
           this.reset()
@@ -305,9 +306,6 @@ export default {
       this.$store.commit('updateSetmealPopVisible', {name: 'create', visible: false})
     },
     reset () {
-      let form = this.$refs.mainForm.$refs.SetmealInfoMain
-      window.haha = form
-      // form.resetFields()
       this.setmeal = {
         name: '',
         description: '',
@@ -320,14 +318,17 @@ export default {
     refreshTable () {
       this.$store.dispatch('SelectSetmealList')
     },
+    init () {
+      this.resourceNames.forEach(e => {
+        this.$watch(`counter.${e}.value`, function (newVal, oldVal) {
+          this.updateResourceCount(e, newVal, oldVal)
+        })
+        this.counter[e].value = 1
+      })
+    },
   },
   created () {
-    this.resourceNames.forEach(e => {
-      this.$watch(`counter.${e}.value`, function (newVal, oldVal) {
-        this.updateResourceCount(e, newVal, oldVal)
-      })
-      this.counter[e].value = 1
-    })
+    this.init()
   },
 }
 </script>
