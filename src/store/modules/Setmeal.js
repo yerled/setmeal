@@ -100,7 +100,6 @@ export default {
       if (!detailId) {
         return
       }
-      console.log(`更新${detailId}的详细信息`)
       commit('updateDetail', (await dispatch('SelectSetmealDetail', detailId)).data)
     },
   }

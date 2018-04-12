@@ -14,7 +14,7 @@
       @leaveDetail="leaveDetail">
     </TableView>
     <SetmealCreate></SetmealCreate>
-    <!-- <SetmealUpdate :data="singleSelection"></SetmealUpdate> -->
+    <SetmealUpdate :data="singleSelection"></SetmealUpdate>
   </div>
 </template>
 
@@ -78,6 +78,7 @@ export default {
       this.$store.commit('updateDetailVisible', true)
       this.$store.commit('updateDetail', data)
       this.$router.push({name: 'SetmealDetail', params: {id: data.set_meal_id}})
+      this.$store.dispatch('UpdateSetmealDetail')
     },
     leaveDetail () {
       this.$store.commit('updateDetailVisible', false)

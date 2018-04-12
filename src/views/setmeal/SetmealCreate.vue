@@ -212,7 +212,7 @@ export default {
 
       let resources = []
       this.resourceNames.forEach(e => {
-        this.resourceDict[e].forEach(ee => {
+        this.resourcePriceDict[e].forEach(ee => {
           let e2 = Object.assign({}, ee)
           resources.push({
             type: e,
@@ -239,9 +239,6 @@ export default {
   },
   methods: {
     initDictFromList,
-    close () {
-      this.$store.commit('updateSetmealPopVisible', {name: 'create', visible: false})
-    },
     validateInfoMain () {
       let form = this.$refs.mainForm.$refs.SetmealInfoMain
       form.validate((valid) => {
@@ -282,9 +279,6 @@ export default {
     updateTotalPrice (price) {
       this.totalPrice = price
     },
-    confirm () {
-
-    },
     updateResourceCount (resourceType, newVal, oldVal) {
       let dict = this.resourceDict[resourceType]
       let difference = newVal - oldVal
@@ -301,11 +295,30 @@ export default {
         .then(res => {
           this.refreshTable()
           this.close()
-          this.$refs['SetmealCreateForm'].resetFields()
+          this.reset()
         }).catch(err => {
           console.log(err)
-          this.errorTip = this.$t('createFailed')
+          this.tip.content = this.$t('createFailed')
         })
+    },
+    close () {
+      this.$store.commit('updateSetmealPopVisible', {name: 'create', visible: false})
+    },
+    reset () {
+      let form = this.$refs.mainForm.$refs.SetmealInfoMain
+      window.haha = form
+      // form.resetFields()
+      this.setmeal = {
+        name: '',
+        description: '',
+        price: 0,
+        limitCount: 1,
+        unlimited: true,
+      }
+      this.step = 0
+    },
+    refreshTable () {
+      this.$store.dispatch('SelectSetmealList')
     },
   },
   created () {

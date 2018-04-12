@@ -68,13 +68,13 @@ export default {
       return this.initDictFromList(this.flavorList, 'flavor_id')
     },
     basic_attributes () {
-      let detail = this.detail
+      let setmeal = this.detail.set_meal || this.detail
       let attrs = ['instance', 'volume', 'floating_ip', 'router']
       let result = {}
       attrs.forEach(attr => {
         result[this.$t(`Setmeal.${attr}_count`)] = this.counter[attr]
       })
-      return Object.assign({[this.$t('Setmeal.name')]: detail.name}, result)
+      return Object.assign({[this.$t('Setmeal.name')]: setmeal.name}, result)
     },
     periodDict () {
       let periods = this.detail.periods || []
@@ -125,18 +125,6 @@ export default {
       this.$store.commit('updateDetail', {})
       this.$router.push({name: 'Setmeal'})
     },
-    update () {
-      this.$store.dispatch('UpdateSetmealDetail')
-    },
-  },
-  beforeRouteUpdate (to, from, next) {
-    this.update()
-    next()
-  },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-      vm.update()
-    })
   },
 }
 </script>
