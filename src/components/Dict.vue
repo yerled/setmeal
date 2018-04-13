@@ -7,6 +7,7 @@
       <span class="value">
         <template v-if="noSlot">
           <Money v-if="value && value.type === 'price'" prefix="￥" :money="value.value"></Money>
+          <Status v-else-if="value && value.type === 'status'" :status="value.value"></Status>
           <span v-else>{{value}}</span>
         </template>
         <slot :value="value"></slot>

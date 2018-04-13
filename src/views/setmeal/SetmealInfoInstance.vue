@@ -15,7 +15,7 @@
             <el-option
               v-for="flavor in flavorList"
               :key="flavor.flavor_id"
-              :label="flavor.name"
+              :label="flavor.__nameAndDesc"
               :value="flavor.flavor_id">
             </el-option>
           </el-select>
@@ -67,13 +67,8 @@ export default {
     }),
     ...mapGetters({
       flavors: 'flavors',
+      flavorList: 'flavorList',
     }),
-    flavorList () {
-      return this.$store.getters.flavorList.map(e => {
-        e.name = e.__nameAndDesc
-        return e
-      })
-    },
     flavorCPU () {
       return Array.from(new Set(this.flavors.map(e => e.vcpus)))
     },

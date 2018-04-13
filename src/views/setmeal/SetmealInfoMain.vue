@@ -14,7 +14,7 @@
     </el-form-item>
     <el-form-item :label-width="formLabelWidth"
       :label="$t('Setmeal.limit')" >
-      <el-switch :active-text="$t('Setmeal.pop.unlimited')"
+      <el-switch :active-text="$t('unlimited')"
         v-model="setmeal.unlimited">
       </el-switch>
       <el-input-number :min="0" :max="10"

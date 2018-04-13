@@ -1,7 +1,7 @@
 <template>
   <span class="cell" @click="click">
-    <i v-if="icon" :class="`el-icon-${icon}`"></i>
-    <span :class="column.type">{{ content }}</span>
+    <Status v-if="column.type === 'status'" :status="value"></Status>
+    <span v-else :class="column.type">{{ value }}</span>
   </span>
 </template>
 
@@ -10,21 +10,6 @@
 
 .cell {
   white-space: nowrap;
-  i {
-    font-size: 1.3em;
-    &.el-icon-success {
-      color: #26b09c;
-    }
-    &.el-icon-info {
-      color: #39546d;
-    }
-    &.el-icon-warning {
-      color: #d6d078;
-    }
-    &.el-icon-error {
-      color: #d45964;
-    }
-  }
   .caption {
     cursor: pointer;
     color: @color_link;
@@ -60,27 +45,6 @@ export default {
     },
     value () {
       return this.$props.row[this.field]
-    },
-    icon () {
-      let field = this.field
-      let value = this.value
-      if (field === 'status') {
-        if (['draft'].includes(value)) {
-          return 'info'
-        } else if (['issue'].includes(value)) {
-          return 'success'
-        } else if (['off_shelve'].includes(value)) {
-          return 'warning'
-        }
-      }
-    },
-    content () {
-      let type = this.type
-      let value = this.value
-      switch (type) {
-        case 'status': return this.$t(value)
-      }
-      return value
     },
   },
   methods: {

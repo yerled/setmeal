@@ -2,12 +2,14 @@ import {convertSize} from '../../utils'
 
 export default {
   state: {
-    flavors: [],
     initializedFlag: {
       flavor: false,
       line: false,
+      product: false,
     },
-    lineList: [],
+    flavors: [],
+    lines: [],
+    products: [],
   },
   getters: {
     flavors (state) {
@@ -34,23 +36,42 @@ export default {
       return ['ssd', 'sata']
     },
     lineList (state) {
-      return state.lineList
+      return state.lines
+    },
+    productList (state) {
+      return state.products.map(e => {
+        return {
+          name: e.name,
+          unit: e.unit,
+          unit_price: e.unit_price,
+        }
+      })
     },
   },
   mutations: {
-    updateFlavors (state, flavors) {
-      state.flavors = flavors
-    },
     updateInitializedFlag (state, name) {
+      console.log('updateInitializedFlag:' + name)
       state.initializedFlag[name] = true
     },
-    updateLineList (state, list) {
-      state.lineList = list
+    updateFlavors (state, flavors) {
+      console.log(flavors)
+      state.flavors = flavors
+    },
+    updateLines (state, list) {
+      state.lines = list
+    },
+    updateProducts (state, list) {
+      state.products = list
     },
   },
   actions: {
+    INIT_DATA ({dispatch}) {
+      dispatch('INIT_FLAVOR')
+      dispatch('INIT_LINE')
+      dispatch('INIT_PRODUCT')
+    },
     INIT_FLAVOR ({commit}) {
-      return window.axios.get('/os/compute/v2/f0026604054c48d6893c24665c717e58/flavors/detail').then(res => {
+      window.axios.get('/os/compute/v2/f0026604054c48d6893c24665c717e58/flavors/detail').then(res => {
         commit('updateFlavors', res.data.flavors)
         commit('updateInitializedFlag', 'flavor')
       }).catch(err => {
@@ -69,15 +90,19 @@ export default {
             set.add(e.name)
           }
         })
-        commit('updateLineList', Array.from(set).map(name => ({name})))
+        commit('updateLines', Array.from(set).map(name => ({name})))
         commit('updateInitializedFlag', 'line')
       })).catch(err => {
         console.log(err)
       })
     },
-    INIT_RESOURCE ({dispatch}) {
-      dispatch('INIT_FLAVOR')
-      dispatch('INIT_LINE')
+    INIT_PRODUCT ({commit}) {
+      window.axios.get('/us/bill/v2/products/detail').then(res => {
+        commit('updateProducts', res.data.products)
+        commit('updateInitializedFlag', 'product')
+      }).catch(err => {
+        console.log(err)
+      })
     },
   }
 }

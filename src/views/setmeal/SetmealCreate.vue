@@ -129,6 +129,7 @@ export default {
   computed: {
     ...mapGetters({
       flavorList: 'flavorList',
+      productList: 'productList',
     }),
     visible () {
       return this.$store.getters.SetmealPopVisible.create
@@ -144,6 +145,9 @@ export default {
     },
     flavorDict () {
       return this.initDictFromList(this.flavorList, 'flavor_id')
+    },
+    productDict () {
+      return this.initDictFromList(this.productList, 'name')
     },
     defaultResource () {
       let defaultFlavor = this.$store.getters.flavorList[0] || {}
@@ -188,18 +192,20 @@ export default {
         let resourceArr = dict_bak[type]
         resourceArr.price = 0
         resourceArr.forEach(e => {
-          e.price = this._calcSinglePrice(e.configuration)
+          e.price = this._calcSinglePrice(type, e.configuration)
           e.configDesc = this._initConfigDesc(e.configuration)
           resourceArr.price += e.price
           price += e.price
         })
+        resourceArr.price = Number(resourceArr.price.toFixed(4))
       })
+      price = Number(price.toFixed(4))
       this.updateTotalPrice(price)
       return dict_bak
     },
     discountPrice () {
       return this.periods.map(e => {
-        return this.totalPrice * 30 * e.period * e.discount / 100
+        return this.totalPrice * 24 * 30 * e.period * e.discount / 100
       })
     },
     dataForCommit () {
@@ -249,14 +255,31 @@ export default {
         }
       })
     },
-    _calcSinglePrice (resource) {
-      return 1
+    _calcSinglePrice (type, resource) {
+      let dict = this.productDict
+      let result
+      /* eslint-disable no-fallthrough */
+      switch (type) {
+        case 'instance': 
+          result = dict[`instance:${this.flavorDict[resource.flavor_id].name}`].unit_price
+          break
+        case 'volume': 
+          result = dict[`${resource.volume_type === 'sata' ? 'sata.' : ''}volume.size`].unit_price * resource.size
+          break
+        case 'floating_ip':
+        case 'router': 
+          console.log(resource.line)
+          result = dict[`ip.floating.${resource.line}`].unit_price * resource.ratelimit
+          break
+        default: result = 0
+      }
+      return Number(Number(result).toFixed(4))
     },
     _initConfigDesc (config) {
       let arr = []
       if ('flavor_id' in config) {
         let flavor = this.flavorDict[config.flavor_id]
-        arr.push(`${this.$t('flavor')}:${flavor ? flavor.name : config.flavor_id}`)
+        arr.push(`${this.$t('flavor')}:${flavor ? flavor.__nameAndDesc : config.flavor_id}`)
       }
       if ('volume_type' in config) {
         arr.push(`${this.$t('volume_type')}:${this.$t(config.volume_type)}`)
@@ -278,15 +301,6 @@ export default {
     updateResourceCount (resourceType, newVal, oldVal) {
       let dict = this.resourceDict[resourceType]
       let difference = newVal - oldVal
-      // if (difference > 0) {
-      //   for (let i = 0; i < difference; i++) {
-      //     if (difference > 0) {
-      //       dict.push(JSON.parse(JSON.stringify(this.defaultResource[resourceType])))
-      //     }
-      //   }
-      // } else if (difference < 0) {
-      //   dict.length = newVal
-      // }
       if (difference) {
         for (let i = 0; i < Math.abs(difference); i++) {
           if (difference > 0) {

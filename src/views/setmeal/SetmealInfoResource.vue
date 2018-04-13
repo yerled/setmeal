@@ -7,7 +7,7 @@
         <div class="price_title">
           <span class="resource_name">{{`${$t(type)}${$t('total_price')}`}}</span>
           <span class="price">
-            <Money :class="['big', 'balance']" prefix="￥" :money="resources.price" unit="day"></Money>
+            <Money :class="['big', 'balance']" prefix="￥" :money="resources.price" unit="hour"></Money>
           </span>
         </div>
       </template>
@@ -18,7 +18,7 @@
           <span class="resource_name">{{`${$t(type)} ${index + 1} `}}</span>
           <span class="configDesc">{{item.configDesc}}</span>
           <span class="price">
-            <Money :class="['zero']" prefix="￥" :money="item.price" unit="day"></Money>
+            <Money :class="['zero']" prefix="￥" :money="item.price" unit="hour"></Money>
           </span>
         </div>
       </div>

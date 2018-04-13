@@ -1,7 +1,7 @@
-import resource from './resource'
+import data from './data'
 import Setmeal from './Setmeal'
 
 export default {
-  resource,
+  data,
   Setmeal,
 }

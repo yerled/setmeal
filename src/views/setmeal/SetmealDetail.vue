@@ -79,13 +79,14 @@ export default {
         name: setmeal.name,
         limit: setmeal.limit || this.$t('unlimited'),
         price: {value: setmeal.price, type: 'price'},
+        status: {value: setmeal.status, type: 'status'},
         description: setmeal.description,
         instance_count: counter.instance,
         volume_count: counter.volume,
         floating_ip_count: counter.floating_ip,
         router_count: counter.router,
-        updated_at: setmeal.updated_at,
-        created_at: setmeal.created_at,
+        updated_at: this.$dateFormat(setmeal.updated_at),
+        created_at: this.$dateFormat(setmeal.created_at),
       }
     },
     periodDict () {

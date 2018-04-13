@@ -5,7 +5,7 @@
         {{`${$t('Setmeal.setmeal')}${$t('total_price')}`}}
       </span>
       <span class="price">
-        <Money :class="['big']" prefix="￥" :money="totalPrice" unit="day"></Money>
+        <Money :class="['big']" prefix="￥" :money="totalPrice" unit="hour"></Money>
       </span>
     </div>
     <div class="period"
@@ -16,7 +16,7 @@
       </span>
       {{$t('discount')}}
       <el-input-number :max="100" :min="1" v-model="item.discount"></el-input-number>%
-      <Money :class="['big']" prefix="￥" :money="discountPrice[index]"></Money>
+      <Money :class="['big']" prefix="￥" :money="discountPrice[index]" :fixed="4"></Money>
     </div>
   </div>
 </template>

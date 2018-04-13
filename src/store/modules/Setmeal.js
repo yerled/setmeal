@@ -1,3 +1,5 @@
+import { dateFormat } from '../../utils'
+
 export default {
   state: {
     config: {
@@ -54,6 +56,8 @@ export default {
           field: 'floating_ip_count',
         }, {
           field: 'router_count',
+        }, {
+          field: 'created_at',
         }
       ],
       rowClass: {
@@ -88,6 +92,8 @@ export default {
           }
           resource.configuration = configuration
         })
+        setmeal.updated_at = dateFormat(setmeal.updated_at)
+        setmeal.created_at = dateFormat(setmeal.created_at)
       })
       return setmealList
     },
