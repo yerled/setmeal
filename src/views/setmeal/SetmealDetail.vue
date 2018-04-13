@@ -10,13 +10,13 @@
         <span slot="title">{{$t('basic_attributes')}}</span>
         <el-row>
           <el-col :span="12">
-            <Dict :data="basic_attributes"></Dict>
+            <Dict :data="basic_attributes" moduleName="Setmeal"></Dict>
           </el-col>
           <el-col :span="12">
-            <Dict :data="periodDict">
+            <Dict :data="periodDict" moduleName="Setmeal">
               <template slot-scope="props">
                 <span>{{props.value.discount}}</span>
-                <Money prefix="￥" :money="props.value.price" unit="month1"></Money>
+                <Money prefix="￥" :money="props.value.price"></Money>
               </template>
             </Dict>
           </el-col>
@@ -74,19 +74,25 @@ export default {
     },
     basic_attributes () {
       let setmeal = this.detail.set_meal || this.detail
-      let attrs = ['instance', 'volume', 'floating_ip', 'router']
-      let result = {}
-      attrs.forEach(attr => {
-        result[this.$t(`Setmeal.${attr}_count`)] = this.counter[attr]
-      })
-      return Object.assign({[this.$t('Setmeal.name')]: setmeal.name}, result)
+      let counter = this.counter
+      return {
+        name: setmeal.name,
+        limit: setmeal.limit || this.$t('unlimited'),
+        price: {value: setmeal.price, type: 'price'},
+        description: setmeal.description,
+        instance_count: counter.instance,
+        volume_count: counter.volume,
+        floating_ip_count: counter.floating_ip,
+        router_count: counter.router,
+        updated_at: setmeal.updated_at,
+        created_at: setmeal.created_at,
+      }
     },
     periodDict () {
       let periods = this.detail.periods || []
       let dict = {}
       periods.forEach(e => {
-        // dict[this.$t(`discount${e.period}`)] = `${this.$t('discount')} ${e.discount * 100}% ￥${e.discount_price}${this.$t('rmb')}`
-        dict[this.$t(`discount${e.period}`)] = {
+        dict[`discount${e.period}`] = {
           discount: `${this.$t('discount')} ${e.discount * 100}%`,
           price: e.discount_price,
         }

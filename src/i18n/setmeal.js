@@ -18,7 +18,6 @@ export default {
     name: '套餐名称',
     limit: '购买次数',
     pop: {
-      unlimited: '无限制',
       nameRequired: '请输入套餐名称',
       step_main: '基本信息',
       step_instance: '云主机',

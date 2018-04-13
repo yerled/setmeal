@@ -3,9 +3,12 @@
     <div class="item"
       v-for="(value, key) of data"
       :key="key">
-      <span class="key">{{key}}</span>
+      <span class="key">{{i18nKey(key)}}</span>
       <span class="value">
-        <span v-if="noSlot">{{value}}</span>
+        <template v-if="noSlot">
+          <Money v-if="value && value.type === 'price'" prefix="￥" :money="value.value"></Money>
+          <span v-else>{{value}}</span>
+        </template>
         <slot :value="value"></slot>
       </span>
     </div>
@@ -45,10 +48,22 @@ export default {
         return {}
       },
     },
+    moduleName: {
+      type: String,
+    },
   },
   computed: {
     noSlot () {
       return !this.$scopedSlots.default
+    }
+  },
+  methods: {
+    i18nKey (key) {
+      let moduleName = this.$props.moduleName
+      if (moduleName) {
+        return this.$t(`${moduleName}.${key}`)
+      }
+      return key
     }
   }
 }
