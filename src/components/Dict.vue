@@ -4,7 +4,10 @@
       v-for="(value, key) of data"
       :key="key">
       <span class="key">{{key}}</span>
-      <span class="value">{{value}}</span>
+      <span class="value">
+        <span v-if="noSlot">{{value}}</span>
+        <slot :value="value"></slot>
+      </span>
     </div>
   </div>
 </template>
@@ -43,5 +46,10 @@ export default {
       },
     },
   },
+  computed: {
+    noSlot () {
+      return !this.$scopedSlots.default
+    }
+  }
 }
 </script>

@@ -34,3 +34,5 @@ window.yerled = new Vue({
   components: { App },
   template: '<App/>'
 })
+
+window.yerled.$store.dispatch('INIT_RESOURCE')

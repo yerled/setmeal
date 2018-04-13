@@ -13,6 +13,7 @@ export default {
     draft: '草稿',
     issue: '发布',
     off_shelve: '下架',
+    shelve: '下架',
     details: '详细信息',
     basic_attributes: '基本属性',
     delete: '删除',

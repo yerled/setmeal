@@ -12,20 +12,15 @@
     </el-steps>
     <el-alert :type="tip.type" v-show="tip.content" :title="tip.content" show-icon :closable="false"></el-alert>
     <div class="body">
-      <template v-if="!onlyUpdatePeriod">
         <SetmealInfoMain ref="mainForm" v-show="step === 0" :setmeal.sync="setmeal" :counter.sync="counter"></SetmealInfoMain>
         <SetmealInfoInstance v-show="step === 1" :instances.sync="resourceDict.instance"></SetmealInfoInstance>
         <SetmealInfoVolume v-show="step === 2" :volumes.sync="resourceDict.volume"></SetmealInfoVolume>
         <SetmealInfoLine v-show="step === 3" :lines.sync="resourceDict.floating_ip" type="floating_ip"></SetmealInfoLine>
         <SetmealInfoLine v-show="step === 4" :lines.sync="resourceDict.router" type="router"></SetmealInfoLine>
         <SetmealInfoResource v-show="step === 5" :dict="resourcePriceDict"></SetmealInfoResource>
-      </template>
         <SetmealInfoPeriod v-show="step === 5" :periods.sync="periods" :totalPrice="totalPrice" :discountPrice="discountPrice"></SetmealInfoPeriod>
     </div>
-    <!-- <div slot="footer">
-      <el-button type="primary" @click="update">{{$t('confirm')}}</el-button>
-    </div> -->
-    <setmealPopButtons :step.sync="step" :stepLen="6" slot="footer" :hideStep="true"
+    <setmealPopButtons :step.sync="step" :stepLen="6" slot="footer"
       @confirm="update"
       @validateInfoMain="validateInfoMain"></setmealPopButtons>
   </el-dialog>
@@ -67,20 +62,24 @@ export default {
       return this.$store.getters.SetmealPopVisible.update
     },
     onlyUpdatePeriod () {
-      return this.rawData.status === 'off_shelve'
+      let setmeal = this.rawData.set_meal || this.rawData
+      return setmeal.status === 'off_shelve'
     },
   },
   methods: {
     update () {
-      this.$store.dispatch('UpdateSetmeal', {
-        id: this.rawData.set_meal_id,
+      let setmeal = this.rawData.set_meal ? this.rawData.set_meal : this.rawData
+      let action = this.onlyUpdatePeriod ? 'UpdateSetmealPeriod' : 'UpdateSetmeal'
+      this.$store.dispatch(action, {
+        id: setmeal.set_meal_id,
         data: this.dataForCommit
       }).then(res => {
         this.refreshTable()
         this.close()
+        this.$message.success(this.$t('updateSuccess'))
       }).catch(err => {
         console.log(err)
-        this.tip.content = this.$t('createFailed')
+        this.tip.content = this.$t('updateFailed')
       })
     },
     initData (data) {
@@ -89,12 +88,18 @@ export default {
       }
       let rawData = this.rawData
       this.step = 0
+
+      /* infoMain */
+      let setmeal = rawData.set_meal ? rawData.set_meal : rawData
+      this.step = 0
       this.setmeal = {
-        name: rawData.name,
-        description: rawData.description,
-        unlimited: rawData.limit === 0,
-        limitNumber: rawData.limit,
+        name: setmeal.name,
+        description: setmeal.description,
+        unlimited: setmeal.limit === 0,
+        limitNumber: setmeal.limit,
       }
+
+      /* infoResource */
       this.resourceDict = {
         instance: [],
         volume: [],
@@ -108,7 +113,9 @@ export default {
       this.counter.router.value = 0
       rawData.resources.forEach(e => {
         this.counter[e.type].value++
-
+        if (typeof e.configuration === 'string') {
+          e.configuration = JSON.parse(e.configuration)
+        }
         let obj = {
           type: e.type,
           configuration: e.configuration,
@@ -123,6 +130,21 @@ export default {
       this.$nextTick(() => {
         this.unwatchCounter = false
       })
+
+      /* infoPeriod */
+      let periods = []
+      rawData.periods.forEach(e => {
+        periods.push({
+          period: e.period,
+          discount: e.discount * 100
+        })
+      })
+      this.periods = periods
+
+      /* onlyUpdatePeriod */
+      if (this.onlyUpdatePeriod) {
+        this.step = 5
+      }
     },
     close () {
       this.$store.commit('updateSetmealPopVisible', {name: 'update', visible: false})

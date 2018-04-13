@@ -75,7 +75,6 @@ export default {
       })
     },
     flavorCPU () {
-      console.log(this.flavors)
       return Array.from(new Set(this.flavors.map(e => e.vcpus)))
     },
   },

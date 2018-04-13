@@ -44,10 +44,6 @@ export default {
         this.$emit('validateInfoMain')
       } else if (this.step < this.stepLen - 1) {
         this.$emit('update:step', this.step + 1)
-        // 动态绑定价格可能很麻烦，我打算在跳转到价格页面时再手动计算
-        if (this.step === this.stepLen - 1) {
-          // this.calcPrice()
-        }
       }
     },
     confirm () {

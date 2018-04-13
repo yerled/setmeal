@@ -1,56 +1,61 @@
 export default {
   state: {
     config: {
-      buttons: [{
-        field: 'create',
-        icon: 'add',
-        type: 'primary',
-      }, {
-        field: 'update',
-        icon: 'edit',
-        selection: 'single',
-        validStatus: ['draft', 'off_shelve'],
-      }, {
-        field: 'issue',
-        icon: 'issue',
-        selection: 'single',
-        validStatus: ['draft', 'off_shelve'],
-      }, {
-        field: 'shelve',
-        icon: 'shelve',
-        selection: 'single',
-        validStatus: ['issue'],
-      }, {
-        field: 'purchase',
-        icon: 'purchase',
-        selection: 'single',
-        validStatus: ['issue'],
-      }, {
-        field: 'delete',
-        icon: 'delete',
-        selection: 'single',
-        type: 'danger',
-        validStatus: ['issue', 'draft', 'off_shelve'],
-      }],
-      columns: [{
-        field: 'name',
-        type: 'caption',
-      }, {
-        field: 'description',
-      }, {
-        field: 'price',
-      }, {
-        field: 'status',
-        type: 'status',
-      }, {
-        field: 'instance_count',
-      }, {
-        field: 'volume_count',
-      }, {
-        field: 'floating_ip_count',
-      }, {
-        field: 'router_count',
-      }],
+      buttons: [
+        {
+          field: 'create',
+          icon: 'add',
+          type: 'primary',
+        }, {
+          field: 'update',
+          icon: 'edit',
+          selection: 'single',
+          validStatus: ['draft', 'off_shelve'],
+        }, {
+          field: 'issue',
+          icon: 'issue',
+          selection: 'single',
+          validStatus: ['draft', 'off_shelve'],
+        }, {
+          field: 'shelve',
+          icon: 'shelve',
+          selection: 'single',
+          validStatus: ['issue'],
+        }, {
+          field: 'purchase',
+          icon: 'purchase',
+          selection: 'single',
+          validStatus: ['issue'],
+        }, {
+          field: 'delete',
+          icon: 'delete',
+          selection: 'single',
+          type: 'danger',
+          validStatus: ['draft'],
+        }
+      ],
+      columns: [
+        {
+          field: 'name',
+          type: 'caption',
+        }, {
+          field: 'description',
+        }, {
+          field: 'price',
+          type: 'price',
+        }, {
+          field: 'status',
+          type: 'status',
+        }, {
+          field: 'instance_count',
+        }, {
+          field: 'volume_count',
+        }, {
+          field: 'floating_ip_count',
+        }, {
+          field: 'router_count',
+        }
+      ],
       rowClass: {
         warn: ['off_shelve'],
       },
@@ -79,6 +84,7 @@ export default {
           } catch (e) {
             console.log('非法的JSON: ' + configuration)
             console.log(e)
+            console.log('来自：' + setmeal.name)
           }
           resource.configuration = configuration
         })
@@ -111,6 +117,9 @@ export default {
     },
     UpdateSetmealStatus (context, {id, status}) {
       return window.axios.put(`/us/bill/v3/setmeals/${id}/update_set_meal`, {status})
+    },
+    UpdateSetmealPeriod (context, {id, data}) {
+      return window.axios.put(`/us/bill/v3/setmeals/${id}/update_period`, {periods: data.periods})
     },
     DeleteSetmeal (context, id) {
       return window.axios.delete(`/us/bill/v3/setmeals/${id}`)

@@ -255,24 +255,20 @@ export default {
     _initConfigDesc (config) {
       let arr = []
       if ('flavor_id' in config) {
-        arr.push(`${this.$t('flavor')}:
-          ${this.flavorDict[config.flavor_id].name}`)
+        let flavor = this.flavorDict[config.flavor_id]
+        arr.push(`${this.$t('flavor')}:${flavor ? flavor.name : config.flavor_id}`)
       }
       if ('volume_type' in config) {
-        arr.push(`${this.$t('volume_type')}:
-          ${this.$t(config.volume_type)}`)
+        arr.push(`${this.$t('volume_type')}:${this.$t(config.volume_type)}`)
       }
       if ('size' in config) {
-        arr.push(`${this.$t('size')}:
-          ${config.size} GB`)
+        arr.push(`${this.$t('size')}:${config.size} GB`)
       }
       if ('line' in config) {
-        arr.push(`${this.$t('line')}:
-          ${this.$t(config.line)}`)
+        arr.push(`${this.$t('line')}:${this.$t(config.line)}`)
       }
       if ('ratelimit' in config) {
-        arr.push(`${this.$t('ratelimit')}:
-          ${config.ratelimit} MB`)
+        arr.push(`${this.$t('ratelimit')}:${config.ratelimit} MB`)
       }
       return arr.join('; ')
     },
@@ -282,12 +278,23 @@ export default {
     updateResourceCount (resourceType, newVal, oldVal) {
       let dict = this.resourceDict[resourceType]
       let difference = newVal - oldVal
-      if (difference > 0) {
-        for (let i = 0; i < difference; i++) {
-          dict.push(JSON.parse(JSON.stringify(this.defaultResource[resourceType])))
+      // if (difference > 0) {
+      //   for (let i = 0; i < difference; i++) {
+      //     if (difference > 0) {
+      //       dict.push(JSON.parse(JSON.stringify(this.defaultResource[resourceType])))
+      //     }
+      //   }
+      // } else if (difference < 0) {
+      //   dict.length = newVal
+      // }
+      if (difference) {
+        for (let i = 0; i < Math.abs(difference); i++) {
+          if (difference > 0) {
+            dict.push(JSON.parse(JSON.stringify(this.defaultResource[resourceType])))
+          } else {
+            dict.pop()
+          }
         }
-      } else {
-        dict.length = newVal
       }
     },
     create () {
@@ -323,7 +330,6 @@ export default {
         this.$watch(`counter.${e}.value`, function (newVal, oldVal) {
           this.updateResourceCount(e, newVal, oldVal)
         })
-        this.counter[e].value = 1
       })
     },
   },

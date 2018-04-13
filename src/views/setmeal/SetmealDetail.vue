@@ -13,7 +13,12 @@
             <Dict :data="basic_attributes"></Dict>
           </el-col>
           <el-col :span="12">
-            <Dict :data="periodDict"></Dict>
+            <Dict :data="periodDict">
+              <template slot-scope="props">
+                <span>{{props.value.discount}}</span>
+                <Money prefix="￥" :money="props.value.price" unit="month1"></Money>
+              </template>
+            </Dict>
           </el-col>
         </el-row>
       </el-collapse-item>
@@ -80,7 +85,11 @@ export default {
       let periods = this.detail.periods || []
       let dict = {}
       periods.forEach(e => {
-        dict[this.$t(`discount${e.period}`)] = `${this.$t('discount')} ${e.discount * 100}% ￥${e.discount_price}${this.$t('rmb')}`
+        // dict[this.$t(`discount${e.period}`)] = `${this.$t('discount')} ${e.discount * 100}% ￥${e.discount_price}${this.$t('rmb')}`
+        dict[this.$t(`discount${e.period}`)] = {
+          discount: `${this.$t('discount')} ${e.discount * 100}%`,
+          price: e.discount_price,
+        }
       })
       return dict
     },

@@ -13,6 +13,7 @@ export default {
     line: '线路',
     'doubleLine': '双线线路',
     '3LINE_BGP': '三线BGP线路',
+    '4LINE_BGP': '四线BGP线路',
     'ALLLINE_BGP': '全网BGP线路',
     ratelimit: '带宽',
   },

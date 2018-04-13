@@ -70,7 +70,13 @@ export default {
     },
     update () {
       this.$store.commit('updateSetmealPopVisible', {name: 'update', visible: true})
-      this.$refs.popUpdate.initData(JSON.parse(JSON.stringify(this.singleSelection)))
+      this.initUpdatePopData(this.singleSelection)
+      this.$store.dispatch('SelectSetmealDetail', this.singleSelection.set_meal_id).then(res => {
+        this.initUpdatePopData(res.data)
+      })
+    },
+    initUpdatePopData (data) {
+      this.$refs.popUpdate.initData(JSON.parse(JSON.stringify(data)))
     },
     issue () {
       let title = this.$t('Setmeal.issue')
@@ -85,6 +91,7 @@ export default {
           status: 'issue',
         }).then(() => {
           this.$message.success(this.$t('Setmeal.issueSuccess'))
+          this.refreshTable()
         }).catch(err => {
           console.log(err)
           this.$message.error(this.$t('Setmeal.issueFaild'))
@@ -101,9 +108,10 @@ export default {
       }).then(() => {
         this.$store.dispatch('UpdateSetmealStatus', {
           id: this.singleSelection.set_meal_id,
-          status: 'issue',
+          status: 'off_shelve',
         }).then(() => {
           this.$message.success(this.$t('Setmeal.shelveSuccess'))
+          this.refreshTable()
         }).catch(err => {
           console.log(err)
           this.$message.error(this.$t('Setmeal.shelveFaild'))

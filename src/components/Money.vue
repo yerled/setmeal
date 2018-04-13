@@ -46,7 +46,6 @@ export default {
     },
     unit: {
       type: [String],
-      default: 'hour',
     },
     prefix: {
       type: [String],
@@ -61,7 +60,11 @@ export default {
       return arr
     },
     computedUnit () {
-      return `${this.$t('rmb')} / ${this.$t(`${this.$props.unit}`)}`
+      let unit = this.$t('rmb')
+      if (this.$props.unit) {
+        unit += ` / ${this.$t(`${this.$props.unit}`)}`
+      }
+      return unit
     },
   },
 }
