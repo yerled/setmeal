@@ -4,6 +4,7 @@ export default {
     create: '新建套餐',
     update: '编辑套餐',
     issue: '发布套餐',
+    auto_renewal: '自动续约',
     issueSuccess: '套餐发布成功!',
     issueFaild: '发布失败',
     shelve: '下架套餐',
@@ -11,6 +12,8 @@ export default {
     shelveFaild: '下架失败',
     actionConfirm: '是否确定对该套餐执行{{action}}操作?',
     purchase: '购买套餐',
+    purchaseSuccess: '套餐购买完成!',
+    purchaseFailed: '购买失败',
     instance_count: '云主机数量',
     volume_count: '云硬盘数量',
     floating_ip_count: '公网IP数量',
@@ -25,12 +28,17 @@ export default {
       step_floating_ip: '公网IP',
       step_router: '路由器',
       step_price: '价格',
+      step_allocation: '配置资源',
+      step_purchase: '购买',
       create: {
         title: '新建套餐',
       },
       update: {
         title: '编辑套餐',
       },
+      purchase: {
+        title: '购买套餐',
+      }
     },
   },
   en: {

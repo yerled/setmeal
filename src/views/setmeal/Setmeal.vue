@@ -10,13 +10,14 @@
       @update="update"
       @issue="issue"
       @shelve="shelve"
-      @purchase="showPop"
+      @purchase="purchase"
       @delete="deleteSetmeal"
       @enterDetail="enterDetail"
       @leaveDetail="leaveDetail">
     </TableView>
     <SetmealCreate></SetmealCreate>
     <SetmealUpdate ref="popUpdate"></SetmealUpdate>
+    <SetmealPurchase ref="popPurchase"></SetmealPurchase>
   </div>
 </template>
 
@@ -30,6 +31,7 @@
 import {mapGetters} from 'vuex'
 import SetmealCreate from './SetmealCreate'
 import SetmealUpdate from './SetmealUpdate'
+import SetmealPurchase from './SetmealPurchase'
 import SetmealDetail from './SetmealDetail'
 
 export default {
@@ -37,6 +39,7 @@ export default {
   components: {
     SetmealCreate,
     SetmealUpdate,
+    SetmealPurchase,
     SetmealDetail,
   },
   data () {
@@ -66,17 +69,22 @@ export default {
       this.multipleSelection = selection
     },
     create () {
-      this.$store.commit('updateSetmealPopVisible', {name: 'create', visible: true})
+      this.showPop('create')
     },
     update () {
-      this.$store.commit('updateSetmealPopVisible', {name: 'update', visible: true})
-      this.initUpdatePopData(this.singleSelection)
-      this.$store.dispatch('SelectSetmealDetail', this.singleSelection.set_meal_id).then(res => {
-        this.initUpdatePopData(res.data)
-      })
+      this.showPop('update')
+      this.initPopData('popUpdate')
     },
-    initUpdatePopData (data) {
-      this.$refs.popUpdate.initData(JSON.parse(JSON.stringify(data)))
+    purchase () {
+      this.showPop('purchase')
+      this.initPopData('popPurchase')
+    },
+    initPopData (popRef) {
+      let pop = this.$refs[popRef]
+      pop.initData(JSON.parse(JSON.stringify(this.singleSelection)))
+      this.$store.dispatch('SelectSetmealDetail', this.singleSelection.set_meal_id).then(res => {
+        pop.initData(JSON.parse(JSON.stringify(res.data)))
+      })
     },
     issue () {
       let title = this.$t('Setmeal.issue')
@@ -135,7 +143,7 @@ export default {
         })
       })
     },
-    showPop ({name}) {
+    showPop (name) {
       this.$store.commit('updateSetmealPopVisible', {
         name,
         visible: true,

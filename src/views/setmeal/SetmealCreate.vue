@@ -1,9 +1,9 @@
 <template>
   <el-dialog  width="800px"
-      :title="$t(`Setmeal.pop.create.title`)"
-      :close-on-click-modal="false"
-      :visible="visible"
-      @close="close">
+    :title="$t(`Setmeal.pop.create.title`)"
+    :close-on-click-modal="false"
+    :visible="visible"
+    @close="close">
     <el-steps finish-status="success" :active="step">
       <el-step v-for="item of steps"
         :key="item"
@@ -22,7 +22,8 @@
     </div>
     <setmealPopButtons :step.sync="step" :stepLen="6" slot="footer"
       @confirm="create"
-      @validateInfoMain="validateInfoMain"></setmealPopButtons>
+      @validateInfoMain="validateInfoMain">
+    </setmealPopButtons>
   </el-dialog>
 </template>
 
@@ -49,7 +50,7 @@ import SetmealInfoVolume from './SetmealInfoVolume'
 import SetmealInfoLine from './SetmealInfoLine'
 import SetmealInfoResource from './SetmealInfoResource'
 import SetmealInfoPeriod from './SetmealInfoPeriod'
-import setmealPopButtons from './setmealPopButtons'
+import SetmealPopButtons from './SetmealPopButtons'
 import { mapGetters } from 'vuex'
 import {initDictFromList} from '../../utils'
 
@@ -62,7 +63,7 @@ export default {
     SetmealInfoLine,
     SetmealInfoResource,
     SetmealInfoPeriod,
-    setmealPopButtons
+    SetmealPopButtons,
   },
   data () {
     return {
@@ -257,19 +258,21 @@ export default {
     },
     _calcSinglePrice (type, resource) {
       let dict = this.productDict
-      let result
+      let product, result
       /* eslint-disable no-fallthrough */
       switch (type) {
-        case 'instance': 
-          result = dict[`instance:${this.flavorDict[resource.flavor_id].name}`].unit_price
+        case 'instance':
+          product = dict[`instance:${this.flavorDict[resource.flavor_id].name}`]
+          product && (result = product.unit_price)
           break
-        case 'volume': 
-          result = dict[`${resource.volume_type === 'sata' ? 'sata.' : ''}volume.size`].unit_price * resource.size
+        case 'volume':
+          product = dict[`${resource.volume_type === 'sata' ? 'sata.' : ''}volume.size`]
+          product && (result = product.unit_price * resource.size)
           break
         case 'floating_ip':
-        case 'router': 
-          console.log(resource.line)
-          result = dict[`ip.floating.${resource.line}`].unit_price * resource.ratelimit
+        case 'router':
+          product = dict[`ip.floating.${resource.line}`]
+          product && (result = product.unit_price * resource.ratelimit)
           break
         default: result = 0
       }
@@ -331,7 +334,7 @@ export default {
         name: '',
         description: '',
         price: 0,
-        limitCount: 1,
+        limitNumber: 1,
         unlimited: true,
       }
       this.step = 0

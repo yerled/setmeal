@@ -1,9 +1,9 @@
 <template>
   <el-dialog  width="800px"
-      :title="$t(`Setmeal.pop.update.title`)"
-      :close-on-click-modal="false"
-      :visible="visible"
-      @close="close">
+    :title="$t(`Setmeal.pop.update.title`)"
+    :close-on-click-modal="false"
+    :visible="visible"
+    @close="close">
     <el-steps finish-status="success" :active="step" v-if="!onlyUpdatePeriod">
       <el-step v-for="item of steps"
         :key="item"
@@ -12,17 +12,18 @@
     </el-steps>
     <el-alert :type="tip.type" v-show="tip.content" :title="tip.content" show-icon :closable="false"></el-alert>
     <div class="body">
-        <SetmealInfoMain ref="mainForm" v-show="step === 0" :setmeal.sync="setmeal" :counter.sync="counter"></SetmealInfoMain>
-        <SetmealInfoInstance v-show="step === 1" :instances.sync="resourceDict.instance"></SetmealInfoInstance>
-        <SetmealInfoVolume v-show="step === 2" :volumes.sync="resourceDict.volume"></SetmealInfoVolume>
-        <SetmealInfoLine v-show="step === 3" :lines.sync="resourceDict.floating_ip" type="floating_ip"></SetmealInfoLine>
-        <SetmealInfoLine v-show="step === 4" :lines.sync="resourceDict.router" type="router"></SetmealInfoLine>
-        <SetmealInfoResource v-show="step === 5" :dict="resourcePriceDict"></SetmealInfoResource>
-        <SetmealInfoPeriod v-show="step === 5" :periods.sync="periods" :totalPrice="totalPrice" :discountPrice="discountPrice"></SetmealInfoPeriod>
+      <SetmealInfoMain ref="mainForm" v-show="step === 0" :setmeal.sync="setmeal" :counter.sync="counter"></SetmealInfoMain>
+      <SetmealInfoInstance v-show="step === 1" :instances.sync="resourceDict.instance"></SetmealInfoInstance>
+      <SetmealInfoVolume v-show="step === 2" :volumes.sync="resourceDict.volume"></SetmealInfoVolume>
+      <SetmealInfoLine v-show="step === 3" :lines.sync="resourceDict.floating_ip" type="floating_ip"></SetmealInfoLine>
+      <SetmealInfoLine v-show="step === 4" :lines.sync="resourceDict.router" type="router"></SetmealInfoLine>
+      <SetmealInfoResource v-show="step === 5" :dict="resourcePriceDict"></SetmealInfoResource>
+      <SetmealInfoPeriod v-show="step === 5" :periods.sync="periods" :totalPrice="totalPrice" :discountPrice="discountPrice"></SetmealInfoPeriod>
     </div>
-    <setmealPopButtons :step.sync="step" :stepLen="6" slot="footer"
+    <SetmealPopButtons :step.sync="step" :stepLen="6" slot="footer"
       @confirm="update"
-      @validateInfoMain="validateInfoMain"></setmealPopButtons>
+      @validateInfoMain="validateInfoMain">
+    </SetmealPopButtons>
   </el-dialog>
 </template>
 
@@ -91,7 +92,6 @@ export default {
 
       /* infoMain */
       let setmeal = rawData.set_meal ? rawData.set_meal : rawData
-      this.step = 0
       this.setmeal = {
         name: setmeal.name,
         description: setmeal.description,

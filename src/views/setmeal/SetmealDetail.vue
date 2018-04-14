@@ -78,7 +78,7 @@ export default {
       return {
         name: setmeal.name,
         limit: setmeal.limit || this.$t('unlimited'),
-        price: {value: setmeal.price, type: 'price'},
+        price: {value: setmeal.price, type: 'price', unit: 'hour'},
         status: {value: setmeal.status, type: 'status'},
         description: setmeal.description,
         instance_count: counter.instance,

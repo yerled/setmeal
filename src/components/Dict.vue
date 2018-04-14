@@ -6,7 +6,7 @@
       <span class="key">{{i18nKey(key)}}</span>
       <span class="value">
         <template v-if="noSlot">
-          <Money v-if="value && value.type === 'price'" prefix="￥" :money="value.value"></Money>
+          <Money v-if="value && value.type === 'price'" prefix="￥" :money="value.value" :unit="value.unit"></Money>
           <Status v-else-if="value && value.type === 'status'" :status="value.value"></Status>
           <span v-else>{{value}}</span>
         </template>
