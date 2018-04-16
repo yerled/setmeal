@@ -47,6 +47,7 @@ import SetmealPurChaseAllocateOther from './SetmealPurChaseAllocateOther'
 import SetmealPurChaseForm from './SetmealPurChaseForm'
 import SetmealPopButtons from './SetmealPopButtons'
 import { mapGetters } from 'vuex'
+import {initDictFromList} from '../../utils'
 
 export default {
   name: 'SetmealPurchase',
@@ -74,8 +75,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['subnetList', 'systemImageList', 'snapImageList', 'keytList']),
-
+    ...mapGetters(['subnetList', 'flavorList', 'systemImageList', 'snapImageList', 'keytList']),
+    flavorDict () {
+      return this.initDictFromList(this.flavorList, 'flavor_id')
+    },
     visible () {
       return this.$store.getters.SetmealPopVisible.purchase
     },
@@ -89,7 +92,7 @@ export default {
           name: e.name,
           image: e.isSystemImage ? e.systemImage : e.snapImage,
           subnet: e.subnet_id,
-          password: e.isPassword ? this.password : e.keyt,
+          password: e.isKeyt ? this.password : e.keyt,
         }
       })
       
@@ -126,13 +129,16 @@ export default {
         systemImage: defaultSystemImage.id,
         snapImage: defaultSnapImage.id,
         subnet_id: defaultSubnet.id,
-        isPassword: true,
+        isKeyt: true,
+        isWindows: defaultSystemImage.image_label && 
+          defaultSystemImage.image_label.toLowerCase() === 'windows',
         password: '',
         keyt: defualtKeyt.name,
       }
     },
   },
   methods: {
+    initDictFromList,
     initData (data) {
       if (data) {
         this.rawData = data
@@ -143,25 +149,35 @@ export default {
       /* instances and resources */
       this.instances = []
       this.resources = []
+      let counter = {
+        instance: 0,
+        volume: 0,
+        floating_ip: 0,
+        router: 0,
+      }
       rawData.resources.forEach(e => {
-        let defaultName = `${this.$t(e.type)}-1`
+        counter[e.type]++
+        if (typeof e.configuration === 'string') {
+          e.configuration = JSON.parse(e.configuration)
+        }
+        let configDesc = this._initConfigDesc(e.configuration)
+
+        let defaultName = `${this.$t(e.type)}-${counter[e.type]}`
         if (e.type === 'instance') {
           let defaultInstance = JSON.parse(JSON.stringify(this.defualtInstance))
           defaultInstance.name = defaultName
+          defaultInstance.configDesc = configDesc
           defaultInstance.set_meal_resource_id = e.set_meal_resource_id
           this.instances.push(defaultInstance)
           return
         }
 
-        if (typeof e.configuration === 'string') {
-          e.configuration = JSON.parse(e.configuration)
-        }
         let obj = {
           name: defaultName,
           type: e.type,
           set_meal_resource_id: e.set_meal_resource_id,
           configuration: e.configuration,
-          configDesc: this._initConfigDesc(e.configuration)
+          configDesc: configDesc
         }
         this.resources.push(obj)
       })
@@ -179,19 +195,23 @@ export default {
     },
     _initConfigDesc (config) {
       let arr = []
+      if ('flavor_id' in config) {
+        let flavor = this.flavorDict[config.flavor_id]
+        arr.push(flavor ? flavor.__desc : config.flavor_id)
+      }
       if ('volume_type' in config) {
-        arr.push(`${this.$t('volume_type')}:${this.$t(config.volume_type)}`)
+        arr.push(this.$t(config.volume_type))
       }
       if ('size' in config) {
-        arr.push(`${this.$t('size')}:${config.size} GB`)
+        arr.push(`${config.size}GB`)
       }
       if ('line' in config) {
-        arr.push(`${this.$t('line')}:${this.$t(config.line)}`)
+        arr.push(this.$t(config.line))
       }
       if ('ratelimit' in config) {
-        arr.push(`${this.$t('ratelimit')}:${config.ratelimit} MB`)
+        arr.push(`${config.ratelimit}MB`)
       }
-      return arr.join('; ')
+      return arr.join('  ')
     },
     stepNext () {
       if (this.step === 0) {

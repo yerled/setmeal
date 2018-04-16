@@ -4,10 +4,10 @@
       v-for="(resource, index) of resources"
       :key="index">
       <div slot="header">
-        <label>{{`${$t(resource.type)} ${index + 1}`}}</label>
+        <label v-once>{{resource.name}}</label>
       </div>
       <el-form :model="resource" :ref="`form${index}`" :rules="rules">
-        <el-form-item :label-width="formLabelWidth" :label="$t('basic_attributes')" >
+        <el-form-item :label-width="formLabelWidth" :label="$t('configuration')" >
           {{resource.configDesc}}
         </el-form-item>
         <el-form-item v-if="resource.type !== 'floating_ip'" :label-width="formLabelWidth" :label="$t('name')" prop="name">

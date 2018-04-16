@@ -4,9 +4,12 @@
       v-for="(resource, index) of instances"
       :key="index">
       <div slot="header">
-        <label>{{`${$t('instance')} ${index + 1}`}}</label>
+        <label v-once>{{resource.name}}</label>
       </div>
       <el-form :model="resource" :ref="`form${index}`" :rules="rules">
+        <el-form-item :label-width="formLabelWidth" :label="$t('configuration')" >
+          {{resource.configDesc}}
+        </el-form-item>
         <el-form-item :label-width="formLabelWidth" :label="$t('name')" prop="name">
           <el-input v-model="resource.name"></el-input>
         </el-form-item>
@@ -40,8 +43,8 @@
           </el-select>
         </el-form-item>
         <el-form-item :label-width="formLabelWidth" :label="$t('loginInfo')">
-          <el-switch v-model="resource.isPassword"
-            :active-text="$t('keyt')" :inactive-text="$t('password')">
+          <el-switch v-model="resource.isKeyt" :disabled="resource.isWindows"
+            :inactive-text="$t('password')" :active-text="$t('keyt')">
           </el-switch>
         </el-form-item>
         <el-form-item :label-width="formLabelWidth">
@@ -51,7 +54,7 @@
               {{resource.username}}
             </span>
           </span>
-          <span v-show="resource.isPassword">
+          <span v-show="resource.isKeyt">
             <label for="">{{`${$t('keyt')}:`}}</label>
             <el-select v-model="resource.keyt" class="inline-input">
               <el-option v-for="item in keytList"
@@ -61,7 +64,7 @@
               </el-option>
             </el-select>
           </span>
-          <span v-show="!resource.isPassword">
+          <span v-show="!resource.isKeyt">
             <label for="">{{`${$t('password')}:`}}</label>
             <el-input v-model="resource.password" class="inline-input"></el-input>
           </span>
@@ -93,6 +96,7 @@ export default {
   name: 'SetmealPurchaseAllocation',
   data () {
     return {
+      switch1: false,
       rules: {
         name: [
           { required: true, message: this.$t('Setmeal.pop.instanceNameRequired'), trigger: 'blur' },
@@ -110,7 +114,7 @@ export default {
     ...mapState({
       formLabelWidth: 'formLabelWidth',
     }),
-    ...mapGetters(['subnetList', 'systemImageList', 'snapImageList', 'keytList']),
+    ...mapGetters(['subnetList', 'flavorList', 'systemImageList', 'snapImageList', 'keytList']),
     snapImageDict () {
       return this.initDictFromList(this.snapImageList)
     },
@@ -124,12 +128,17 @@ export default {
         val.forEach(e => {
           let image = e.isSystemImage
             ? this.systemImageDict[e.systemImage] : this.snapImageDict[e.snapImage]
+          if (this.getImageIcon(image) === 'windows') {
+            e.username = 'Administrator'
+            e.isKeyt = false
+            e.isWindows = true
+          } else {
+            e.username = 'root'
+            e.isWindows = false
+          }
           if (image && image.image_meta) {
             e.username = JSON.parse(image.image_meta)['os_username']
-            return
           }
-          let image_label = image && image.image_label && image.image_label.toLowerCase()
-          e.username = image_label === 'windows' ? 'Administrator' : 'root'
         })
       },
       deep: true,

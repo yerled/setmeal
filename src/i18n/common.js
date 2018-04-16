@@ -9,6 +9,7 @@ export default {
     price: '价格',
     period: '周期',
     back: '上一步',
+    configuration: '配置',
     next: '下一步',
     loginInfo: '登录信息',
     password: '密码',
