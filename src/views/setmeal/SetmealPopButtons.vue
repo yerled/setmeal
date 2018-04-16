@@ -40,11 +40,7 @@ export default {
       }
     },
     next () {
-      if (this.step === 0) {
-        this.$emit('validateInfoMain')
-      } else if (this.step < this.stepLen - 1) {
-        this.$emit('update:step', this.step + 1)
-      }
+      this.$emit('next')
     },
     confirm () {
       this.$emit('confirm')

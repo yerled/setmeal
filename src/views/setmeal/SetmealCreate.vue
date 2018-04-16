@@ -22,16 +22,12 @@
     </div>
     <setmealPopButtons :step.sync="step" :stepLen="6" slot="footer"
       @confirm="create"
-      @validateInfoMain="validateInfoMain">
+      @next="stepNext">
     </setmealPopButtons>
   </el-dialog>
 </template>
 
 <style lang="less" scoped>
-.el-steps {
-  margin-left: 25px;
-  margin-bottom: 15px;
-}
 .body {
   height: 380px;
   overflow: auto;
@@ -246,15 +242,19 @@ export default {
   },
   methods: {
     initDictFromList,
-    validateInfoMain () {
-      let form = this.$refs.mainForm.$refs.SetmealInfoMain
-      form.validate((valid) => {
-        if (valid) {
-          this.step++
-        } else {
-          return false
-        }
-      })
+    stepNext () {
+      if (this.step === 0) {
+        let form = this.$refs.mainForm.$refs.SetmealInfoMain
+        form.validate((valid) => {
+          if (valid) {
+            this.step++
+          } else {
+            return false
+          }
+        })
+      } else if (this.step < this.stepLen - 1) {
+        this.step++
+      }
     },
     _calcSinglePrice (type, resource) {
       let dict = this.productDict

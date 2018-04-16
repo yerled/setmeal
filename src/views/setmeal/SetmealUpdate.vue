@@ -22,7 +22,7 @@
     </div>
     <SetmealPopButtons :step.sync="step" :stepLen="6" slot="footer"
       @confirm="update"
-      @validateInfoMain="validateInfoMain">
+      @next="stepNext">
     </SetmealPopButtons>
   </el-dialog>
 </template>

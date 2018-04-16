@@ -11,33 +11,49 @@
       </el-step>
     </el-steps>
     <el-alert :type="tip.type" v-show="tip.content" :title="tip.content" show-icon :closable="false"></el-alert>
-    <SetmealPurchaseAllocation :instances="instances"></SetmealPurchaseAllocation>
-    <!-- <SetmealPurchaseCheck></SetmealPurchaseCheck> -->
+    <div class="body">
+      <SetmealPurChaseAllocateInstance v-show="step === 0" ref="instanceForms" :instances="instances"></SetmealPurChaseAllocateInstance>
+      <SetmealPurChaseAllocateOther  v-show="step === 1" ref="otherForms" :resources="resources"></SetmealPurChaseAllocateOther>
+      <el-alert type="info" v-show="step === 2"
+        :title="$t('Setmeal.expiration_rules')" 
+        :description="$t('Setmeal.expiration_rules_desc')"></el-alert>
+      <SetmealPurChaseForm v-show="step === 2" ref="mainForm" :form="form" :periods="periods"></SetmealPurChaseForm>
+    </div>
     <SetmealPopButtons :step.sync="step" :stepLen="steps.length" slot="footer"
       @confirm="purchase"
-      @validateInfoMain="validateInfoMain">
+      @next="stepNext">
     </SetmealPopButtons>
   </el-dialog>
 </template>
 
 <style lang="less" scoped>
-.el-steps {
-  width: 90%;
-  margin: 0 auto;
+.body {
+  height: 380px;
+  overflow: auto;
+  .resource {
+    .el-card {
+      margin-bottom: 10px;
+    }
+  }
+}
+.body2 {
+  height: 210px;
 }
 </style>
 
 <script>
-import SetmealPurchaseAllocation from './SetmealPurchaseAllocation'
-// import SetmealPurchaseCheck from './SetmealPurchaseCheck'
+import SetmealPurChaseAllocateInstance from './SetmealPurChaseAllocateInstance'
+import SetmealPurChaseAllocateOther from './SetmealPurChaseAllocateOther'
+import SetmealPurChaseForm from './SetmealPurChaseForm'
 import SetmealPopButtons from './SetmealPopButtons'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'SetmealPurchase',
   components: {
-    SetmealPurchaseAllocation,
-    // SetmealPurchaseCheck,
+    SetmealPurChaseAllocateInstance,
+    SetmealPurChaseAllocateOther,
+    SetmealPurChaseForm,
     SetmealPopButtons,
   },
   data () {
@@ -47,25 +63,58 @@ export default {
         type: 'error',
         content: '',
       },
-      resourceDict: {
-        volume: [],
-        floating_ip: [],
-        router: [],
-      },
       instances: [],
+      resources: [],
+      form: {
+        auto_renewal: true,
+        period: 1,
+      },
+      periods: [],
       rawData: {},
     }
   },
   computed: {
     ...mapGetters(['subnetList', 'systemImageList', 'snapImageList', 'keytList']),
+
     visible () {
       return this.$store.getters.SetmealPopVisible.purchase
     },
     steps () {
-      return ['allocation', 'purchase']
+      return ['allocateInstance', 'allocateOther', 'purchase']
     },
     dataForCommit () {
-      return {}
+      let instance = this.instances.map(e => {
+        return {
+          set_meal_resource_id: e.set_meal_resource_id,
+          name: e.name,
+          image: e.isSystemImage ? e.systemImage : e.snapImage,
+          subnet: e.subnet_id,
+          password: e.isPassword ? this.password : e.keyt,
+        }
+      })
+      
+      let volume = []
+      let router = []
+      let floatingip = []
+      this.resources.forEach(({type, name, set_meal_resource_id}) => {
+        let obj = {name, set_meal_resource_id}
+        if (type === 'volume') {
+          volume.push(obj)
+        } else if (type === 'floating_ip') {
+          floatingip.push({set_meal_resource_id})
+        } else if (type === 'router') {
+          router.push(obj)
+        }
+      })
+
+      return {
+        period_id: this.form.period,
+        auto_renewal: this.form.auto_renewal,
+        instance,
+        volume,
+        router,
+        floatingip,
+      }
     },
     defualtInstance () {
       let defaultSubnet = this.subnetList[0] || {}
@@ -73,13 +122,13 @@ export default {
       let defaultSnapImage = this.snapImageList[0] || {}
       let defualtKeyt = this.keytList[0] || {}
       return {
-        isSystemImage: true,
+        isSystemImage: false,
         systemImage: defaultSystemImage.id,
         snapImage: defaultSnapImage.id,
         subnet_id: defaultSubnet.id,
         isPassword: true,
         password: '',
-        keyt: defualtKeyt.id,
+        keyt: defualtKeyt.name,
       }
     },
   },
@@ -91,38 +140,42 @@ export default {
       let rawData = this.rawData
       this.step = 0
 
-      /* infoResource and instances */
-      this.resourceDict = {
-        volume: [],
-        floating_ip: [],
-        router: [],
-      }
+      /* instances and resources */
+      this.instances = []
+      this.resources = []
       rawData.resources.forEach(e => {
+        let defaultName = `${this.$t(e.type)}-1`
         if (e.type === 'instance') {
-          this.instances.push(JSON.parse(JSON.stringify(this.defualtInstance)))
+          let defaultInstance = JSON.parse(JSON.stringify(this.defualtInstance))
+          defaultInstance.name = defaultName
+          defaultInstance.set_meal_resource_id = e.set_meal_resource_id
+          this.instances.push(defaultInstance)
           return
         }
+
         if (typeof e.configuration === 'string') {
           e.configuration = JSON.parse(e.configuration)
         }
         let obj = {
-          name: this.resourceDict[e.type].length + 1,
+          name: defaultName,
           type: e.type,
+          set_meal_resource_id: e.set_meal_resource_id,
           configuration: e.configuration,
           configDesc: this._initConfigDesc(e.configuration)
         }
-        this.resourceDict[e.type].push(obj)
+        this.resources.push(obj)
       })
 
       /* infoPeriod */
       let periods = []
       rawData.periods.forEach(e => {
         periods.push({
-          period: e.period,
-          discount: e.discount * 100
+          period_id: e.period_id,
+          desc: `${this.$t(`month${e.period}`)}  ￥${e.discount_price} ${this.$t('rmb')}`
         })
       })
       this.periods = periods
+      this.form.period = this.periods[0].period_id
     },
     _initConfigDesc (config) {
       let arr = []
@@ -140,24 +193,47 @@ export default {
       }
       return arr.join('; ')
     },
-    validateInfoMain () {
-      let form = this.$refs.mainForm.$refs.SetmealInfoMain
-      form.validate((valid) => {
-        if (valid) {
+    stepNext () {
+      if (this.step === 0) {
+        let instanceFormDict = this.$refs.instanceForms.$refs
+        let instanceValid = Object.keys(instanceFormDict).every(e => {
+          let singleValid
+          // yerled instanceFormDict: {form0: Array(1), form1: Array(1)}
+          instanceFormDict[e][0].validate((valid) => {
+            singleValid = valid
+          })
+          return singleValid
+        })
+
+        if (instanceValid) {
           this.step++
-        } else {
-          return false
         }
-      })
+      } else if (this.step === 1) {
+        let otherFormDict = this.$refs.otherForms.$refs
+        let otherValid = Object.keys(otherFormDict).every(e => {
+          let singleValid
+          // yerled 同上
+          otherFormDict[e][0].validate((valid) => {
+            singleValid = valid
+          })
+          return singleValid
+        })
+
+        if (otherValid) {
+          this.step++
+        }
+      } else if (this.step < this.stepLen - 1) {
+        this.step++
+      }
     },
     purchase () {
       this.$store.dispatch('PurchaseSetmeal', this.dataForCommit).then(res => {
         // this.refreshTable()
         this.close()
-        this.$message.success(this.$t('purchaseSuccess'))
+        this.$message.success(this.$t('Setmeal.purchaseSuccess'))
       }).catch(err => {
         console.log(err)
-        this.tip.content = this.$t('purchaseFailed')
+        this.tip.content = this.$t('Setmeal.purchaseFailed')
       })
     },
     close () {

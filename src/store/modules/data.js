@@ -60,7 +60,7 @@ export default {
       let network_id = getters.networkList[0] && getters.networkList[0].id
       let set = new Set()
       getters.subnetList.forEach(e => {
-        if (e.network_id === network_id) { // 此处还需要根据配置项UOS.env.floatingIpDisabledCidr来过滤
+        if (e.network_id === network_id) { // yerled 此处还需要根据配置项UOS.env.floatingIpDisabledCidr来过滤
           set.add(e.name)
         }
       })
