@@ -1,4 +1,4 @@
-import {convertSize} from '../../utils'
+import {convertSize, initDictFromList} from '../../utils'
 
 export default {
   state: {
@@ -35,49 +35,81 @@ export default {
       })
     },
     flavorList (state, getters) {
-      return getters.flavors.map(({id, name, vcpus, ram}) => {
+      return getters.flavors.map(e => {
+        let {id, name, vcpus, ram} = e
         let __desc = `${vcpus}vCPU/${convertSize(ram, 'M')}`
-        return {
-          flavor_id: id,
-          vcpus,
-          ram,
-          name,
-          __desc,
-          __nameAndDesc: `${name} (${__desc})`,
-        }
+        e.flavor_id = id
+        e.__desc = __desc
+        e.__nameAndDesc = `${name} (${__desc})`
+        return e
       })
+    },
+    flavorDict (state, getters) {
+      return initDictFromList(getters.flavorList)
     },
     volumeTypeList () {
       return ['ssd', 'sata']
     },
     networkList (state) {
-      return state.networks
+      return state.networks.map(e => {
+        e.network_id = e.id
+        return e
+      }).sort((a, b) => {
+        return a.name > b.name
+      })
+    },
+    networkDict (state, getters) {
+      return initDictFromList(getters.networkList)
     },
     subnetList (state) {
-      return state.subnets
+      return state.subnets.map(e => {
+        e.subnet_id = e.id
+        return e
+      }).sort((a, b) => {
+        return a.name > b.name
+      })
     },
-    lineList (state, getters) {
+    subnetDict (state, getters) {
+      return initDictFromList(getters.subnetList)
+    },
+    lineDict (state, getters) {
       let network_id = getters.networkList[0] && getters.networkList[0].id
-      let set = new Set()
+      let dict = {}
       getters.subnetList.forEach(e => {
         if (e.network_id === network_id) { // yerled 此处还需要根据配置项UOS.env.floatingIpDisabledCidr来过滤
-          set.add(e.name)
+          if (!dict[e.name]) {
+            dict[e.name] = []
+          }
+          dict[e.name].push(e)
         }
       })
-      return Array.from(set).map(name => ({name}))
+      return dict
+    },
+    lineList (state, getters) {
+      return Object.keys(getters.lineDict).sort((a, b) => a > b).map(e => ({name: e}))
     },
     imageList (state) {
-      return state.images
+      return state.images.map(e => e).sort((a, b) => {
+        return a.name > b.name
+      })
     },
-    systemImageList (state) {
-      return state.images.filter(e => e)
+    imageDict (state, getters) {
+      return initDictFromList(getters.imageList)
     },
-    snapImageList (state) {
-      return state.images.filter(e => e)
+    systemImageList (state, getters) {
+      return getters.imageList.filter(e => e)
+    },
+    snapImageList (state, getters) {
+      return getters.imageList.filter(e => e)
     },
     keytList (state) {
-      return state.keyts.map(e => e.keypair)
+      return state.keyts.map(e => e.keypair).sort((a, b) => {
+        return a.name > b.name
+      })
     },
+    keytDict (state, getters) {
+      return initDictFromList(getters.keytList)
+    }
   },
   mutations: {
     updateInitializedFlag (state, name) {
@@ -117,6 +149,7 @@ export default {
         commit('updateProducts', res.data.products)
         commit('updateInitializedFlag', 'product')
       }).catch(err => {
+        console.log(`product相关数据初始化出错`)
         console.log(err)
       })
     },
@@ -126,6 +159,7 @@ export default {
         commit('updateFlavors', res.data.flavors)
         commit('updateInitializedFlag', 'flavor')
       }).catch(err => {
+        console.log(`flavor相关数据初始化出错`)
         console.log(err)
       })
     },
@@ -134,6 +168,7 @@ export default {
         commit('updateNetworks', res.data.networks)
         commit('updateInitializedFlag', 'network')
       }).catch(err => {
+        console.log(`network相关数据初始化出错`)
         console.log(err)
       })
     },
@@ -142,6 +177,7 @@ export default {
         commit('updateSubnets', res.data.subnets)
         commit('updateInitializedFlag', 'subnet')
       }).catch(err => {
+        console.log(`subnet相关数据初始化出错`)
         console.log(err)
       })
     },
@@ -150,6 +186,7 @@ export default {
         commit('updateImages', res.data.images)
         commit('updateInitializedFlag', 'image')
       }).catch(err => {
+        console.log(`image相关数据初始化出错`)
         console.log(err)
       })
     },
@@ -158,6 +195,7 @@ export default {
         commit('updateKeyts', res.data.keypairs)
         commit('updateInitializedFlag', 'keyt')
       }).catch(err => {
+        console.log(`keyt相关数据初始化出错`)
         console.log(err)
       })
     },

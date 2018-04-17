@@ -337,6 +337,7 @@ export default {
         limitNumber: 1,
         unlimited: true,
       }
+      this.tip.content = ''
       this.step = 0
     },
     refreshTable () {

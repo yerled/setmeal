@@ -2,7 +2,6 @@
   <div class="module setmeal">
     <TableView
       moduleName="Setmeal"
-      :detailTabs="['tab2', 'tab3']"
       @refreshTable="refreshTable"
       @refreshDetail="refreshDetail"
       @updateSelection="updateSelection"
@@ -20,12 +19,6 @@
     <SetmealPurchase ref="popPurchase"></SetmealPurchase>
   </div>
 </template>
-
-<style lang="less" scoped>
-.module {
-  height: 100%;   
-}
-</style>
 
 <script>
 import {mapGetters} from 'vuex'

@@ -89,6 +89,7 @@ export default {
       }
       let rawData = this.rawData
       this.step = 0
+      this.tip.content = ''
 
       /* infoMain */
       let setmeal = rawData.set_meal ? rawData.set_meal : rawData

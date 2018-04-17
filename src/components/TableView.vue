@@ -39,7 +39,9 @@
           </template>
       </el-table-column>
     </el-table>
-    <slot name="detialView"></slot>
+    <!-- <el-pagination background layout="total, prev, pager, next"
+      :total="total_count">
+    </el-pagination> -->
   </div>
 </template>
 
@@ -101,6 +103,9 @@ export default {
       })
       return tableData
     },
+    // total_count () {
+    //   return this.$store.getters[`${this.moduleName}TotalCount`]
+    // },
     buttonStatus () {
       const self = this
       const statusObj = {}

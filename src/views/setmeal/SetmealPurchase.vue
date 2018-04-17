@@ -47,7 +47,6 @@ import SetmealPurChaseAllocateOther from './SetmealPurChaseAllocateOther'
 import SetmealPurChaseForm from './SetmealPurChaseForm'
 import SetmealPopButtons from './SetmealPopButtons'
 import { mapGetters } from 'vuex'
-import {initDictFromList} from '../../utils'
 
 export default {
   name: 'SetmealPurchase',
@@ -75,10 +74,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['subnetList', 'flavorList', 'systemImageList', 'snapImageList', 'keytList']),
-    flavorDict () {
-      return this.initDictFromList(this.flavorList, 'flavor_id')
-    },
+    ...mapGetters(['subnetList', 'flavorList', 'flavorDict', 'lineDict', 'subnetDict',
+      'imageDict', 'systemImageList', 'snapImageList', 'keytList']),
     visible () {
       return this.$store.getters.SetmealPopVisible.purchase
     },
@@ -86,34 +83,65 @@ export default {
       return ['allocateInstance', 'allocateOther', 'purchase']
     },
     dataForCommit () {
-      let instance = this.instances.map(e => {
-        return {
+      let server = this.instances.map(e => {
+        let imageRef = e.isSystemImage ? e.systemImage : e.snapImage
+        let image = this.imageDict[imageRef]
+        let subnet_id = e.subnet_id
+        let subnet = this.subnetDict[subnet_id]
+        let result = {
           set_meal_resource_id: e.set_meal_resource_id,
-          name: e.name,
-          image: e.isSystemImage ? e.systemImage : e.snapImage,
-          subnet: e.subnet_id,
-          password: e.isKeyt ? this.password : e.keyt,
+          display_name: e.name,
+          imageRef,
+          metadata: {
+            image_name: image.name,
+            image_label: image.image_label,
+          },
+          networks: [{
+            uuid: subnet.network_id,
+            subnet_id,
+          }],
+          min_count: 1,
+          max_count: 1,
         }
+        if (e.isKeyt) {
+          result.key_name = e.keyt
+        } else {
+          result.admin_pass = e.password
+        }
+        return result
       })
       
       let volume = []
       let router = []
       let floatingip = []
-      this.resources.forEach(({type, name, set_meal_resource_id}) => {
-        let obj = {name, set_meal_resource_id}
+      // eslint-disable-next-line
+      this.resources.forEach(({type, name, set_meal_resource_id, configuration}) => {
         if (type === 'volume') {
-          volume.push(obj)
+          volume.push({
+            set_meal_resource_id,
+            display_name: name,
+            display_description: '',
+          })
         } else if (type === 'floating_ip') {
-          floatingip.push({set_meal_resource_id})
+          let subnet = this.lineDict[configuration.line][0]
+          floatingip.push({
+            set_meal_resource_id,
+            floating_network_id: subnet.network_id,
+            subnet_id: subnet.id,
+          })
         } else if (type === 'router') {
-          router.push(obj)
+          router.push({
+            set_meal_resource_id,
+            display_name: name,
+            admin_state_up: true,
+          })
         }
       })
 
       return {
         period_id: this.form.period,
         auto_renewal: this.form.auto_renewal,
-        instance,
+        server,
         volume,
         router,
         floatingip,
@@ -138,13 +166,13 @@ export default {
     },
   },
   methods: {
-    initDictFromList,
     initData (data) {
       if (data) {
         this.rawData = data
       }
       let rawData = this.rawData
       this.step = 0
+      this.tip.content = ''
 
       /* instances and resources */
       this.instances = []

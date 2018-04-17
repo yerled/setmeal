@@ -66,7 +66,7 @@
           </span>
           <span v-show="!resource.isKeyt">
             <label for="">{{`${$t('password')}:`}}</label>
-            <el-input v-model="resource.password" class="inline-input"></el-input>
+            <el-input type="password" v-model="resource.password" class="inline-input"></el-input>
           </span>
         </el-form-item>
       </el-form>
