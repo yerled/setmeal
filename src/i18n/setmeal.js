@@ -8,6 +8,7 @@ export default {
     issueSuccess: '套餐发布成功!',
     issueFaild: '发布失败',
     shelve: '下架套餐',
+    price: '价格 (元/时)',
     shelveSuccess: '套餐下架完成!',
     shelveFaild: '下架失败',
     actionConfirm: '是否确定对该套餐执行{{action}}操作?',
@@ -19,7 +20,7 @@ export default {
     floating_ip_count: '公网IP数量',
     router_count: '路由器数量',
     name: '套餐名称',
-    limit: '购买次数',
+    limit: '可购买次数',
     expiration_rules: '套餐资源过期处理规则',
     expiration_rules_desc:
       `实例欠费或到期停机后，实例将进入回收期，即实例的计算资源（vCPU+内存）不再保留，

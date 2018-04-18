@@ -7,6 +7,7 @@ import Setmeal from '../views/setmeal/Setmeal'
 import SetmealDetail from '../views/setmeal/SetmealDetail'
 import MySetmeal from '../views/mysetmeal/MySetmeal'
 import Record from '../views/record/Record'
+import RecordDetail from '../views/record/RecordDetail'
 
 Vue.use(Router)
 
@@ -42,6 +43,14 @@ const router = new Router({
       path: '/record',
       name: 'Record',
       component: Record
+    },
+    {
+      path: '/record/:id',
+      name: 'RecordDetail',
+      components: {
+        default: Record,
+        detail: RecordDetail,
+      },
     },
     {
       path: '/NotFound',

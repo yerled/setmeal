@@ -6,6 +6,7 @@ import TableCell from './TableCell'
 import DetailView from './DetailView'
 import Dict from './Dict'
 import Status from './Status'
+import Cell from './Cell'
 
 Vue.component('TableView', TableView)
 Vue.component('Iconfont', Iconfont)
@@ -14,3 +15,4 @@ Vue.component('TableCell', TableCell)
 Vue.component('DetailView', DetailView)
 Vue.component('Dict', Dict)
 Vue.component('Status', Status)
+Vue.component('Cell', Cell)

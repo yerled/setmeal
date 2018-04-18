@@ -20,7 +20,7 @@
       <SetmealInfoResource v-show="step === 5" :dict="resourcePriceDict"></SetmealInfoResource>
       <SetmealInfoPeriod v-show="step === 5" :periods.sync="periods" :totalPrice="totalPrice" :discountPrice="discountPrice"></SetmealInfoPeriod>
     </div>
-    <setmealPopButtons :step.sync="step" :stepLen="6" slot="footer"
+    <setmealPopButtons :step.sync="step" :stepLen="stepLen" slot="footer"
       @confirm="create"
       @next="stepNext">
     </setmealPopButtons>
@@ -134,6 +134,9 @@ export default {
     steps () {
       return ['main', ...this.resourceNames, 'price']
     },
+    stepLen () {
+      return this.steps.length
+    },
     limit () {
       return this.setmeal.unlimited ? 0 : this.setmeal.limitNumber
     },
@@ -243,6 +246,7 @@ export default {
   methods: {
     initDictFromList,
     stepNext () {
+      console.log(this.step)
       if (this.step === 0) {
         let form = this.$refs.mainForm.$refs.SetmealInfoMain
         form.validate((valid) => {

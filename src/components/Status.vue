@@ -38,12 +38,12 @@ export default {
   },
   props: {
     status: {
-      type: String,
+      required: true,
     },
   },
   computed: {
     icon () {
-      return this.statusList[this.statusStore[this.$props.status] || 0]
+      return this.statusList[this.statusStore[this.$props.status]]
     }
   }
 }

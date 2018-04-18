@@ -1,25 +1,6 @@
 <template>
-  <span class="cell" @click="click">
-    <Status v-if="column.type === 'status'" :status="value"></Status>
-    <span v-else :class="column.type">{{ value }}</span>
-  </span>
+  <Cell @click="click" :config="config"></Cell>
 </template>
-
-<style lang="less" scoped>
-@import '../styles/variable.less';
-
-.cell {
-  white-space: nowrap;
-  .caption {
-    cursor: pointer;
-    color: @color_link;
-  }
-  .price {
-    font-weight: bold;
-    color: #f78913;
-  }
-}
-</style>
 
 <script>
 export default {
@@ -37,6 +18,12 @@ export default {
     },
   },
   computed: {
+    config () {
+      return {
+        value: this.value,
+        type: this.type,
+      }
+    },
     field () {
       return this.$props.column.field
     },
@@ -44,7 +31,12 @@ export default {
       return this.$props.column.type
     },
     value () {
-      return this.$props.row[this.field]
+      let value = `${this.$props.row[this.field]}`
+      let format = this.$props.column.format
+      if (typeof format === 'function') {
+        
+      }
+      return value
     },
   },
   methods: {

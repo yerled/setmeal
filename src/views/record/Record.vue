@@ -3,7 +3,6 @@
     <TableView
       moduleName="Record"
       @refreshTable="refreshTable"
-      @refreshDetail="refreshDetail"
       @renewal="renewal"
       @update="updateRenewal"
       @updateSelection="updateSelection"
@@ -21,7 +20,7 @@ import RecordRenewal from './RecordRenewal'
 import RecordUpdateRenewal from './RecordUpdateRenewal'
 
 export default {
-  name: 'Setmeal',
+  name: 'Record',
   components: {
     RecordRenewal,
     RecordUpdateRenewal,
@@ -43,9 +42,6 @@ export default {
     },
   },
   methods: {
-    refreshDetail () {
-      this.$store.dispatch('UpdateSetmealDetail')
-    },
     refreshTable () {
       this.$store.dispatch('SelectRecordList')
     },
@@ -63,29 +59,9 @@ export default {
     initPopData (popRef) {
       let pop = this.$refs[popRef]
       pop.initData(JSON.parse(JSON.stringify(this.singleSelection)))
-      this.$store.dispatch('SelectSetmealDetail', this.singleSelection.user_set_meal_id).then(res => {
-        pop.initData(JSON.parse(JSON.stringify(res.data)))
-      })
-    },
-    deleteSetmeal () {
-      let title = this.$t('Setmeal.delete')
-      let content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('delete'))
-      this.$confirm(content, title, {
-        confirmButtonText: this.$t('confirm'),
-        cancelButtonText: this.$t('cancel'),
-        type: 'error'
-      }).then(() => {
-        this.$store.dispatch('DeleteSetmeal', this.singleSelection.set_meal_id).then(res => {
-          this.$message.success(this.$t('deleteSuccess'))
-          this.refreshTable()
-        }).catch(err => {
-          console.log(err)
-          this.$message.error(this.$t('deleteFaild'))
-        })
-      })
     },
     showPop (name) {
-      this.$store.commit('updateSetmealPopVisible', {
+      this.$store.commit('updateRecordPopVisible', {
         name,
         visible: true,
       })
@@ -93,13 +69,13 @@ export default {
     enterDetail (data) {
       this.$store.commit('updateDetailVisible', true)
       this.$store.commit('updateDetail', data)
-      this.$router.push({name: 'SetmealDetail', params: {id: data.set_meal_id}})
-      this.$store.dispatch('UpdateSetmealDetail')
+      this.$router.push({name: 'RecordDetail', params: {id: data.user_set_meal_id}})
+      // this.$store.dispatch('UpdateRecordDetail')
     },
     leaveDetail () {
       this.$store.commit('updateDetailVisible', false)
       this.$store.commit('updateDetail', {})
-      this.$router.push({name: 'Setmeal'})
+      this.$router.push({name: 'Record'})
     },
   },
   created () {

@@ -77,6 +77,7 @@ export default {
       let counter = this.counter
       return {
         name: setmeal.name,
+        uuid: setmeal.id,
         limit: setmeal.limit || this.$t('unlimited'),
         price: {value: setmeal.price, type: 'price', unit: 'hour'},
         status: {value: setmeal.status, type: 'status'},

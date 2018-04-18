@@ -15,6 +15,12 @@
   </div>
 </template>
 
+<style lang="less" scoped>
+.el-header {
+  padding: 0;
+}
+</style>
+
 <script>
 import Menu from './views/layout/Menu'
 import Header from './views/layout/Header'

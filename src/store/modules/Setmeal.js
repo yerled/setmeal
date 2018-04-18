@@ -1,4 +1,4 @@
-import { dateFormat } from '../../utils'
+// import { dateFormat } from '../../utils'
 
 export default {
   state: {
@@ -45,6 +45,9 @@ export default {
         }, {
           field: 'price',
           type: 'price',
+          format: function ({price}, vm) {
+            return `${price} ${vm.$t('rmb')}/${vm.$t('hour')}`
+          },
         }, {
           field: 'status',
           type: 'status',
@@ -58,6 +61,7 @@ export default {
           field: 'router_count',
         }, {
           field: 'created_at',
+          type: 'date',
         }
       ],
       rowClass: {
@@ -92,8 +96,9 @@ export default {
           }
           resource.configuration = configuration
         })
-        setmeal.updated_at = dateFormat(setmeal.updated_at)
-        setmeal.created_at = dateFormat(setmeal.created_at)
+        setmeal.id = setmeal.set_meal_id
+        // setmeal.updated_at = dateFormat(setmeal.updated_at)
+        // setmeal.created_at = dateFormat(setmeal.created_at)
       })
       return setmealList
     },
@@ -141,7 +146,9 @@ export default {
       if (!detailId) {
         return
       }
-      commit('updateDetail', (await dispatch('SelectSetmealDetail', detailId)).data)
+      let detail = (await dispatch('SelectSetmealDetail', detailId)).data
+      detail.id = detail.set_meal.set_meal_id
+      commit('updateDetail', detail)
     },
   }
 }

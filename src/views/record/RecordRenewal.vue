@@ -1,5 +1,5 @@
 <template>
-  <el-dialog  width="800px"
+  <el-dialog  width="600px"
     :title="$t(`Record.pop.renewal.title`)"
     :close-on-click-modal="false"
     :visible="visible"
@@ -40,6 +40,7 @@ export default {
       rawdata: {
         
       },
+      periods: [],
     }
   },
   computed: {
@@ -48,28 +49,32 @@ export default {
       return this.$store.getters.RecordPopVisible.renewal
     },
     dataForCommit () {
-      return {}
+      return {
+        period_id: this.form.period,
+      }
     },
   },
   methods: {
     close () {
       this.$store.commit('updateRecordPopVisible', {name: 'renewal', visible: false})
     },
-    initData (data) {
+    async initData (data) {
       if (data) {
         this.rawData = data
       }
       let rawData = this.rawData
 
       /* infoPeriod */
-      let periods = []
-      rawData.periods.forEach(e => {
-        periods.push({
-          period: e.period,
-          discount: e.discount * 100
+      let res = await this.$store.dispatch('GetSetmealPeriod', rawData.set_meal_id)
+      if (res.data && res.data.periods) {
+        this.periods = res.data.periods.map(e => {
+          return {
+            period_id: e.period_id,
+            desc: `${this.$t(`month${e.period}`)}  ￥${e.discount_price} ${this.$t('rmb')}`
+          }
         })
-      })
-      this.periods = periods
+        this.form.period = this.periods[0].period_id
+      }
     },
     renewal () {
       this.$store.dispatch('RenewalSetmeal', {

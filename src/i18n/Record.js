@@ -7,11 +7,12 @@ export default {
     renewal: '续约套餐',
     project_name: '资源所在项目',
     update: '编辑续约方式',
+    total_price: '总消费',
     pop: {
       renewal: {
         title: '续约套餐',
       },
-      udpateRenewal: {
+      updateRenewal: {
         title: '编辑续约方式',
       }
     },

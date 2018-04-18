@@ -87,7 +87,7 @@ export default {
   },
   methods: {
     toggleTab (tab, event) {
-      console.log(tab)
+      console.log(`toggleTab ${tab}`)
     },
     clickLeft () {
       this.$emit('close')

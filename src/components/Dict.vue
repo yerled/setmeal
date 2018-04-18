@@ -6,9 +6,7 @@
       <span class="key">{{i18nKey(key)}}</span>
       <span class="value">
         <template v-if="noSlot">
-          <Money v-if="value && value.type === 'price'" prefix="￥" :money="value.value" :unit="value.unit"></Money>
-          <Status v-else-if="value && value.type === 'status'" :status="value.value"></Status>
-          <span v-else>{{value}}</span>
+          <Cell :config="getConfig(value)"></Cell>
         </template>
         <slot :value="value"></slot>
       </span>
@@ -56,7 +54,7 @@ export default {
   computed: {
     noSlot () {
       return !this.$scopedSlots.default
-    }
+    },
   },
   methods: {
     i18nKey (key) {
@@ -65,7 +63,16 @@ export default {
         return this.$t(`${moduleName}.${key}`)
       }
       return key
-    }
+    },
+    getConfig (c) {
+      if (typeof c === 'object') {
+        return c
+      } else {
+        return {
+          value: c
+        }
+      }
+    },
   }
 }
 </script>

@@ -8,22 +8,26 @@ export default {
           field: 'renewal',
           icon: 'renewal',
           selection: 'single',
-          validStatus: ['draft', 'off_shelve'],
+          validStatus: [true],
         }, {
           field: 'update',
           icon: 'edit',
           selection: 'single',
-          validStatus: ['draft', 'off_shelve'],
+          validStatus: [true, false],
         }
       ],
       columns: [
         {
           field: 'set_meal_name',
+          type: 'caption',
         }, {
           field: 'description',
         }, {
           field: 'price',
           type: 'price',
+        }, {
+          field: 'period',
+          type: 'month_period',
         }, {
           field: 'project_name',
         }, {
@@ -40,7 +44,7 @@ export default {
     },
     popVisible: {
       renewal: false,
-      update: false,
+      updateRenewal: false,
     },
     recordList: [],
   },
@@ -49,8 +53,11 @@ export default {
     RecordTableData: state => {
       let recordList = JSON.parse(JSON.stringify(state.recordList))
       recordList.forEach(record => {
+        record.id = record.user_set_meal_id
+        record.price = record.discount_price
         record.expire_at = dateFormat(record.expire_at)
         record.created_at = dateFormat(record.created_at)
+        record.__status__ = record.auto_renewal
       })
       return recordList
     },
@@ -78,15 +85,18 @@ export default {
     UpdateRenewal (context, {id, data}) {
       return window.axios.put(`/us/bill/v3/setmeals/${id}`, data)
     },
-    SelectRecordeDetail (context, id) {
-      return window.axios.get(`/us/bill/v3/setmeals/${id}/detail`)
+    GetSetmealPeriod (content, id) {
+      return window.axios.get(`/us/bill/v3/setmeals/${id}/get_period`)
     },
-    async UpdateRecordDetail ({commit, dispatch, rootState}) {
-      let detailId = rootState.detail.set_meal_id
-      if (!detailId) {
-        return
-      }
-      commit('updateDetail', (await dispatch('SelectRecordeDetail', detailId)).data)
-    },
+    // SelectRecordDetail (context, id) {
+    //   return window.axios.get(`/us/bill/v3/setmeals/${id}/detail`)
+    // },
+    // async UpdateRecordDetail ({commit, dispatch, rootState}) {
+    //   let detailId = rootState.detail.set_meal_id
+    //   if (!detailId) {
+    //     return
+    //   }
+    //   commit('updateDetail', (await dispatch('SelectRecordeDetail', detailId)).data)
+    // },
   }
 }

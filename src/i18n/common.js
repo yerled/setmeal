@@ -9,6 +9,7 @@ export default {
     description: '描述',
     price: '价格',
     period: '周期',
+    uuid: 'UUID',
     back: '上一步',
     configuration: '配置',
     next: '下一步',

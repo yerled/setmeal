@@ -1,6 +1,6 @@
 <template>
-  <el-dialog  width="800px"
-    :title="$t(`Record.pop.renewal.title`)"
+  <el-dialog  width="600px"
+    :title="$t(`Record.pop.updateRenewal.title`)"
     :close-on-click-modal="false"
     :visible="visible"
     @close="close">
@@ -43,36 +43,42 @@ export default {
       rawdata: {
         
       },
+      periods: [],
     }
   },
   computed: {
     ...mapState(['formLabelWidth']),
     visible () {
-      return this.$store.getters.RecordPopVisible.renewal
+      return this.$store.getters.RecordPopVisible.updateRenewal
     },
     dataForCommit () {
-      return {}
+      return {
+        period_id: this.form.period,
+        auto_renewal: this.form.auto_renewal,
+      }
     },
   },
   methods: {
     close () {
-      this.$store.commit('updateRecordPopVisible', {name: 'renewal', visible: false})
+      this.$store.commit('updateRecordPopVisible', {name: 'updateRenewal', visible: false})
     },
-    initData (data) {
+    async initData (data) {
       if (data) {
         this.rawData = data
       }
       let rawData = this.rawData
 
       /* infoPeriod */
-      let periods = []
-      rawData.periods.forEach(e => {
-        periods.push({
-          period: e.period,
-          discount: e.discount * 100
+      let res = await this.$store.dispatch('GetSetmealPeriod', rawData.set_meal_id)
+      if (res.data && res.data.periods) {
+        this.periods = res.data.periods.map(e => {
+          return {
+            period_id: e.period_id,
+            desc: `${this.$t(`month${e.period}`)}  ￥${e.discount_price} ${this.$t('rmb')}`
+          }
         })
-      })
-      this.periods = periods
+        this.form.period = this.periods[0].period_id
+      }
     },
     renewal () {
       this.$store.dispatch('UpdateRenewal', {

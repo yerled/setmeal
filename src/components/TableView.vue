@@ -143,7 +143,7 @@ export default {
       this.$emit('refreshTable')
     },
     captionClick (row) {
-      if (row.set_meal_id === this.detail.set_meal_id && this.detailVisible) {
+      if (row.id === this.detail.id && this.detailVisible) {
         this.resetDetailView()
       } else {
         this.setDetailView(row)
