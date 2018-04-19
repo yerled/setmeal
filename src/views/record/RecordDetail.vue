@@ -40,11 +40,11 @@ export default {
         uuid: record.user_set_meal_id,
         set_meal_name: record.set_meal_name,
         description: record.description,
-        price: {value: record.price, type: 'price', unit: `month${record.period}`},
+        price: {value: `${record.discount_price} ${this.$t('rmb')}/${this.$t(`month${record.period}`)}`, type: 'price'},
         project_name: record.project_name,
         auto_renewal: {value: record.auto_renewal, type: 'status'},
         renewal_times: record.renewal_times,
-        total_price: {value: record.total_price, type: 'price'},
+        total_price: {value: `${record.total_price} ${this.$t('rmb')}`, type: 'price'},
         expire_at: this.$dateFormat(record.expire_at),
         created_at: this.$dateFormat(record.created_at),
       } : {}

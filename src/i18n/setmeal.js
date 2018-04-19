@@ -8,7 +8,6 @@ export default {
     issueSuccess: '套餐发布成功!',
     issueFaild: '发布失败',
     shelve: '下架套餐',
-    price: '价格 (元/时)',
     shelveSuccess: '套餐下架完成!',
     shelveFaild: '下架失败',
     actionConfirm: '是否确定对该套餐执行{{action}}操作?',

@@ -35,17 +35,14 @@ export default {
     },
   },
   computed: {
-    config () {
-      return this.$props.config
-    },
     field () {
-      return this.config.value
+      return this.$props.config.value
     },
     type () {
-      return this.config.type
+      return this.$props.config.type
     },
     value () {
-      let value = this.config.value
+      let value = this.$props.config.value
       if (this.type === 'date') {
         value = this.$dateFormat(value)
       } else if (this.type === 'month_period') {

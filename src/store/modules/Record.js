@@ -25,9 +25,9 @@ export default {
         }, {
           field: 'price',
           type: 'price',
-        }, {
-          field: 'period',
-          type: 'month_period',
+          format: function ({discount_price, period}, vm) {
+            return `${discount_price} ${vm.$t('rmb')}/${vm.$t(`month${period}`)}`
+          },
         }, {
           field: 'project_name',
         }, {
@@ -54,7 +54,6 @@ export default {
       let recordList = JSON.parse(JSON.stringify(state.recordList))
       recordList.forEach(record => {
         record.id = record.user_set_meal_id
-        record.price = record.discount_price
         record.expire_at = dateFormat(record.expire_at)
         record.created_at = dateFormat(record.created_at)
         record.__status__ = record.auto_renewal

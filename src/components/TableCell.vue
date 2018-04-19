@@ -34,7 +34,7 @@ export default {
       let value = `${this.$props.row[this.field]}`
       let format = this.$props.column.format
       if (typeof format === 'function') {
-        
+        value = format(this.$props.row, this)
       }
       return value
     },
