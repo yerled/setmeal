@@ -42,7 +42,10 @@ const router = new Router({
     {
       path: '/record',
       name: 'Record',
-      component: Record
+      components: {
+        default: Record,
+        detail: RecordDetail,
+      },
     },
     {
       path: '/record/:id',
