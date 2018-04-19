@@ -14,14 +14,12 @@
         <Iconfont type="refresh"/>
       </el-button>
     </div>
-    <el-table
-        :ref = "moduleName"
-        :data="tableData"
-        :row-class-name="tableRowClassName"
-        :border="true"
-        @select="handleSelect"
-        @select-all="handleSelectAll"
-        @selection-change="handleSelectionChange">
+    <el-table :row-class-name="tableRowClassName" height="100%" :border="true" :ref = "moduleName"
+      :data="tableData"
+      @sort-change="handleSortChange"
+      @select="handleSelect"
+      @select-all="handleSelectAll"
+      @selection-change="handleSelectionChange">
       <el-table-column
           type="selection"
           width="35">
@@ -30,7 +28,7 @@
           v-for="column of config.columns"
           :key="column.field"
           :prop="column.field"
-          :sortable="true"
+          :sortable="needPagination ? 'custom' : true"
           :filters="column.filters"
           :filter-method="column.filter_method"
           :label="$t(`${moduleName}.${column.field}`)">
@@ -39,9 +37,10 @@
           </template>
       </el-table-column>
     </el-table>
-    <!-- <el-pagination background layout="total, prev, pager, next"
-      :total="total_count">
-    </el-pagination> -->
+    <el-pagination background layout="total, prev, pager, next" :total="total_count"
+      v-show="needPagination"
+      @current-change="handleCurrentChange">
+    </el-pagination>
   </div>
 </template>
 
@@ -54,6 +53,14 @@
   .buttonGroup {
     padding: 10px 0;
   }
+}
+.el-table{
+  margin-bottom: 200px;
+}
+.el-pagination {
+  position: absolute;
+  bottom: 150px;
+  right: 50px;
 }
 .refresh {
   padding: 9px 9.5px;
@@ -103,9 +110,15 @@ export default {
       })
       return tableData
     },
-    // total_count () {
-    //   return this.$store.getters[`${this.moduleName}TotalCount`]
-    // },
+    total_count () {
+      return this.$store.getters[`${this.moduleName}TotalCount`]
+    },
+    query () {
+      return this.$store.getters[`${this.moduleName}Query`]
+    },
+    needPagination () {
+      return this.total_count > this.query.limit
+    },
     buttonStatus () {
       const self = this
       const statusObj = {}
@@ -127,6 +140,23 @@ export default {
       })
       return statusObj
     },
+    sortKeyDict () {
+      return {
+        Setmeal: {
+          name: 'set_meal_name',
+        },
+      }
+    },
+  },
+  watch: {
+    query: {
+      handler: function (val, oldval) {
+        if (this.needPagination) {
+          this.refresh()
+        }
+      },
+      deep: true,
+    }
   },
   methods: {
     refresh () {
@@ -166,6 +196,32 @@ export default {
         this.$emit(action, {name: action, data: this.multipleSelection})
       }
     },
+    handleSortChange ({ column, prop, order }) {
+      let commit = this.$store.commit
+      let mutation = `update${this.moduleName}Query`
+      let _order = ''
+      if (order === 'ascending') {
+        _order = 'asc'
+      } else if (order === 'descending') {
+        _order = 'desc'
+      }
+      let _prop = prop
+      if (_prop === null) {
+        _prop = ''
+      } else if (this.sortKeyDict[this.moduleName] && this.sortKeyDict[this.moduleName][prop]) {
+        _prop = this.sortKeyDict[this.moduleName][prop]
+      }
+
+      commit(mutation, {name: 'sort_key', value: (_prop)})
+      commit(mutation, {name: 'sort_order', value: _order})
+    },
+    convertSortKey (prop) {
+      if (this.moduleName === 'Setmeal') {
+        if (prop === 'name') {
+          return 'set'
+        }
+      }
+    },
     handleSelect (selection) {
       if (selection.length === 0 && this.detailVisible) {
         this.resetDetailView()
@@ -191,7 +247,10 @@ export default {
         }
       }
       return ''
-    }
+    },
+    handleCurrentChange (val) {
+      this.$store.commit('updateSetmealQuery', {name: 'offset', value: val - 1})
+    },
   },
 }
 </script>

@@ -1,5 +1,3 @@
-// import { dateFormat } from '../../utils'
-
 export default {
   state: {
     config: {
@@ -75,6 +73,13 @@ export default {
       purchase: false,
     },
     setmealList: [],
+    total_count: 0,
+    query: {
+      sort_key: '',
+      sort_order: '',
+      limit: 15,
+      offset: 0,
+    },
   },
   getters: {
     SetmealConfig: state => state.config,
@@ -97,25 +102,37 @@ export default {
           resource.configuration = configuration
         })
         setmeal.id = setmeal.set_meal_id
-        // setmeal.updated_at = dateFormat(setmeal.updated_at)
-        // setmeal.created_at = dateFormat(setmeal.created_at)
       })
       return setmealList
     },
     SetmealPopVisible: state => state.popVisible,
+    SetmealTotalCount: state => state.total_count,
+    SetmealQuery: state => state.query,
   },
   mutations: {
     updateSetmealList (state, setmealList) {
       state.setmealList = setmealList
     },
+    udpateSetmealTotalCount (state, total_count) {
+      state.total_count = total_count
+    },
     updateSetmealPopVisible (state, {name, visible}) {
       state.popVisible[name] = visible
     },
+    updateSetmealQuery (state, {name, value}) {
+      state.query[name] = value
+    },
   },
   actions: {
-    SelectSetmealList ({commit}) {
-      return window.axios.get('/us/bill/v3/setmeals').then(res => {
+    SelectSetmealList ({commit, getters}) {
+      let query = getters.SetmealQuery
+      let querySort = query.sort_key ? `sort_key=${query.sort_key}&sort_order=${query.sort_order}&` : ''
+      let queryPagination = `limit=${query.limit}&offset=${query.offset}`
+      let queryStr = querySort + queryPagination
+
+      return window.axios.get(`/us/bill/v3/setmeals?${queryStr}`).then(res => {
         commit('updateSetmealList', res.data.set_meal_list)
+        commit('udpateSetmealTotalCount', res.data.total_count || 100)
       }).catch(err => {
         console.log(err)
       })

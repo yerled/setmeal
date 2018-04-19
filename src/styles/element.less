@@ -54,9 +54,14 @@
     .cell {
       height: 36px;
       line-height: 36px;
-      padding: 0 11px;
+      padding: 0 21px;
       border-right: 1px solid #ffffff;
       background-color: @color_gray;
+    }
+  }
+  .is-sortable:not(.ascending):not(.descending) {
+    .ascending, .descending {
+      border-color: transparent;
     }
   }
 }
