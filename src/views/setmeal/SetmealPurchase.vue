@@ -216,7 +216,7 @@ export default {
       rawData.periods.forEach(e => {
         periods.push({
           period_id: e.period_id,
-          desc: `${this.$t(`month${e.period}`)}  ￥${e.discount_price} ${this.$t('rmb')}`
+          desc: `${this.$t(`periodMonth${e.period}`)} ￥${e.discount_price} ${this.$t('rmb')}`
         })
       })
       this.periods = periods

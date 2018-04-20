@@ -101,10 +101,10 @@ export default {
       return window.axios.put(`/us/bill/v3/setmeals/console/${id}`, data)
     },
     UpdateRenewal (context, {id, data}) {
-      return window.axios.put(`/us/bill/v3/setmeals/${id}`, data)
+      return window.axios.put(`/us/bill/v3/setmeals/console/${id}/update_renew`, data)
     },
-    GetSetmealPeriod (content, id) {
-      return window.axios.get(`/us/bill/v3/setmeals/${id}/get_period`)
+    SelectRecordDetail (content, id) {
+      return window.axios.get(`/us/bill/v3/setmeals/console/${id}`)
     },
   }
 }

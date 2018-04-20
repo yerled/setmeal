@@ -1,4 +1,14 @@
 import axios from 'axios'
+import { Notification } from 'element-ui'
+
+axios.interceptors.response.use(res => {
+  return res
+}, err => {
+  console.log('-----------------------')
+  console.dir(err)
+  console.log('-----------------------')
+  Notification()
+})
 
 if (typeof window.axios === 'undefined') {
   window.axios = axios

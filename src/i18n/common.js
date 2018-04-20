@@ -41,6 +41,8 @@ export default {
     deleteFailed: '删除失败',
     renewalSuccess: '续约成功',
     renewalFailed: '续约失败',
+    updateRenewalSuccess: '续约方式编辑完成',
+    updateRenewalFaild: '续约方式编辑失败',
   },
   en: {
     

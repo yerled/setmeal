@@ -146,7 +146,6 @@ export default {
   },
   actions: {
     INIT_DATA ({dispatch, state}) {
-      console.log(state.initializedFlag)
       dispatch('INIT_PRODUCT')
       dispatch('INIT_FLAVOR')
       dispatch('INIT_NETWORK')

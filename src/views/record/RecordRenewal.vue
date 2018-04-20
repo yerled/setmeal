@@ -37,7 +37,7 @@ export default {
       form: {
         period: '',
       },
-      rawdata: {
+      rawData: {
         
       },
       periods: [],
@@ -65,16 +65,15 @@ export default {
       }
       let rawData = this.rawData
 
-      /* infoPeriod */
-      let res = await this.$store.dispatch('GetSetmealPeriod', rawData.set_meal_id)
+      let res = await this.$store.dispatch('SelectRecordDetail', rawData.user_set_meal_id)
       if (res.data && res.data.periods) {
         this.periods = res.data.periods.map(e => {
           return {
             period_id: e.period_id,
-            desc: `${this.$t(`month${e.period}`)}  ￥${e.discount_price} ${this.$t('rmb')}`
+            desc: `${this.$t(`periodMonth${e.period}`)} ￥${e.discount_price} ${this.$t('rmb')}`
           }
         })
-        this.form.period = this.periods[0].period_id
+        this.form.period = res.data.renewal_period_id
       }
     },
     renewal () {
@@ -83,19 +82,21 @@ export default {
       }
       this.loading = true
       this.$store.dispatch('RenewalSetmeal', {
-        id: this.rawdata.user_set_meal_id,
+        id: this.rawData.user_set_meal_id,
         data: this.dataForCommit,
       }).then(res => {
-        this.$message.success(this.$t('RenewalSuccess'))
+        this.$message.success(this.$t('renewalSuccess'))
         this.refreshTable()
         this.close()
-        this.reset()
       }).catch(err => {
         console.log(err)
-        this.tip.content = this.$t('RenewalFailed')
+        this.tip.content = this.$t('renewalFailed')
       }).finally(res => {
         this.loading = false
       })
+    },
+    refreshTable () {
+      this.$store.dispatch('SelectRecordList')
     },
   }
 }
