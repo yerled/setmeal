@@ -143,7 +143,7 @@ export default {
     sortKeyDict () {
       return {
         Setmeal: {
-          name: 'set_meal_name',
+          name: 'name',
         },
       }
     },

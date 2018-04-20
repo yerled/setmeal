@@ -1,3 +1,5 @@
+import {initQueryStr} from '../../utils'
+
 export default {
   state: {
     config: {
@@ -125,10 +127,7 @@ export default {
   },
   actions: {
     SelectSetmealList ({commit, getters}) {
-      let query = getters.SetmealQuery
-      let querySort = query.sort_key ? `sort_key=${query.sort_key}&sort_order=${query.sort_order}&` : ''
-      let queryPagination = `limit=${query.limit}&offset=${query.offset}`
-      let queryStr = querySort + queryPagination
+      let queryStr = initQueryStr(getters.SetmealQuery)
 
       return window.axios.get(`/us/bill/v3/setmeals?${queryStr}`).then(res => {
         commit('updateSetmealList', res.data.set_meal_list)
