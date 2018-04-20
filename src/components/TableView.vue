@@ -15,7 +15,7 @@
       </el-button>
     </div>
     <el-table :row-class-name="tableRowClassName" height="100%" :border="true" :ref = "moduleName"
-      :data="tableData"
+      :data="tableData" v-loading="loading"
       @sort-change="handleSortChange"
       @select="handleSelect"
       @select-all="handleSelectAll"
@@ -37,6 +37,9 @@
           </template>
       </el-table-column>
     </el-table>
+    <!-- <div class="loading" v-show="loading">
+      <div class="spinInner"></div>
+    </div> -->
     <el-pagination background layout="total, prev, pager, next" :total="total_count"
       v-show="needPagination"
       @current-change="handleCurrentChange">
@@ -45,6 +48,14 @@
 </template>
 
 <style lang="less" scoped>
+@keyframes spin {
+  0% {}
+  25% {transform: rotate(90deg);}
+  50% {transform: rotate(180deg);}
+  75% {transform: rotate(270deg);}
+  100% {transform: rotate(360deg);}
+}
+
 .content {
   position: relative;
   display: flex;
@@ -52,19 +63,49 @@
   height: 100%;
   .buttonGroup {
     padding: 10px 0;
+    .refresh {
+      padding: 9px 9.5px;
+    }
   }
+  .el-table{
+    margin-bottom: 200px;
+  }
+  .el-pagination {
+    position: absolute;
+    bottom: 150px;
+    right: 50px;
+  }
+  // .loading {
+  //   display: block;
+  //   position: absolute;
+  //   width: 48px;
+  //   height: 48px;
+  //   margin-left: -24px;
+  //   margin-top: -24px;
+  //   left: 50%;
+  //   top: 180px;
+  //   z-index: 990;
+  //   .spinInner {
+  //     position: static;
+  //     background: transparent url(../assets/icon-loading4.png) center center no-repeat;
+  //     content: "";
+  //     width: 48px;
+  //     height: 48px;
+  //     animation: spin 2s linear infinite;
+  //   }
+  // }
+  // .loading::after {
+  //   background: transparent url(../assets/icon-loading3.png) center center no-repeat;
+  //   content: "";
+  //   width: 48px;
+  //   height: 48px;
+  //   transform: translate(-50%, -50%);
+  //   position: absolute;
+  //   left: 24px;
+  //   top: 24px;
+  // }
 }
-.el-table{
-  margin-bottom: 200px;
-}
-.el-pagination {
-  position: absolute;
-  bottom: 150px;
-  right: 50px;
-}
-.refresh {
-  padding: 9px 9.5px;
-}
+
 </style>
 
 <script>
@@ -115,6 +156,9 @@ export default {
     },
     query () {
       return this.$store.getters[`${this.moduleName}Query`]
+    },
+    loading () {
+      return this.$store.getters[`${this.moduleName}Loading`]
     },
     needPagination () {
       return this.total_count > this.query.limit

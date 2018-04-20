@@ -1,4 +1,4 @@
-import { dateFormat } from '../../utils'
+import { initQueryStr } from '../../utils'
 
 export default {
   state: {
@@ -36,9 +36,11 @@ export default {
         }, {
           field: 'renewal_times'
         }, {
-          field: 'expire_at'
+          field: 'expire_at',
+          type: 'date',
         }, {
           field: 'created_at',
+          type: 'date',
         }
       ],
     },
@@ -47,6 +49,14 @@ export default {
       updateRenewal: false,
     },
     recordList: [],
+    total_count: 0,
+    query: {
+      sort_key: '',
+      sort_order: '',
+      limit: 15,
+      offset: 0,
+    },
+    loading: false,
   },
   getters: {
     RecordConfig: state => state.config,
@@ -54,13 +64,14 @@ export default {
       let recordList = JSON.parse(JSON.stringify(state.recordList))
       recordList.forEach(record => {
         record.id = record.user_set_meal_id
-        record.expire_at = dateFormat(record.expire_at)
-        record.created_at = dateFormat(record.created_at)
         record.__status__ = record.auto_renewal
       })
       return recordList
     },
     RecordPopVisible: state => state.popVisible,
+    RecordTotalCount: state => state.total_count,
+    RecordQuery: state => state.query,
+    RecordLoading: state => state.loading,
   },
   mutations: {
     updateRecordList (state, recordList) {
@@ -69,10 +80,18 @@ export default {
     updateRecordPopVisible (state, {name, visible}) {
       state.popVisible[name] = visible
     },
+    updateRecordQuery (state, {name, value}) {
+      state.query[name] = value
+    },
+    updateRecordLoading (state, value = false) {
+      state.loading = value
+    },
   },
   actions: {
-    SelectRecordList ({commit}) {
-      return window.axios.get('/us/bill/v3/setmeals/console').then(res => {
+    SelectRecordList ({commit, getters}) {
+      let queryStr = initQueryStr(getters.RecordQuery)
+
+      return window.axios.get(`/us/bill/v3/setmeals/console${queryStr}`).then(res => {
         commit('updateRecordList', res.data.user_bought_set_meals)
       }).catch(err => {
         console.log(err)
@@ -87,15 +106,5 @@ export default {
     GetSetmealPeriod (content, id) {
       return window.axios.get(`/us/bill/v3/setmeals/${id}/get_period`)
     },
-    // SelectRecordDetail (context, id) {
-    //   return window.axios.get(`/us/bill/v3/setmeals/${id}/detail`)
-    // },
-    // async UpdateRecordDetail ({commit, dispatch, rootState}) {
-    //   let detailId = rootState.detail.set_meal_id
-    //   if (!detailId) {
-    //     return
-    //   }
-    //   commit('updateDetail', (await dispatch('SelectRecordeDetail', detailId)).data)
-    // },
   }
 }

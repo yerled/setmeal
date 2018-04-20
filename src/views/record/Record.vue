@@ -42,8 +42,10 @@ export default {
     },
   },
   methods: {
-    refreshTable () {
-      this.$store.dispatch('SelectRecordList')
+    async refreshTable () {
+      this.$store.commit('updateRecordLoading', true)
+      await this.$store.dispatch('SelectRecordList')
+      this.$store.commit('updateRecordLoading', false)
     },
     updateSelection (selection) {
       this.multipleSelection = selection

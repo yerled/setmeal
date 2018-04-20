@@ -82,6 +82,7 @@ export default {
       limit: 15,
       offset: 0,
     },
+    loading: false,
   },
   getters: {
     SetmealConfig: state => state.config,
@@ -110,6 +111,7 @@ export default {
     SetmealPopVisible: state => state.popVisible,
     SetmealTotalCount: state => state.total_count,
     SetmealQuery: state => state.query,
+    SetmealLoading: state => state.loading,
   },
   mutations: {
     updateSetmealList (state, setmealList) {
@@ -124,12 +126,15 @@ export default {
     updateSetmealQuery (state, {name, value}) {
       state.query[name] = value
     },
+    updateRecordLoading (state, value = false) {
+      state.loading = value
+    },
   },
   actions: {
     SelectSetmealList ({commit, getters}) {
       let queryStr = initQueryStr(getters.SetmealQuery)
 
-      return window.axios.get(`/us/bill/v3/setmeals?${queryStr}`).then(res => {
+      return window.axios.get(`/us/bill/v3/setmeals${queryStr}`).then(res => {
         commit('updateSetmealList', res.data.set_meal_list)
         commit('udpateSetmealTotalCount', res.data.total_count || 100)
       }).catch(err => {

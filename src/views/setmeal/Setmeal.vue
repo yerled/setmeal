@@ -52,8 +52,10 @@ export default {
     },
   },
   methods: {
-    refreshDetail () {
-      this.$store.dispatch('UpdateSetmealDetail')
+    async refreshDetail () {
+      this.$store.commit('updateSetmealLoading', true)
+      await this.$store.dispatch('UpdateSetmealDetail')
+      this.$store.commit('updateSetmealLoading', false)
     },
     refreshTable () {
       this.$store.dispatch('SelectSetmealList')
