@@ -52,13 +52,13 @@ export default {
     },
   },
   methods: {
-    async refreshDetail () {
+    async refreshTable () {
       this.$store.commit('updateSetmealLoading', true)
-      await this.$store.dispatch('UpdateSetmealDetail')
+      await this.$store.dispatch('SelectSetmealList')
       this.$store.commit('updateSetmealLoading', false)
     },
-    refreshTable () {
-      this.$store.dispatch('SelectSetmealList')
+    refreshDetail () {
+      this.$store.dispatch('UpdateSetmealDetail')
     },
     updateSelection (selection) {
       this.multipleSelection = selection

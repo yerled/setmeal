@@ -27,6 +27,9 @@ export default {
         }
       })
     },
+    productDict (state, getters) {
+      return initDictFromList(getters.productList, 'name')
+    },
     flavors (state) {
       return state.flavors.filter(e => {
         return !~e.name.indexOf('db_')
@@ -89,7 +92,9 @@ export default {
       return Object.keys(getters.lineDict).sort((a, b) => a > b).map(e => ({name: e}))
     },
     imageList (state) {
-      return state.images.map(e => e).sort((a, b) => {
+      return state.images.filter(e => {
+        return !(e.status && e.status.toLowerCase() === 'deprecated')
+      }).sort((a, b) => {
         return a.name > b.name
       })
     },
@@ -97,10 +102,14 @@ export default {
       return initDictFromList(getters.imageList)
     },
     systemImageList (state, getters) {
-      return getters.imageList.filter(e => e)
+      return getters.imageList.filter(e => {
+        return e.image_type === 'distribution'
+      })
     },
     snapImageList (state, getters) {
-      return getters.imageList.filter(e => e)
+      return getters.imageList.filter(e => {
+        return !e.image_type || e.image_type === 'snapshot'
+      })
     },
     keytList (state) {
       return state.keyts.map(e => e.keypair).sort((a, b) => {
@@ -136,7 +145,8 @@ export default {
     },
   },
   actions: {
-    INIT_DATA ({dispatch}) {
+    INIT_DATA ({dispatch, state}) {
+      console.log(state.initializedFlag)
       dispatch('INIT_PRODUCT')
       dispatch('INIT_FLAVOR')
       dispatch('INIT_NETWORK')
@@ -144,7 +154,11 @@ export default {
       dispatch('INIT_IMAGE')
       dispatch('INIT_KEYT')
     },
-    INIT_PRODUCT ({commit}) {
+    INIT_PRODUCT ({commit, state}) {
+      if (state.initializedFlag.product) {
+        console.log(`product相关数据初始化完成（from cache）`)
+        return
+      }
       window.axios.get('/us/bill/v2/products/detail').then(res => {
         commit('updateProducts', res.data.products)
         commit('updateInitializedFlag', 'product')
@@ -153,7 +167,11 @@ export default {
         console.log(err)
       })
     },
-    INIT_FLAVOR ({commit}) {
+    INIT_FLAVOR ({commit, state}) {
+      if (state.initializedFlag.product) {
+        console.log(`product相关数据初始化完成（from cache）`)
+        return
+      }
       // window.axios.get('/os/compute/v2/f0026604054c48d6893c24665c717e58/flavors/detail').then(res => {
       window.axios.get('/os/compute/v2/b5112f82a3e44f908937fc1c2bd1e191/flavors/detail').then(res => {
         commit('updateFlavors', res.data.flavors)

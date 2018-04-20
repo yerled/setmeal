@@ -20,7 +20,7 @@
       <SetmealInfoResource v-show="step === 5" :dict="resourcePriceDict"></SetmealInfoResource>
       <SetmealInfoPeriod v-show="step === 5" :periods.sync="periods" :totalPrice="totalPrice" :discountPrice="discountPrice"></SetmealInfoPeriod>
     </div>
-    <setmealPopButtons :step.sync="step" :stepLen="stepLen" slot="footer"
+    <setmealPopButtons slot="footer" :step.sync="step" :stepLen="stepLen" :loading="loading"
       @confirm="create"
       @next="stepNext">
     </setmealPopButtons>
@@ -121,12 +121,15 @@ export default {
           discount: 75,
         }
       ],
+      loading: false,
     }
   },
   computed: {
     ...mapGetters({
       flavorList: 'flavorList',
+      flavorDict: 'flavorDict',
       productList: 'productList',
+      productDict: 'productDict',
     }),
     visible () {
       return this.$store.getters.SetmealPopVisible.create
@@ -142,12 +145,6 @@ export default {
     },
     resourceNames () {
       return Object.keys(this.defaultResource)
-    },
-    flavorDict () {
-      return this.initDictFromList(this.flavorList, 'flavor_id')
-    },
-    productDict () {
-      return this.initDictFromList(this.productList, 'name')
     },
     defaultResource () {
       let defaultFlavor = this.$store.getters.flavorList[0] || {}
@@ -246,7 +243,6 @@ export default {
   methods: {
     initDictFromList,
     stepNext () {
-      console.log(this.step)
       if (this.step === 0) {
         let form = this.$refs.mainForm.$refs.SetmealInfoMain
         form.validate((valid) => {
@@ -319,6 +315,10 @@ export default {
       }
     },
     create () {
+      if (this.loading) {
+        return
+      }
+      this.loading = true
       this.$store.dispatch('CreateSetmeal', this.dataForCommit)
         .then(res => {
           this.$message.success(this.$t('createSuccess'))
@@ -328,6 +328,8 @@ export default {
         }).catch(err => {
           console.log(err)
           this.tip.content = this.$t('createFailed')
+        }).finally(res => {
+          this.loading = false
         })
     },
     close () {

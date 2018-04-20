@@ -20,7 +20,7 @@
       <SetmealInfoResource v-show="step === 5" :dict="resourcePriceDict"></SetmealInfoResource>
       <SetmealInfoPeriod v-show="step === 5" :periods.sync="periods" :totalPrice="totalPrice" :discountPrice="discountPrice"></SetmealInfoPeriod>
     </div>
-    <SetmealPopButtons :step.sync="step" :stepLen="6" slot="footer"
+    <SetmealPopButtons slot="footer" :step.sync="step" :stepLen="6" :loading="loading"
       @confirm="update"
       @next="stepNext">
     </SetmealPopButtons>
@@ -69,6 +69,10 @@ export default {
   },
   methods: {
     update () {
+      if (this.loading) {
+        return
+      }
+      this.loading = true
       let setmeal = this.rawData.set_meal ? this.rawData.set_meal : this.rawData
       let action = this.onlyUpdatePeriod ? 'UpdateSetmealPeriod' : 'UpdateSetmeal'
       this.$store.dispatch(action, {
@@ -81,6 +85,8 @@ export default {
       }).catch(err => {
         console.log(err)
         this.tip.content = this.$t('updateFailed')
+      }).finally(res => {
+        this.loading = false
       })
     },
     initData (data) {

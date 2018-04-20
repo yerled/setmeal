@@ -126,7 +126,7 @@ export default {
     updateSetmealQuery (state, {name, value}) {
       state.query[name] = value
     },
-    updateRecordLoading (state, value = false) {
+    updateSetmealLoading (state, value = false) {
       state.loading = value
     },
   },

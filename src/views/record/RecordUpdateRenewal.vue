@@ -22,7 +22,7 @@
       </el-form>
     </div>
     <div slot="footer">
-      <el-button type="primary" @click="renewal">{{$t('confirm')}}</el-button>
+      <el-button type="primary" @click="renewal" :loading="loading">{{$t('confirm')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -44,6 +44,7 @@ export default {
         
       },
       periods: [],
+      loading: false,
     }
   },
   computed: {
@@ -81,6 +82,10 @@ export default {
       }
     },
     renewal () {
+      if (this.loading) {
+        return
+      }
+      this.loading = true
       this.$store.dispatch('UpdateRenewal', {
         id: this.rawdata.user_set_meal_id,
         data: this.dataForCommit,
@@ -92,6 +97,8 @@ export default {
       }).catch(err => {
         console.log(err)
         this.tip.content = this.$t('RenewalFailed')
+      }).finally(res => {
+        this.loading = false
       })
     },
   }

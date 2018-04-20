@@ -19,7 +19,7 @@
         :description="$t('Setmeal.expiration_rules_desc')"></el-alert>
       <SetmealPurChaseForm v-show="step === 2" ref="mainForm" :form="form" :periods="periods"></SetmealPurChaseForm>
     </div>
-    <SetmealPopButtons :step.sync="step" :stepLen="steps.length" slot="footer"
+    <SetmealPopButtons slot="footer" :step.sync="step" :stepLen="steps.length" :loading="loading"
       @confirm="purchase"
       @next="stepNext">
     </SetmealPopButtons>
@@ -71,6 +71,7 @@ export default {
       },
       periods: [],
       rawData: {},
+      loading: false,
     }
   },
   computed: {
@@ -275,6 +276,10 @@ export default {
       }
     },
     purchase () {
+      if (this.loading) {
+        return
+      }
+      this.loading = true
       this.$store.dispatch('PurchaseSetmeal', this.dataForCommit).then(res => {
         // this.refreshTable()
         this.close()
@@ -282,6 +287,8 @@ export default {
       }).catch(err => {
         console.log(err)
         this.tip.content = this.$t('Setmeal.purchaseFailed')
+      }).finally(res => {
+        this.loading = false
       })
     },
     close () {
