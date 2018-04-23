@@ -43,6 +43,8 @@ export default {
     renewalFailed: '续约失败',
     updateRenewalSuccess: '续约方式编辑完成',
     updateRenewalFaild: '续约方式编辑失败',
+    searchKeyPlaceholder: '请选择查询类别',
+    searchValuePlaceholder: '请输入查询内容',
   },
   en: {
     

@@ -8,12 +8,34 @@
           @click="doAction(button.field)">
         <Iconfont v-if="button.icon" :type="button.icon"/>
         {{$t(`${moduleName}.${button.field}`)}}
-      </el-button>
-      <el-button class="refresh"
+      </el-button><el-button class="iconButton"
         @click="refresh">
         <Iconfont type="refresh"/>
+      </el-button><el-button class="iconButton" v-show="!searchInputVisible"
+        @click="showSearchInput">
+        <Iconfont type="filter"/>
       </el-button>
+      <el-select class="input-new-tag" v-show="searchInputVisible" :placeholder="$t('searchKeyPlaceholder')"
+        v-model="searchSelectValue">
+      </el-select>
+      <el-input class="input-new-tag" v-show="searchInputVisible" :placeholder="$t('searchValuePlaceholder')"
+        v-model="searchInputValue"
+        ref="saveTagInput"
+        @keyup.enter.native="handleInputConfirm"
+        @blur="handleInputConfirm">
+      </el-input>
     </div>
+    <transition-group tag="div" class="searchTags" 
+      enter-active-class="zoomInUp"
+      leave-active-class="slideOutUp"
+      v-show="searchList.length > 0">
+      <el-tag closable :disable-transitions="false" size="large"
+        v-for="tag in searchList"
+        :key="tag"
+        @close="closeTag(tag)">
+        {{tag}}
+      </el-tag>
+    </transition-group>
     <el-table :row-class-name="tableRowClassName" height="100%" :border="true" :ref = "moduleName"
       :data="tableData" v-loading="loading"
       @sort-change="handleSortChange"
@@ -54,8 +76,21 @@
   height: 100%;
   .buttonGroup {
     padding: 10px 0;
-    .refresh {
+    .iconButton {
       padding: 9px 9.5px;
+    }
+    .input-new-tag {
+      margin-left: 10px;
+      width: 200px;
+    }
+  }
+  .searchTags {
+    margin-bottom: 10px;
+    .el-tag+.el-tag {
+      margin-left: 10px;
+    }
+    .zoomInUp, .slideOutUp {
+      animation-duration: 0.7s;
     }
   }
   .el-table{
@@ -72,11 +107,21 @@
 
 <script>
 import {mapState} from 'vuex'
+
 export default {
   name: 'TableView',
   data () {
     return {
       multipleSelection: [],
+      searchList: [],
+      searchInputVisible: false,
+      searchInputValue: '',
+      selectKey: '',
+      selectValue: {
+        input: '',
+        date_begin: '',
+        date_end: '',
+      }
     }
   },
   props: {
@@ -219,6 +264,23 @@ export default {
     },
     filter_method (value, row, column) {
       return row[column.property] === value
+    },
+    closeTag (tag) {
+      this.searchList.splice(this.searchList.indexOf(tag), 1)
+    },
+    showSearchInput () {
+      this.searchInputVisible = true
+      this.$nextTick(_ => {
+        // this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    handleInputConfirm () {
+      let searchInputValue = this.searchInputValue
+      if (searchInputValue) {
+        this.searchList.push(searchInputValue)
+      }
+      this.searchInputVisible = false
+      this.searchInputValue = ''
     },
     doAction (action) {
       if (!this.buttonStatus[action]) {

@@ -169,6 +169,7 @@ export default {
         floating_ip: {
           type: 'floating_ip',
           configuration: {
+            registerno: '',
             line: defaultLine.name,
             ratelimit: 10,
           },
