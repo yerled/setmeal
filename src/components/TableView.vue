@@ -17,6 +17,7 @@
     <el-table :row-class-name="tableRowClassName" height="100%" :border="true" :ref = "moduleName"
       :data="tableData" v-loading="loading"
       @sort-change="handleSortChange"
+      @filter-change="filter_change"
       @select="handleSelect"
       @select-all="handleSelectAll"
       @selection-change="handleSelectionChange">
@@ -27,8 +28,9 @@
       <el-table-column
           v-for="column of config.columns"
           :key="column.field"
+          :column-key="column.field"
           :prop="column.field"
-          :sortable="needPagination ? 'custom' : true"
+          :sortable="column.sortable ? (needPagination ? 'custom' : true) : false"
           :filters="column.filters"
           :filter-method="column.filter_method"
           :label="$t(`${moduleName}.${column.field}`)">
@@ -37,9 +39,6 @@
           </template>
       </el-table-column>
     </el-table>
-    <!-- <div class="loading" v-show="loading">
-      <div class="spinInner"></div>
-    </div> -->
     <el-pagination background layout="total, prev, pager, next" :total="total_count"
       v-show="needPagination"
       @current-change="handleCurrentChange">
@@ -48,14 +47,6 @@
 </template>
 
 <style lang="less" scoped>
-@keyframes spin {
-  0% {}
-  25% {transform: rotate(90deg);}
-  50% {transform: rotate(180deg);}
-  75% {transform: rotate(270deg);}
-  100% {transform: rotate(360deg);}
-}
-
 .content {
   position: relative;
   display: flex;
@@ -75,35 +66,6 @@
     bottom: 150px;
     right: 50px;
   }
-  // .loading {
-  //   display: block;
-  //   position: absolute;
-  //   width: 48px;
-  //   height: 48px;
-  //   margin-left: -24px;
-  //   margin-top: -24px;
-  //   left: 50%;
-  //   top: 180px;
-  //   z-index: 990;
-  //   .spinInner {
-  //     position: static;
-  //     background: transparent url(../assets/icon-loading4.png) center center no-repeat;
-  //     content: "";
-  //     width: 48px;
-  //     height: 48px;
-  //     animation: spin 2s linear infinite;
-  //   }
-  // }
-  // .loading::after {
-  //   background: transparent url(../assets/icon-loading3.png) center center no-repeat;
-  //   content: "";
-  //   width: 48px;
-  //   height: 48px;
-  //   transform: translate(-50%, -50%);
-  //   position: absolute;
-  //   left: 24px;
-  //   top: 24px;
-  // }
 }
 
 </style>
@@ -157,6 +119,9 @@ export default {
     query () {
       return this.$store.getters[`${this.moduleName}Query`]
     },
+    filter () {
+      return this.$store.getters[`${this.moduleName}Filter`]
+    },
     loading () {
       return this.$store.getters[`${this.moduleName}Loading`]
     },
@@ -200,6 +165,12 @@ export default {
         }
       },
       deep: true,
+    },
+    filter: {
+      handler: function (val, oldval) {
+        this.refresh()
+      },
+      deep: true,
     }
   },
   methods: {
@@ -231,6 +202,20 @@ export default {
       this.$refs[this.moduleName].clearSelection()
       this.$refs[this.moduleName].toggleRowSelection(data)
       this.$emit('enterDetail', data)
+    },
+    filter_change (filters) {
+      console.log(filters)
+      let list = []
+      Object.keys(filters).forEach(key => {
+        filters[key].forEach(value => {
+          list.push({
+            field: key,
+            op: 'eq', // equal
+            value,
+          })
+        })
+      })
+      this.$store.commit(`update${this.moduleName}Filter`, list)
     },
     filter_method (value, row, column) {
       return row[column.property] === value

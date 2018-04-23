@@ -40,11 +40,13 @@ export default {
         {
           field: 'name',
           type: 'caption',
+          sortable: true,
         }, {
           field: 'description',
         }, {
           field: 'price',
           type: 'price',
+          sortable: true,
           format: function ({price}, vm) {
             return `${price} ${vm.$t('rmb')}/${vm.$t('hour')}`
           },
@@ -62,6 +64,7 @@ export default {
         }, {
           field: 'created_at',
           type: 'date',
+          sortable: true,
         }
       ],
       rowClass: {
@@ -82,6 +85,7 @@ export default {
       limit: 15,
       offset: 0,
     },
+    filter: [],
     loading: false,
   },
   getters: {
@@ -111,6 +115,7 @@ export default {
     SetmealPopVisible: state => state.popVisible,
     SetmealTotalCount: state => state.total_count,
     SetmealQuery: state => state.query,
+    SetmealFilter: state => state.filter,
     SetmealLoading: state => state.loading,
   },
   mutations: {
@@ -126,17 +131,20 @@ export default {
     updateSetmealQuery (state, {name, value}) {
       state.query[name] = value
     },
+    updateSetmealFilter (state, list) {
+      state.filter = list
+    },
     updateSetmealLoading (state, value = false) {
       state.loading = value
     },
   },
   actions: {
     SelectSetmealList ({commit, getters}) {
-      let queryStr = initQueryStr(getters.SetmealQuery)
+      let queryStr = initQueryStr(getters.SetmealQuery, getters.SetmealFilter)
 
       return window.axios.get(`/us/bill/v3/setmeals${queryStr}`).then(res => {
         commit('updateSetmealList', res.data.set_meal_list)
-        commit('udpateSetmealTotalCount', res.data.total_count || 100)
+        commit('udpateSetmealTotalCount', res.data.total_count)
       }).catch(err => {
         console.log(err)
       })

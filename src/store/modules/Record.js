@@ -20,11 +20,13 @@ export default {
         {
           field: 'set_meal_name',
           type: 'caption',
+          sortable: true,
         }, {
           field: 'description',
         }, {
           field: 'price',
           type: 'price',
+          sortable: true,
           format: function ({discount_price, period}, vm) {
             return `${discount_price} ${vm.$t('rmb')}/${vm.$t(`month${period}`)}`
           },
@@ -34,13 +36,16 @@ export default {
           field: 'auto_renewal',
           type: 'status',
         }, {
-          field: 'renewal_times'
+          field: 'renewal_times',
+          sortable: true,
         }, {
           field: 'expire_at',
           type: 'date',
+          sortable: true,
         }, {
           field: 'created_at',
           type: 'date',
+          sortable: true,
         }
       ],
     },
@@ -56,6 +61,7 @@ export default {
       limit: 15,
       offset: 0,
     },
+    filter: [],
     loading: false,
   },
   getters: {
@@ -71,6 +77,7 @@ export default {
     RecordPopVisible: state => state.popVisible,
     RecordTotalCount: state => state.total_count,
     RecordQuery: state => state.query,
+    RecordFilter: state => state.filter,
     RecordLoading: state => state.loading,
   },
   mutations: {
@@ -83,16 +90,20 @@ export default {
     updateRecordQuery (state, {name, value}) {
       state.query[name] = value
     },
+    updateRecordFilter (state, list) {
+      state.filter = list
+    },
     updateRecordLoading (state, value = false) {
       state.loading = value
     },
   },
   actions: {
     SelectRecordList ({commit, getters}) {
-      let queryStr = initQueryStr(getters.RecordQuery)
+      let queryStr = initQueryStr(getters.RecordQuery, getters.SetmealFilter)
 
       return window.axios.get(`/us/bill/v3/setmeals/console${queryStr}`).then(res => {
         commit('updateRecordList', res.data.user_bought_set_meals)
+        commit('udpateRecordTotalCount', res.data.total_count)
       }).catch(err => {
         console.log(err)
       })
