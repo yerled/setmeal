@@ -2,38 +2,56 @@
   <div class="content">
     <div class="buttonGroup">
       <el-button v-for="button of config.buttons"
-          :type="button.type"
-          :key="button.field"
-          :class="{disabled: buttonStatus[button.field]}"
-          @click="doAction(button.field)">
+        :type="button.type"
+        :key="button.field"
+        :class="{disabled: buttonStatus[button.field]}"
+        @click="doAction(button.field)">
         <Iconfont v-if="button.icon" :type="button.icon"/>
         {{$t(`${moduleName}.${button.field}`)}}
       </el-button><el-button class="iconButton"
         @click="refresh">
         <Iconfont type="refresh"/>
-      </el-button><el-button class="iconButton" v-show="!searchInputVisible"
-        @click="showSearchInput">
+      </el-button><el-button class="iconButton" v-show="!searchVisible"
+        @click="showSearchSelect">
         <Iconfont type="filter"/>
       </el-button>
-      <el-select class="input-new-tag" v-show="searchInputVisible" :placeholder="$t('searchKeyPlaceholder')"
-        v-model="searchSelectValue">
+      <el-select class="input-new-tag" v-show="searchVisible" :placeholder="$t('searchKeyPlaceholder')"
+        v-model="searchKey">
+        <el-option v-for="item in config.search"
+          :key="item.field"
+          :label="$t(`${moduleName}.${item.field}`)"
+          :disabled="calcSearchDisable(item.field)"
+          :value="item.field">
+        </el-option>
       </el-select>
-      <el-input class="input-new-tag" v-show="searchInputVisible" :placeholder="$t('searchValuePlaceholder')"
-        v-model="searchInputValue"
-        ref="saveTagInput"
-        @keyup.enter.native="handleInputConfirm"
-        @blur="handleInputConfirm">
+      <el-input class="input-new-tag" :placeholder="$t('searchValuePlaceholder')"
+        v-show="searchConfigDict[searchKey] && searchConfigDict[searchKey].type === 'text'"
+        v-model="searchValue.text"
+        ref="searchInputText"
+        @blur="handleTextConfirm"
+        @keyup.enter.native="handleTextConfirm"
+        @keyup.esc.native="handleTextReset">
       </el-input>
+      <el-date-picker type="daterange" align="right" unlink-panels value-format="yyyy-MM-dd"
+        ref="searchInputDate"
+        v-model="searchValue.date"
+        v-show="searchConfigDict[searchKey] && searchConfigDict[searchKey].type === 'date'"
+        @blur="handleDateConfirm"
+        :range-separator="$t('to')"
+        :start-placeholder="$t('start_date')"
+        :end-placeholder="$t('end_date')"
+        :picker-options="pickerOptions">
+      </el-date-picker>
     </div>
     <transition-group tag="div" class="searchTags" 
       enter-active-class="zoomInUp"
       leave-active-class="slideOutUp"
-      v-show="searchList.length > 0">
+      v-show="search.length > 0">
       <el-tag closable :disable-transitions="false" size="large"
         v-for="tag in searchList"
-        :key="tag"
-        @close="closeTag(tag)">
-        {{tag}}
+        :key="tag.field"
+        @close="closeTag(tag.field)">
+        {{tag.label}}
       </el-tag>
     </transition-group>
     <el-table :row-class-name="tableRowClassName" height="100%" :border="true" :ref = "moduleName"
@@ -113,15 +131,39 @@ export default {
   data () {
     return {
       multipleSelection: [],
-      searchList: [],
-      searchInputVisible: false,
-      searchInputValue: '',
-      selectKey: '',
-      selectValue: {
-        input: '',
-        date_begin: '',
-        date_end: '',
-      }
+      searchVisible: false,
+      searchKey: '',
+      searchValue: {
+        text: '',
+        date: '',
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: this.$t('last_week'),
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: this.$t('last_month'),
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: this.$t('last_month3'),
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
     }
   },
   props: {
@@ -149,6 +191,20 @@ export default {
       })
       return config
     },
+    searchConfigDict () {
+      let config = this.config.search
+      let dict = {}
+      config.forEach(e => {
+        dict[e.field] = e
+      })
+      return dict
+    },
+    searchList () {
+      return this.search.map(({field, value}) => ({
+        field,
+        label: `${this.$t(`${this.moduleName}.${field}`)}: ${value}`,
+      }))
+    },
     tableData () {
       const tableData = this.$store.getters[`${this.moduleName}TableData`]
       tableData.forEach(e => {
@@ -166,6 +222,9 @@ export default {
     },
     filter () {
       return this.$store.getters[`${this.moduleName}Filter`]
+    },
+    search () {
+      return this.$store.getters[`${this.moduleName}Search`]
     },
     loading () {
       return this.$store.getters[`${this.moduleName}Loading`]
@@ -216,7 +275,23 @@ export default {
         this.refresh()
       },
       deep: true,
-    }
+    },
+    search: {
+      handler: function (val, oldval) {
+        this.refresh()
+      },
+      deep: true,
+    },
+    searchKey (val, oldval) {
+      if (!val) {
+        return
+      }
+      let type = this.searchConfigDict[val].type
+      let calcType = type.slice(0, 1).toUpperCase() + type.slice(1)
+      this.$nextTick(_ => {
+        this.$refs[`searchInput${calcType}`].focus()
+      })
+    },
   },
   methods: {
     refresh () {
@@ -249,7 +324,6 @@ export default {
       this.$emit('enterDetail', data)
     },
     filter_change (filters) {
-      console.log(filters)
       let list = []
       Object.keys(filters).forEach(key => {
         filters[key].forEach(value => {
@@ -266,21 +340,66 @@ export default {
       return row[column.property] === value
     },
     closeTag (tag) {
-      this.searchList.splice(this.searchList.indexOf(tag), 1)
+      this.$store.commit(`remove${this.moduleName}Search`, tag)
     },
-    showSearchInput () {
-      this.searchInputVisible = true
-      this.$nextTick(_ => {
-        // this.$refs.saveTagInput.$refs.input.focus()
-      })
+    showSearchSelect () {
+      this.searchVisible = true
     },
-    handleInputConfirm () {
-      let searchInputValue = this.searchInputValue
-      if (searchInputValue) {
-        this.searchList.push(searchInputValue)
+    handleTextConfirm () {
+      let value = this.searchValue.text
+      if (value) {
+        let searchItem = {
+          field: this.searchKey,
+          op: 'eq', // 等于
+          value: value,
+        }
+        this.$store.commit(`push${this.moduleName}Search`, searchItem)
       }
-      this.searchInputVisible = false
-      this.searchInputValue = ''
+      this.handleTextReset()
+    },
+    handleTextReset () {
+      this.searchValue.text = ''
+      this.resetSearch()
+    },
+    handleDateConfirm () {
+      let values = this.searchValue.date
+      if (values && values.length > 1) {
+        let start_date = {
+          field: `start_${this.searchKey}`,
+          op: 'ge', // 大于
+          value: values[0],
+        }
+        let end_date = {
+          field: `end_${this.searchKey}`,
+          op: 'le', // 小于
+          value: values[1],
+        }
+        // 日期相关的字段有两个值，用户可能手动去除了其中一个值
+        // 因此在选择日期时搜索项中可能还存在着一个值
+        this.$store.commit('removeSetmealSearch', `start_${this.searchKey}`)
+        this.$store.commit('removeSetmealSearch', `end_${this.searchKey}`)
+
+        this.$store.commit('pushSetmealSearch', start_date)
+        this.$store.commit('pushSetmealSearch', end_date)
+      }
+      this.handleTextReset()
+    },
+    resetSearch () {
+      this.searchKey = ''
+      this.searchVisible = false
+    },
+    calcSearchDisable (field) {
+      let startDateFlag, endDateFlag
+      return this.search.some(e => {
+        if (e.field === `start_${field}`) {
+          startDateFlag = true
+        } else if (e.field === `end_${field}`) {
+          endDateFlag = true
+        } else {
+          return e.field === field
+        }
+        return startDateFlag && endDateFlag
+      })
     },
     doAction (action) {
       if (!this.buttonStatus[action]) {

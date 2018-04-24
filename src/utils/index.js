@@ -27,15 +27,16 @@ export function dateFormat (date, pattern = 'YYYY-MM-DD HH:mm:ss') {
   return moment(date).format(pattern)
 }
 
-export function initQueryStr (query = {}, filter = []) {
+export function initQueryStr (query = {}, filter = [], search = []) {
   let querySort = query.sort_key ? `sort_key=${query.sort_key}&sort_order=${query.sort_order}&` : ''
   let queryPagination = `limit=${query.limit}&offset=${query.offset * query.limit}&`
 
-  let filterStr = filter.map(({field, op, value}) => {
+  let list = filter.concat(search)
+  let extraStr = list.map(({field, op, value}) => {
     return `querys.field=${field}&querys.op=${op}&querys.value=${value}&`
   }).join('')
 
-  let queryStr = `?${querySort}${queryPagination}${filterStr}`
+  let queryStr = `?${querySort}${queryPagination}${extraStr}`
 
   return queryStr
 }

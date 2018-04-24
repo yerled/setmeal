@@ -43,6 +43,7 @@ export default {
           sortable: true,
         }, {
           field: 'description',
+          sortable: true,
         }, {
           field: 'price',
           type: 'price',
@@ -67,6 +68,20 @@ export default {
           sortable: true,
         }
       ],
+      search: [
+        {
+          field: 'name',
+          type: 'text',
+        },
+        {
+          field: 'description',
+          type: 'text',
+        },
+        {
+          field: 'created_at',
+          type: 'date',
+        },
+      ],
       rowClass: {
         warn: ['off_shelve'],
       },
@@ -86,6 +101,7 @@ export default {
       offset: 0,
     },
     filter: [],
+    search: [],
     loading: false,
   },
   getters: {
@@ -116,6 +132,7 @@ export default {
     SetmealTotalCount: state => state.total_count,
     SetmealQuery: state => state.query,
     SetmealFilter: state => state.filter,
+    SetmealSearch: state => state.search,
     SetmealLoading: state => state.loading,
   },
   mutations: {
@@ -134,13 +151,19 @@ export default {
     updateSetmealFilter (state, list) {
       state.filter = list
     },
+    pushSetmealSearch (state, searchItem) {
+      state.search.push(searchItem)
+    },
+    removeSetmealSearch (state, field) {
+      state.search = state.search.filter(e => e.field !== field)
+    },
     updateSetmealLoading (state, value = false) {
       state.loading = value
     },
   },
   actions: {
     SelectSetmealList ({commit, getters}) {
-      let queryStr = initQueryStr(getters.SetmealQuery, getters.SetmealFilter)
+      let queryStr = initQueryStr(getters.SetmealQuery, getters.SetmealFilter, getters.SetmealSearch)
 
       return window.axios.get(`/us/bill/v3/setmeals${queryStr}`).then(res => {
         commit('updateSetmealList', res.data.set_meal_list)
