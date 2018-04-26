@@ -24,11 +24,6 @@ export default {
           selection: 'single',
           validStatus: ['issue'],
         }, {
-          field: 'purchase',
-          icon: 'purchase',
-          selection: 'single',
-          validStatus: ['issue'],
-        }, {
           field: 'delete',
           icon: 'delete',
           selection: 'single',
@@ -161,9 +156,6 @@ export default {
     },
     DeleteSetmeal (context, id) {
       return window.axios.delete(`/us/bill/v3/setmeals/${id}`)
-    },
-    PurchaseSetmeal (context, data) {
-      return window.axios.post('/us/bill/v3/setmeals/console', data)
     },
     SelectSetmealDetail (context, id) {
       return window.axios.get(`/us/bill/v3/setmeals/${id}/detail`)

@@ -6,7 +6,7 @@ export default {
     renewal_times: '续约次数',
     renewal: '续约套餐',
     project_name: '资源所在项目',
-    update: '编辑续约方式',
+    updateRenewal: '编辑续约方式',
     total_price: '总消费',
     pop: {
       renewal: {

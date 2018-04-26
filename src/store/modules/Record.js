@@ -10,7 +10,7 @@ export default {
           selection: 'single',
           validStatus: [true],
         }, {
-          field: 'update',
+          field: 'updateRenewal',
           icon: 'edit',
           selection: 'single',
           validStatus: [true, false],
@@ -99,6 +99,7 @@ export default {
       state.total_count = total_count
     },
     updateRecordPopVisible (state, {name, visible}) {
+      console.log('1111')
       state.popVisible[name] = visible
     },
     updateRecordQuery (state, {name, value}) {

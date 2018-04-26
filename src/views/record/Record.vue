@@ -92,7 +92,6 @@ export default {
       this.$store.commit('updateDetailVisible', true)
       this.$store.commit('updateDetail', data)
       this.$router.push({name: 'RecordDetail', params: {id: data.user_set_meal_id}})
-      // this.$store.dispatch('UpdateRecordDetail')
     },
     leaveDetail () {
       this.$store.commit('updateDetailVisible', false)

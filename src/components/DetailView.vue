@@ -29,7 +29,7 @@
 
 .detailView {
   position: absolute;
-  top: 116px;
+  top: 106px;
   left: 480px;
   right: 0px;
   bottom: 0px;

@@ -15,7 +15,6 @@
     </TableView>
     <SetmealCreate></SetmealCreate>
     <SetmealUpdate ref="popUpdate"></SetmealUpdate>
-    <SetmealPurchase ref="popPurchase"></SetmealPurchase>
   </div>
 </template>
 
@@ -23,7 +22,6 @@
 import {mapState, mapGetters} from 'vuex'
 import SetmealCreate from './SetmealCreate'
 import SetmealUpdate from './SetmealUpdate'
-import SetmealPurchase from './SetmealPurchase'
 import SetmealDetail from './SetmealDetail'
 
 export default {
@@ -31,7 +29,6 @@ export default {
   components: {
     SetmealCreate,
     SetmealUpdate,
-    SetmealPurchase,
     SetmealDetail,
   },
   data () {
@@ -79,10 +76,6 @@ export default {
         case 'update':
           this.showPop('update')
           this.initPopData('popUpdate')
-          break
-        case 'purchase':
-          this.showPop('purchase')
-          this.initPopData('popPurchase')
           break
         case 'issue':
           title = this.$t('Setmeal.issue')
