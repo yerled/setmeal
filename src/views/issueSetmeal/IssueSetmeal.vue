@@ -21,6 +21,7 @@
       </div>
     </el-card>
     <SetmealPurchase ref="popPurchase"></SetmealPurchase>
+    <SetmealDetail ref="popDetail"></SetmealDetail>
   </div>
 </template>
 
@@ -58,11 +59,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import SetmealPurchase from './SetmealPurchase'
+import SetmealDetail from './SetmealDetail'
 
 export default {
   name: 'IssueSetmeal',
   components: {
     SetmealPurchase,
+    SetmealDetail,
   },
   data () {
     return {

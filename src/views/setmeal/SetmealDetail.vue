@@ -59,6 +59,7 @@ export default {
     }),
     ...mapGetters({
       flavorList: 'flavorList',
+      flavorDict: 'flavorDict',
     }),
     detail () {
       let detail = JSON.parse(JSON.stringify(this.$store.state.detail))
@@ -68,9 +69,6 @@ export default {
         }
       })
       return detail
-    },
-    flavorDict () {
-      return this.initDictFromList(this.flavorList, 'flavor_id')
     },
     basic_attributes () {
       let setmeal = this.detail.set_meal || this.detail
