@@ -1,10 +1,14 @@
 <template>
-  <div class="module record">
+  <div class="module">
+    <ButtonGroup
+      moduleName="Record"
+      :selection="multipleSelection"
+      @refresh="refresh"
+      @doAction="doAction">
+    </ButtonGroup>
     <TableView
       moduleName="Record"
-      @refreshTable="refreshTable"
-      @renewal="renewal"
-      @update="updateRenewal"
+      @refresh="refresh"
       @updateSelection="updateSelection"
       @enterDetail="enterDetail"
       @leaveDetail="leaveDetail">
@@ -15,7 +19,7 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import RecordRenewal from './RecordRenewal'
 import RecordUpdateRenewal from './RecordUpdateRenewal'
 
@@ -31,6 +35,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['detailVisible']),
     ...mapGetters({
       popVisible: 'RecordPopVisible',
     }),
@@ -42,21 +47,36 @@ export default {
     },
   },
   methods: {
+    refresh () {
+      if (this.detailVisible) {
+        this.refreshDetail()
+      } else {
+        this.refreshTable()
+      }
+    },
     async refreshTable () {
       this.$store.commit('updateRecordLoading', true)
       await this.$store.dispatch('SelectRecordList')
       this.$store.commit('updateRecordLoading', false)
     },
+    refreshDetail () {
+      // this.$store.dispatch('UpdateSetmealDetail')
+    },
     updateSelection (selection) {
       this.multipleSelection = selection
     },
-    renewal () {
-      this.showPop('renewal')
-      this.initPopData('popRenewal')
-    },
-    updateRenewal () {
-      this.showPop('updateRenewal')
-      this.initPopData('popUpdateRenewal')
+    doAction (field) {
+      switch (field) {
+        case 'renewal':
+          this.showPop('renewal')
+          this.initPopData('popRenewal')
+          break
+        case 'updateRenewal':
+          this.showPop('updateRenewal')
+          this.initPopData('popUpdateRenewal')
+          break
+        default:
+      }
     },
     initPopData (popRef) {
       let pop = this.$refs[popRef]

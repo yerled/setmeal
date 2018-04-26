@@ -250,11 +250,11 @@ export default {
         }
         // 日期相关的字段有两个值，用户可能手动去除了其中一个值
         // 因此在选择日期时搜索项中可能还存在着一个值
-        this.$store.commit('removeSetmealSearch', `start_${this.searchKey}`)
-        this.$store.commit('removeSetmealSearch', `end_${this.searchKey}`)
+        this.$store.commit(`remove${this.moduleName}Search`, `start_${this.searchKey}`)
+        this.$store.commit(`removeSetmealSearch`, `end_${this.searchKey}`)
 
-        this.$store.commit('pushSetmealSearch', start_date)
-        this.$store.commit('pushSetmealSearch', end_date)
+        this.$store.commit(`push${this.moduleName}Search`, start_date)
+        this.$store.commit(`push${this.moduleName}Search`, end_date)
       }
       this.handleTextReset()
     },

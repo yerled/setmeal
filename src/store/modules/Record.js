@@ -22,8 +22,6 @@ export default {
           type: 'caption',
           sortable: true,
         }, {
-          field: 'description',
-        }, {
           field: 'price',
           type: 'price',
           sortable: true,
@@ -36,9 +34,6 @@ export default {
           field: 'auto_renewal',
           type: 'status',
         }, {
-          field: 'renewal_times',
-          sortable: true,
-        }, {
           field: 'expire_at',
           type: 'date',
           sortable: true,
@@ -47,6 +42,20 @@ export default {
           type: 'date',
           sortable: true,
         }
+      ],
+      searches: [
+        {
+          field: 'set_meal_name',
+          type: 'text',
+        },
+        {
+          field: 'description',
+          type: 'text',
+        },
+        {
+          field: 'created_at',
+          type: 'date',
+        },
       ],
     },
     popVisible: {
@@ -62,6 +71,7 @@ export default {
       offset: 0,
     },
     filter: [],
+    search: [],
     loading: false,
   },
   getters: {
@@ -78,11 +88,15 @@ export default {
     RecordTotalCount: state => state.total_count,
     RecordQuery: state => state.query,
     RecordFilter: state => state.filter,
+    RecordSearch: state => state.search,
     RecordLoading: state => state.loading,
   },
   mutations: {
     updateRecordList (state, recordList) {
       state.recordList = recordList
+    },
+    udpateRecordTotalCount (state, total_count) {
+      state.total_count = total_count
     },
     updateRecordPopVisible (state, {name, visible}) {
       state.popVisible[name] = visible
@@ -93,13 +107,19 @@ export default {
     updateRecordFilter (state, list) {
       state.filter = list
     },
+    pushRecordSearch (state, searchItem) {
+      state.search.push(searchItem)
+    },
+    removeRecordSearch (state, field) {
+      state.search = state.search.filter(e => e.field !== field)
+    },
     updateRecordLoading (state, value = false) {
       state.loading = value
     },
   },
   actions: {
     SelectRecordList ({commit, getters}) {
-      let queryStr = initQueryStr(getters.RecordQuery, getters.SetmealFilter)
+      let queryStr = initQueryStr(getters.RecordQuery, getters.RecordFilter, getters.RecordSearch)
 
       return window.axios.get(`/us/bill/v3/setmeals/console${queryStr}`).then(res => {
         commit('updateRecordList', res.data.user_bought_set_meals)

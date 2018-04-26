@@ -1,12 +1,12 @@
 <template>
-  <div class="module setmeal">
+  <div class="module">
     <ButtonGroup
       moduleName="Setmeal"
       :selection="multipleSelection"
       @refresh="refresh"
       @doAction="doAction">
     </ButtonGroup>
-    <TableView class="tableView"
+    <TableView
       moduleName="Setmeal"
       @refresh="refresh"
       @updateSelection="updateSelection"
@@ -19,19 +19,8 @@
   </div>
 </template>
 
-<style lang="less" scoped>
-.module {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  .tableView {
-    flex: 1;
-  }
-}
-</style>
-
 <script>
-import {mapGetters} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import SetmealCreate from './SetmealCreate'
 import SetmealUpdate from './SetmealUpdate'
 import SetmealPurchase from './SetmealPurchase'
@@ -51,6 +40,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['detailVisible']),
     ...mapGetters({
       popVisible: 'SetmealPopVisible',
     }),
@@ -81,7 +71,6 @@ export default {
       this.multipleSelection = selection
     },
     doAction (field) {
-      console.log('show' + field)
       let title, content
       switch (field) {
         case 'create':
