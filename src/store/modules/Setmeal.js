@@ -48,27 +48,23 @@ export default {
           field: 'price',
           type: 'price',
           sortable: true,
-          format: function ({price}, vm) {
-            return `${price} ${vm.$t('rmb')}/${vm.$t('hour')}`
+          format: function ({discount_price, period}, vm) {
+            return `${discount_price} ${vm.$t('rmb')}/${vm.$t(`month${period}`)}`
           },
         }, {
           field: 'status',
           type: 'status',
         }, {
-          field: 'instance_count',
-        }, {
-          field: 'volume_count',
-        }, {
-          field: 'floating_ip_count',
-        }, {
-          field: 'router_count',
+          field: 'updated_at',
+          type: 'date',
+          sortable: true,
         }, {
           field: 'created_at',
           type: 'date',
           sortable: true,
-        }
+        },
       ],
-      search: [
+      searches: [
         {
           field: 'name',
           type: 'text',
@@ -97,7 +93,7 @@ export default {
     query: {
       sort_key: '',
       sort_order: '',
-      limit: 15,
+      limit: 20,
       offset: 0,
     },
     filter: [],
@@ -106,28 +102,7 @@ export default {
   },
   getters: {
     SetmealConfig: state => state.config,
-    SetmealTableData: state => {
-      let setmealList = JSON.parse(JSON.stringify(state.setmealList))
-      setmealList.forEach(setmeal => {
-        setmeal.instance_count = setmeal.volume_count = setmeal.floating_ip_count = setmeal.router_count = 0
-        setmeal.resources.forEach(resource => {
-          let type = resource.type
-          let count = `${type}_count`
-          setmeal[count]++
-          let configuration = resource.configuration
-          try {
-            configuration = JSON.parse(resource.configuration)
-          } catch (e) {
-            console.log('非法的JSON: ' + configuration)
-            console.log(e)
-            console.log('来自：' + setmeal.name)
-          }
-          resource.configuration = configuration
-        })
-        setmeal.id = setmeal.set_meal_id
-      })
-      return setmealList
-    },
+    SetmealTableData: state => state.setmealList,
     SetmealPopVisible: state => state.popVisible,
     SetmealTotalCount: state => state.total_count,
     SetmealQuery: state => state.query,

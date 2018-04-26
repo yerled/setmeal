@@ -118,7 +118,7 @@ export default {
       this.counter.volume.value = 0
       this.counter.floating_ip.value = 0
       this.counter.router.value = 0
-      rawData.resources.forEach(e => {
+      rawData.resources && rawData.resources.forEach(e => {
         this.counter[e.type].value++
         if (typeof e.configuration === 'string') {
           e.configuration = JSON.parse(e.configuration)
@@ -140,7 +140,7 @@ export default {
 
       /* infoPeriod */
       let periods = []
-      rawData.periods.forEach(e => {
+      rawData.periods && rawData.periods.forEach(e => {
         periods.push({
           period: e.period,
           discount: e.discount * 100

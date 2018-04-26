@@ -184,7 +184,7 @@ export default {
         floating_ip: 0,
         router: 0,
       }
-      rawData.resources.forEach(e => {
+      rawData.resources && rawData.resources.forEach(e => {
         counter[e.type]++
         if (typeof e.configuration === 'string') {
           e.configuration = JSON.parse(e.configuration)
@@ -213,14 +213,14 @@ export default {
 
       /* infoPeriod */
       let periods = []
-      rawData.periods.forEach(e => {
+      rawData.resources && rawData.periods.forEach(e => {
         periods.push({
           period_id: e.period_id,
           desc: `${this.$t(`periodMonth${e.period}`)} ￥${e.discount_price} ${this.$t('rmb')}`
         })
       })
       this.periods = periods
-      this.form.period = this.periods[0].period_id
+      this.form.period = this.periods[0] && this.periods[0].period_id
     },
     _initConfigDesc (config) {
       let arr = []

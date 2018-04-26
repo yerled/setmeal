@@ -7,7 +7,7 @@ import DetailView from './DetailView'
 import Dict from './Dict'
 import Status from './Status'
 import Cell from './Cell'
-import Search from './Search'
+import ButtonGroup from './ButtonGroup'
 
 Vue.component('TableView', TableView)
 Vue.component('Iconfont', Iconfont)
@@ -17,4 +17,4 @@ Vue.component('DetailView', DetailView)
 Vue.component('Dict', Dict)
 Vue.component('Status', Status)
 Vue.component('Cell', Cell)
-Vue.component('Search', Search)
+Vue.component('ButtonGroup', ButtonGroup)

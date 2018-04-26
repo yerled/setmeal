@@ -77,9 +77,8 @@ export default {
       let counter = this.counter
       return {
         name: setmeal.name,
-        uuid: setmeal.id,
+        uuid: setmeal.set_meal_id,
         limit: setmeal.limit || this.$t('unlimited'),
-        price: {value: `${setmeal.price} ${this.$t('rmb')}/${this.$t('hour')}`, type: 'price'},
         status: {value: setmeal.status, type: 'status'},
         description: setmeal.description,
         instance_count: counter.instance,

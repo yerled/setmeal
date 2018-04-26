@@ -19,6 +19,13 @@
 .el-header {
   padding: 0;
 }
+#app {
+  display: flex;
+  flex-direction: column;
+  .el-container {
+    height: 100%;
+  }
+}
 </style>
 
 <script>

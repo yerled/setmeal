@@ -1,16 +1,15 @@
 <template>
   <div class="module setmeal">
-    <TableView
+    <ButtonGroup
       moduleName="Setmeal"
-      @refreshTable="refreshTable"
-      @refreshDetail="refreshDetail"
+      :selection="multipleSelection"
+      @refresh="refresh"
+      @doAction="doAction">
+    </ButtonGroup>
+    <TableView class="tableView"
+      moduleName="Setmeal"
+      @refresh="refresh"
       @updateSelection="updateSelection"
-      @create="create"
-      @update="update"
-      @issue="issue"
-      @shelve="shelve"
-      @purchase="purchase"
-      @delete="deleteSetmeal"
       @enterDetail="enterDetail"
       @leaveDetail="leaveDetail">
     </TableView>
@@ -19,6 +18,17 @@
     <SetmealPurchase ref="popPurchase"></SetmealPurchase>
   </div>
 </template>
+
+<style lang="less" scoped>
+.module {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .tableView {
+    flex: 1;
+  }
+}
+</style>
 
 <script>
 import {mapGetters} from 'vuex'
@@ -52,6 +62,13 @@ export default {
     },
   },
   methods: {
+    refresh () {
+      if (this.detailVisible) {
+        this.refreshDetail()
+      } else {
+        this.refreshTable()
+      }
+    },
     async refreshTable () {
       this.$store.commit('updateSetmealLoading', true)
       await this.$store.dispatch('SelectSetmealList')
@@ -63,79 +80,86 @@ export default {
     updateSelection (selection) {
       this.multipleSelection = selection
     },
-    create () {
-      this.showPop('create')
-    },
-    update () {
-      this.showPop('update')
-      this.initPopData('popUpdate')
-    },
-    purchase () {
-      this.showPop('purchase')
-      this.initPopData('popPurchase')
+    doAction (field) {
+      console.log('show' + field)
+      let title, content
+      switch (field) {
+        case 'create':
+          this.showPop('create')
+          break
+        case 'update':
+          this.showPop('update')
+          this.initPopData('popUpdate')
+          break
+        case 'purchase':
+          this.showPop('purchase')
+          this.initPopData('popPurchase')
+          break
+        case 'issue':
+          title = this.$t('Setmeal.issue')
+          content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('issue'))
+          this.$confirm(content, title, {
+            confirmButtonText: this.$t('confirm'),
+            cancelButtonText: this.$t('cancel'),
+            type: 'warning'
+          }).then(() => {
+            this.$store.dispatch('UpdateSetmealStatus', {
+              id: this.singleSelection.set_meal_id,
+              status: 'issue',
+            }).then(() => {
+              this.$message.success(this.$t('Setmeal.issueSuccess'))
+              this.refreshTable()
+            }).catch(err => {
+              console.log(err)
+              this.$message.error(this.$t('Setmeal.issueFaild'))
+            })
+          })
+          break
+        case 'shelve':
+          title = this.$t('Setmeal.shelve')
+          content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('shelve'))
+          this.$confirm(content, title, {
+            confirmButtonText: this.$t('confirm'),
+            cancelButtonText: this.$t('cancel'),
+            type: 'warning'
+          }).then(() => {
+            this.$store.dispatch('UpdateSetmealStatus', {
+              id: this.singleSelection.set_meal_id,
+              status: 'off_shelve',
+            }).then(() => {
+              this.$message.success(this.$t('Setmeal.shelveSuccess'))
+              this.refreshTable()
+            }).catch(err => {
+              console.log(err)
+              this.$message.error(this.$t('Setmeal.shelveFaild'))
+            })
+          })
+          break
+        case 'delete':
+          title = this.$t('Setmeal.delete')
+          content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('delete'))
+          this.$confirm(content, title, {
+            confirmButtonText: this.$t('confirm'),
+            cancelButtonText: this.$t('cancel'),
+            type: 'error'
+          }).then(() => {
+            this.$store.dispatch('DeleteSetmeal', this.singleSelection.set_meal_id).then(res => {
+              this.$message.success(this.$t('deleteSuccess'))
+              this.refreshTable()
+            }).catch(err => {
+              console.log(err)
+              this.$message.error(this.$t('deleteFaild'))
+            })
+          })
+          break
+        default:
+      }
     },
     initPopData (popRef) {
       let pop = this.$refs[popRef]
       pop.initData(JSON.parse(JSON.stringify(this.singleSelection)))
       this.$store.dispatch('SelectSetmealDetail', this.singleSelection.set_meal_id).then(res => {
         pop.initData(JSON.parse(JSON.stringify(res.data)))
-      })
-    },
-    issue () {
-      let title = this.$t('Setmeal.issue')
-      let content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('issue'))
-      this.$confirm(content, title, {
-        confirmButtonText: this.$t('confirm'),
-        cancelButtonText: this.$t('cancel'),
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('UpdateSetmealStatus', {
-          id: this.singleSelection.set_meal_id,
-          status: 'issue',
-        }).then(() => {
-          this.$message.success(this.$t('Setmeal.issueSuccess'))
-          this.refreshTable()
-        }).catch(err => {
-          console.log(err)
-          this.$message.error(this.$t('Setmeal.issueFaild'))
-        })
-      })
-    },
-    shelve () {
-      let title = this.$t('Setmeal.shelve')
-      let content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('shelve'))
-      this.$confirm(content, title, {
-        confirmButtonText: this.$t('confirm'),
-        cancelButtonText: this.$t('cancel'),
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('UpdateSetmealStatus', {
-          id: this.singleSelection.set_meal_id,
-          status: 'off_shelve',
-        }).then(() => {
-          this.$message.success(this.$t('Setmeal.shelveSuccess'))
-          this.refreshTable()
-        }).catch(err => {
-          console.log(err)
-          this.$message.error(this.$t('Setmeal.shelveFaild'))
-        })
-      })
-    },
-    deleteSetmeal () {
-      let title = this.$t('Setmeal.delete')
-      let content = this.$t('Setmeal.actionConfirm').replace('{{action}}', this.$t('delete'))
-      this.$confirm(content, title, {
-        confirmButtonText: this.$t('confirm'),
-        cancelButtonText: this.$t('cancel'),
-        type: 'error'
-      }).then(() => {
-        this.$store.dispatch('DeleteSetmeal', this.singleSelection.set_meal_id).then(res => {
-          this.$message.success(this.$t('deleteSuccess'))
-          this.refreshTable()
-        }).catch(err => {
-          console.log(err)
-          this.$message.error(this.$t('deleteFaild'))
-        })
       })
     },
     showPop (name) {
