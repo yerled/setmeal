@@ -1,5 +1,5 @@
 <template>
-  <el-dialog  width="800px"
+  <el-dialog  width="700px"
     :title="$t(`Setmeal.pop.create.title`)"
     :close-on-click-modal="false"
     :visible="visible"
@@ -29,7 +29,7 @@
 
 <style lang="less" scoped>
 .body {
-  height: 380px;
+  height: 330px;
   overflow: auto;
   .resource {
     .el-card {

@@ -140,7 +140,7 @@ export default {
     SelectSetmealList ({commit, getters}) {
       let queryStr = initQueryStr(getters.SetmealQuery, getters.SetmealFilter, getters.SetmealSearch)
 
-      return window.axios.get(`/us/bill/v3/setmeals${queryStr}`).then(res => {
+      return window.axios.get(`/us/bill/v3/setmeals?${queryStr}`).then(res => {
         commit('updateSetmealList', res.data.set_meal_list)
         commit('udpateSetmealTotalCount', res.data.total_count)
       }).catch(err => {

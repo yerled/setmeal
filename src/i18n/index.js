@@ -2,6 +2,7 @@ import common from './common'
 import resource from './resource'
 import price from './price'
 import menu from './menu'
+import IssueSetmeal from './IssueSetmeal'
 import Setmeal from './Setmeal'
 import Record from './Record'
 
@@ -17,7 +18,7 @@ baseArr.forEach(e => {
 })
 
 // add modules
-const modules = { menu, Setmeal, Record }
+const modules = { menu, Setmeal, Record, IssueSetmeal }
 for (let key in modules) {
   messages.zh[key] = Object.setPrototypeOf(modules[key].zh, messages.zh)
   messages.en[key] = Object.setPrototypeOf(modules[key].en, messages.en)

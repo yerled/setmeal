@@ -1,13 +1,13 @@
 <template>
-  <el-dialog  width="800px"
-      :title="$t(`Setmeal.pop.purchase.title`)"
+  <el-dialog  width="700px"
+      :title="$t(`IssueSetmeal.pop.purchase.title`)"
       :close-on-click-modal="false"
       :visible="visible"
       @close="close">
     <el-steps finish-status="success" :active="step">
       <el-step v-for="item of steps"
         :key="item"
-        :title="$t(`Setmeal.pop.step_${item}`)">
+        :title="$t(`IssueSetmeal.pop.step_${item}`)">
       </el-step>
     </el-steps>
     <el-alert :type="tip.type" v-show="tip.content" :title="tip.content" show-icon :closable="false"></el-alert>
@@ -15,8 +15,8 @@
       <SetmealPurChaseAllocateInstance v-show="step === 0" ref="instanceForms" :instances="instances"></SetmealPurChaseAllocateInstance>
       <SetmealPurChaseAllocateOther  v-show="step === 1" ref="otherForms" :resources="resources"></SetmealPurChaseAllocateOther>
       <el-alert type="info" v-show="step === 2"
-        :title="$t('Setmeal.expiration_rules')" 
-        :description="$t('Setmeal.expiration_rules_desc')"></el-alert>
+        :title="$t('IssueSetmeal.expiration_rules')" 
+        :description="$t('IssueSetmeal.expiration_rules_desc')"></el-alert>
       <SetmealPurChaseForm v-show="step === 2" ref="mainForm" :form="form" :periods="periods"></SetmealPurChaseForm>
     </div>
     <SetmealPopButtons slot="footer" :step.sync="step" :stepLen="steps.length" :loading="loading"
@@ -28,7 +28,7 @@
 
 <style lang="less" scoped>
 .body {
-  height: 380px;
+  height: 330px;
   overflow: auto;
   .resource {
     .el-card {
@@ -78,7 +78,7 @@ export default {
     ...mapGetters(['subnetList', 'flavorList', 'flavorDict', 'lineDict', 'subnetDict',
       'imageDict', 'systemImageList', 'snapImageList', 'keytList']),
     visible () {
-      return this.$store.getters.SetmealPopVisible.purchase
+      return this.$store.getters.IssueSetmealPopVisible.purchase
     },
     steps () {
       return ['allocateInstance', 'allocateOther', 'purchase']
@@ -280,20 +280,19 @@ export default {
         return
       }
       this.loading = true
-      this.$store.dispatch('PurchaseSetmeal', this.dataForCommit).then(res => {
-        // this.refreshTable()
+      this.$store.dispatch('PurchaseIssueSetmeal', this.dataForCommit).then(res => {
         this.close()
-        this.$message.success(this.$t('Setmeal.purchaseSuccess'))
-        console.log('2')
+        console.log('1')
+        this.$message.success(this.$t('purchaseSuccess'))
       }).catch(err => {
         console.log(err)
-        this.tip.content = this.$t('Setmeal.purchaseFailed')
+        this.tip.content = this.$t('purchaseFailed')
       }).finally(res => {
         this.loading = false
       })
     },
     close () {
-      this.$store.commit('updateSetmealPopVisible', {name: 'purchase', visible: false})
+      this.$store.commit('updateIssueSetmealPopVisible', {name: 'purchase', visible: false})
     },
   }
 }

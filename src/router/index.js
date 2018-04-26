@@ -5,7 +5,7 @@ import HelloWorld from '@/components/HelloWorld'
 import NotFound from '../views/404/NotFound'
 import Setmeal from '../views/setmeal/Setmeal'
 import SetmealDetail from '../views/setmeal/SetmealDetail'
-import MySetmeal from '../views/mysetmeal/MySetmeal'
+import IssueSetmeal from '../views/issueSetmeal/IssueSetmeal'
 import Record from '../views/record/Record'
 import RecordDetail from '../views/record/RecordDetail'
 
@@ -19,7 +19,12 @@ const router = new Router({
       component: HelloWorld
     },
     {
-      path: '/setmeal',
+      path: '/setmeal/issue',
+      name: 'IssueSetmeal',
+      component: IssueSetmeal
+    },
+    {
+      path: '/setmeal/manage',
       name: 'Setmeal',
       components: {
         default: Setmeal,
@@ -27,7 +32,7 @@ const router = new Router({
       },
     },
     {
-      path: '/setmeal/:id',
+      path: '/setmeal/manage/:id',
       name: 'SetmealDetail',
       components: {
         default: Setmeal,
@@ -35,12 +40,7 @@ const router = new Router({
       },
     },
     {
-      path: '/mySetmeal',
-      name: 'MySetmeal',
-      component: MySetmeal
-    },
-    {
-      path: '/record',
+      path: '/setmeal/record',
       name: 'Record',
       components: {
         default: Record,
@@ -48,7 +48,7 @@ const router = new Router({
       },
     },
     {
-      path: '/record/:id',
+      path: '/setmeal/record/:id',
       name: 'RecordDetail',
       components: {
         default: Record,

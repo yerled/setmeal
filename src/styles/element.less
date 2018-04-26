@@ -59,11 +59,6 @@
       background-color: @color_gray;
     }
   }
-  // .is-sortable:not(.ascending):not(.descending) {
-  //   .ascending, .descending {
-  //     border-color: transparent;
-  //   }
-  // }
 }
 // 调整row:hover颜色
 .el-table--enable-row-hover .el-table__body tr:hover>td {
@@ -128,7 +123,7 @@
   }
   &.image {
     label .el-radio-button__inner {
-      width: 270px;
+      width: 235px;
       text-align: left;
       margin-bottom: 10px;
     }
@@ -189,4 +184,10 @@
 
 .inline-input {
   width: 200px !important;
+}
+
+.el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
+  .el-form-item__error {
+    line-height: 9px;
+  }
 }

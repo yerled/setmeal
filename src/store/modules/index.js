@@ -1,9 +1,11 @@
 import data from './data'
-import Setmeal from './Setmeal'
+import IssueSetmeal from './IssueSetmeal'
 import Record from './Record'
+import Setmeal from './Setmeal'
 
 export default {
   data,
-  Setmeal,
+  IssueSetmeal,
   Record,
+  Setmeal,
 }

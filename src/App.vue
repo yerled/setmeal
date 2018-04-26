@@ -16,14 +16,17 @@
 </template>
 
 <style lang="less" scoped>
-.el-header {
-  padding: 0;
-}
 #app {
   display: flex;
   flex-direction: column;
+  .el-header {
+    padding: 0;
+  }
   .el-container {
     height: 100%;
+  }
+  .el-main {
+    padding: 0;
   }
 }
 </style>

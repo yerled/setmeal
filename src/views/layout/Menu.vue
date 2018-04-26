@@ -24,14 +24,14 @@ export default {
   },
   created () {
     this.menus = [{
+      label: 'setmeal',
+      router: {
+        name: 'IssueSetmeal'
+      },
+    }, {
       label: 'setmeal_manage',
       router: {
         name: 'Setmeal'
-      },
-    }, {
-      label: 'setmeal',
-      router: {
-        name: 'MySetmeal'
       },
     }, {
       label: 'record',

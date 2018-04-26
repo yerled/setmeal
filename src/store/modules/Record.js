@@ -121,8 +121,8 @@ export default {
     SelectRecordList ({commit, getters}) {
       let queryStr = initQueryStr(getters.RecordQuery, getters.RecordFilter, getters.RecordSearch)
 
-      return window.axios.get(`/us/bill/v3/setmeals/console${queryStr}`).then(res => {
-        commit('updateRecordList', res.data.user_bought_set_meals)
+      return window.axios.get(`/us/bill/v3/setmeals/bought_set_meal?console=true&${queryStr}`).then(res => {
+        commit('updateRecordList', res.data.bought_set_meals)
         commit('udpateRecordTotalCount', res.data.total_count)
       }).catch(err => {
         console.log(err)

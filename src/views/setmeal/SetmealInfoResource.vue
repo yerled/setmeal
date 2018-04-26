@@ -29,7 +29,7 @@
 <style lang="less" scoped>
 .el-collapse, .total_price {
   margin-left: 20px;
-  width: 666px;
+  width: 566px;
   span {
     display: inline-block;
   }

@@ -24,7 +24,7 @@
 <style lang="less" scoped>
 .total_price {
   margin-left: 20px;
-  width: 666px;
+  width: 566px;
   span {
     display: inline-block;
   }

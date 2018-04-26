@@ -22,7 +22,8 @@
   }
   &.big {
     .price {
-      font-size: 22px;
+      font-size: 20px;
+      font-weight: bold;
     }
   }
 }
@@ -42,7 +43,7 @@ export default {
     },
     fixed: {
       type: Number,
-      default: 0,
+      default: -1,
     },
     unit: {
       type: [String],

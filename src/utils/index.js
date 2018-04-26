@@ -36,7 +36,7 @@ export function initQueryStr (query = {}, filter = [], search = []) {
     return `querys.field=${field}&querys.op=${op}&querys.value=${value}&`
   }).join('')
 
-  let queryStr = `?${querySort}${queryPagination}${extraStr}`
+  let queryStr = `${querySort}${queryPagination}${extraStr}`
 
   return queryStr
 }
