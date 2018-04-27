@@ -15,8 +15,8 @@
         {{`${$t(`discount${item.period}`)}:`}}
       </span>
       {{$t('discount')}}
-      <el-input-number :max="100" :min="1" v-model="item.discount"></el-input-number>%
-      <Money :class="['big']" prefix="￥" :money="discountPrice[index]" :fixed="4"></Money>
+      <span class="discount">{{`${item.discount}%`}}</span>
+      <Money :class="['big']" prefix="￥" :money="item.discount_price" :fixed="4"></Money>
     </div>
   </div>
 </template>
@@ -68,10 +68,6 @@ export default {
     },
     totalPrice: {
       type: Number,
-      required: true,
-    },
-    discountPrice: {
-      type: Array,
       required: true,
     },
   },

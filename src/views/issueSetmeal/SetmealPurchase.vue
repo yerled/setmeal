@@ -282,7 +282,6 @@ export default {
       this.loading = true
       this.$store.dispatch('PurchaseIssueSetmeal', this.dataForCommit).then(res => {
         this.close()
-        console.log('1')
         this.$message.success(this.$t('purchaseSuccess'))
       }).catch(err => {
         console.log(err)

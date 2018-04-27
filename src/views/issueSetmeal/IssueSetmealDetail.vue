@@ -1,23 +1,37 @@
 <template>
-  <el-dialog width="500px"
+  <el-dialog width="650px"
     :title="$t(`IssueSetmeal.pop.detail.title`)"
-    :close-on-click-modal="false"
     :visible="visible"
     @close="close">
-    <SetmealInfoResource :dict="resourcePriceDict"></SetmealInfoResource>
-    <!-- <SetmealInfoPeriod :periods.sync="periods" :totalPrice="totalPrice" :discountPrice="discountPrice"></SetmealInfoPeriod> -->
+    <div class="body">
+      <SetmealInfoResource :dict="resourceDescDict"></SetmealInfoResource>
+      <SetmealInfoPeriod :periods="periods" :totalPrice="totalPrice"></SetmealInfoPeriod>
+    </div>
+    <div slot="footer">
+      <el-button class="back" @click="cancel">{{$t('cancel')}}</el-button>
+      <el-button type="primary" @click="purchase">{{$t('purchase')}}</el-button>
+    </div>
   </el-dialog>
 </template>
 
+<style lang="less" scoped>
+.body {
+  height: 420px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+</style>
+
 <script>
 import SetmealInfoResource from './SetmealInfoResource'
-// import SetmealInfoPeriod from './SetmealInfoPeriod'
+import SetmealInfoPeriod from './SetmealInfoPeriod'
+import { mapGetters } from 'vuex'
 
 export default {
-  name: 'SetmealPurchaseForm',
+  name: 'IssueSetmealDetail',
   components: {
     SetmealInfoResource,
-    // SetmealInfoPeriod,
+    SetmealInfoPeriod,
   },
   data () {
     return {
@@ -27,13 +41,8 @@ export default {
         floating_ip: [],
         router: [],
       },
-      counter: {
-        instance: 0,
-        volume: 0,
-        floating_ip: 0,
-        router: 0,
-      },
       rawData: {},
+      totalPrice: 0,
       periods: [
         {
           period: 1,
@@ -55,25 +64,21 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['flavorDict']),
     visible () {
       return this.$store.getters.IssueSetmealPopVisible.detail
     },
-    resourcePriceDict () {
+    resourceNames () {
+      return Object.keys(this.resourceDict)
+    },
+    resourceDescDict () {
       let dict_bak = JSON.parse(JSON.stringify(this.resourceDict))
-      let price = 0
       this.resourceNames.forEach(type => {
         let resourceArr = dict_bak[type]
-        resourceArr.price = 0
         resourceArr.forEach(e => {
-          e.price = this._calcSinglePrice(type, e.configuration)
           e.configDesc = this._initConfigDesc(e.configuration)
-          resourceArr.price += e.price
-          price += e.price
         })
-        resourceArr.price = Number(resourceArr.price.toFixed(4))
       })
-      price = Number(price.toFixed(4))
-      this.updateTotalPrice(price)
       return dict_bak
     },
   },
@@ -83,17 +88,6 @@ export default {
         this.rawData = data
       }
       let rawData = this.rawData
-      this.step = 0
-      this.tip.content = ''
-
-      /* infoMain */
-      let setmeal = rawData.set_meal ? rawData.set_meal : rawData
-      this.setmeal = {
-        name: setmeal.name,
-        description: setmeal.description,
-        unlimited: setmeal.limit === 0,
-        limitNumber: setmeal.limit,
-      }
 
       /* infoResource */
       this.resourceDict = {
@@ -102,13 +96,7 @@ export default {
         floating_ip: [],
         router: [],
       }
-      this.unwatchCounter = true
-      this.counter.instance.value = 0
-      this.counter.volume.value = 0
-      this.counter.floating_ip.value = 0
-      this.counter.router.value = 0
       rawData.resources && rawData.resources.forEach(e => {
-        this.counter[e.type].value++
         if (typeof e.configuration === 'string') {
           e.configuration = JSON.parse(e.configuration)
         }
@@ -123,24 +111,45 @@ export default {
         }
         this.resourceDict[e.type].push(obj)
       })
-      this.$nextTick(() => {
-        this.unwatchCounter = false
-      })
+      this.totalPrice = Number(rawData.set_meal ? rawData.set_meal.price : rawData.price)
 
       /* infoPeriod */
       let periods = []
       rawData.periods && rawData.periods.forEach(e => {
         periods.push({
           period: e.period,
-          discount: e.discount * 100
+          discount: e.discount * 100,
+          discount_price: e.discount_price,
         })
       })
       this.periods = periods
-
-      /* onlyUpdatePeriod */
-      if (this.onlyUpdatePeriod) {
-        this.step = 5
+    },
+    _initConfigDesc (config) {
+      let arr = []
+      if ('flavor_id' in config) {
+        let flavor = this.flavorDict[config.flavor_id]
+        arr.push(`${this.$t('flavor')}:${flavor ? flavor.__nameAndDesc : config.flavor_id}`)
       }
+      if ('volume_type' in config) {
+        arr.push(`${this.$t('volume_type')}:${this.$t(config.volume_type)}`)
+      }
+      if ('size' in config) {
+        arr.push(`${this.$t('size')}:${config.size} GB`)
+      }
+      if ('line' in config) {
+        arr.push(`${this.$t('line')}:${this.$t(config.line)}`)
+      }
+      if ('ratelimit' in config) {
+        arr.push(`${this.$t('ratelimit')}:${config.ratelimit} MB`)
+      }
+      return arr.join('; ')
+    },
+    purchase () {
+      this.$emit('purchase', this.rawData)
+      this.close()
+    },
+    cancel () {
+      this.close()
     },
     close () {
       this.$store.commit('updateIssueSetmealPopVisible', {name: 'detail', visible: false})

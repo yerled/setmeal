@@ -4,16 +4,29 @@ import { Notification } from 'element-ui'
 axios.interceptors.response.use(res => {
   return res
 }, err => {
-  console.log('-----------------------')
   console.dir(err)
-  console.log('-----------------------')
-  Notification()
+  let code = err.response.status
+  if (code === 401) {
+    window.location.href = '/logout'
+    return
+  }
+  if (code === 202) {
+    return
+  }
+  if (code >= 500) {
+    if (window.UOS_LANG === 'en') {
+      Notification('System error. Please contact the administrator.')
+    } else {
+      Notification('系统错误，请联系管理员。')
+    }
+    console.log(err)
+  }
 })
 
 if (typeof window.axios === 'undefined') {
   window.axios = axios
+
   // for dev
-  // window.login = function (email = 'slancer', password = 'abc123') {
   window.login = function (email = 'yerled91', password = 'lv1m#4B') {
     axios({
       url: '/login',
@@ -28,13 +41,6 @@ if (typeof window.axios === 'undefined') {
       method: 'post',
       'content-type': 'application/x-www-form-urlencoded',
       data: `email=${email}&password=${password}`,
-    })
-  }
-  window.testAjax = function (url = '/os/network/v2.0/ports') {
-    axios.get(url).then(res => {
-      console.log('OK')
-    }).catch(err => {
-      console.log(err)
     })
   }
 }

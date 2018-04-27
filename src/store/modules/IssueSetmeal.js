@@ -5,10 +5,12 @@ export default {
       detail: false,
     },
     issueSetmealList: [],
+    loading: false,
   },
   getters: {
     IssueSetmealList: state => state.issueSetmealList,
     IssueSetmealPopVisible: state => state.popVisible,
+    IssueSetmealLoading: state => state.loading,
   },
   mutations: {
     updateIssueSetmealList (state, issueSetmealList) {
@@ -16,6 +18,9 @@ export default {
     },
     updateIssueSetmealPopVisible (state, {name, visible}) {
       state.popVisible[name] = visible
+    },
+    updateIssueSetmealLoading (state, loading) {
+      state.loading = loading
     },
   },
   actions: {

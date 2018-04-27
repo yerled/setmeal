@@ -1,5 +1,5 @@
 <template>
-  <div class="IssueSetmeal">
+  <div class="IssueSetmeal" v-loading="loading">
     <el-card shadow="hover" :body-style="bodyStyle"
       v-for="setmeal of setmealList"
       :key="setmeal.id">
@@ -21,7 +21,7 @@
       </div>
     </el-card>
     <SetmealPurchase ref="popPurchase"></SetmealPurchase>
-    <SetmealDetail ref="popDetail"></SetmealDetail>
+    <IssueSetmealDetail ref="popDetail" @purchase="purchase"></IssueSetmealDetail>
   </div>
 </template>
 
@@ -59,13 +59,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import SetmealPurchase from './SetmealPurchase'
-import SetmealDetail from './SetmealDetail'
+import IssueSetmealDetail from './IssueSetmealDetail'
 
 export default {
   name: 'IssueSetmeal',
   components: {
     SetmealPurchase,
-    SetmealDetail,
+    IssueSetmealDetail,
   },
   data () {
     return {
@@ -81,14 +81,18 @@ export default {
     ...mapGetters({
       setmealList: 'IssueSetmealList',
       popVisible: 'IssueSetmealPopVisible',
+      loading: 'IssueSetmealLoading',
     }),
   },
   methods: {
-    init () {
-      this.$store.dispatch('SelectIssueSetmealList')
+    async init () {
+      this.$store.commit('updateIssueSetmealLoading', true)
+      await this.$store.dispatch('SelectIssueSetmealList')
+      this.$store.commit('updateIssueSetmealLoading', false)
     },
     showDetail (setmeal) {
-
+      this.showPop('detail')
+      this.initPopData('popDetail', setmeal)
     },
     purchase (setmeal) {
       this.showPop('purchase')
@@ -98,7 +102,8 @@ export default {
       let pop = this.$refs[popRef]
       let data_bak = JSON.parse(JSON.stringify(setmeal))
       pop.initData(data_bak)
-      this.$store.dispatch('SelectIssueSetmealDetail', data_bak.set_meal_id).then(res => {
+      let id = (data_bak.set_meal && data_bak.set_meal.set_meal_id) || data_bak.set_meal_id
+      this.$store.dispatch('SelectIssueSetmealDetail', id).then(res => {
         pop.initData(JSON.parse(JSON.stringify(res.data)))
       })
     },
