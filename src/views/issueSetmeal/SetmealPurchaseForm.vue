@@ -9,8 +9,12 @@
         </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item :label-width="formLabelWidth" :label="$t('IssueSetmeal.auto_renewal')">
-      <el-switch v-model="form.auto_renewal"></el-switch>
+    <el-form-item :label-width="formLabelWidth" :label="$t('IssueSetmeal.expire_dispose')">
+      <el-radio-group v-model="form.expire_dispose" class="column-radio">
+        <el-radio label="auto_renewal">{{$t('IssueSetmeal.desc_auto_renewal')}}</el-radio>
+        <el-radio label="deleted">{{$t('IssueSetmeal.desc_deleted')}}</el-radio>
+        <el-radio label="recover">{{$t('IssueSetmeal.desc_recover')}}</el-radio>
+      </el-radio-group>
     </el-form-item>
   </el-form>
 </template>

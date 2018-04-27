@@ -7,7 +7,14 @@
     <el-alert :type="tip.type" v-show="tip.content" :title="tip.content" show-icon :closable="false"></el-alert>
     <div class="body">
       <el-form :model="form">
-        <el-form-item :label-width="formLabelWidth" :label="$t('period')">
+        <el-form-item :label-width="formLabelWidth" :label="$t('Record.expire_dispose')">
+          <el-radio-group v-model="form.expire_dispose" class="column-radio">
+            <el-radio label="auto_renewal">{{$t('Record.desc_auto_renewal')}}</el-radio>
+            <el-radio label="deleted">{{$t('Record.desc_deleted')}}</el-radio>
+            <el-radio label="recover">{{$t('Record.desc_recover')}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label-width="formLabelWidth" :label="$t('period')" v-show="form.expire_dispose === 'auto_renewal'">
           <el-select v-model="form.period">
             <el-option v-for="period of periods"
               :key="period.period_id"
@@ -15,9 +22,6 @@
               :label="period.desc">
             </el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item :label-width="formLabelWidth" :label="$t('Record.auto_renewal')">
-          <el-switch v-model="form.auto_renewal"></el-switch>
         </el-form-item>
       </el-form>
     </div>
@@ -34,11 +38,12 @@ export default {
   data () {
     return {
       tip: {
-        type: '',
+        type: 'error',
         content: '',
       },
       form: {
         period: '',
+        expire_dispose: '',
       },
       rawData: {
         
@@ -53,10 +58,12 @@ export default {
       return this.$store.getters.RecordPopVisible.updateRenewal
     },
     dataForCommit () {
-      return {
-        period_id: this.form.period,
-        auto_renewal: this.form.auto_renewal,
+      let expire_dispose = this.form.expire_dispose
+      let data = { expire_dispose }
+      if (expire_dispose === 'auto_renewal') {
+        data.period_id = this.period
       }
+      return data
     },
   },
   methods: {
@@ -79,7 +86,7 @@ export default {
           }
         })
         this.form.period = res.data.renewal_period_id
-        this.form.auto_renewal = res.data.auto_renewal
+        // this.form.expire_dispose = res.data.expire_dispose
       }
     },
     updateRenewal () {

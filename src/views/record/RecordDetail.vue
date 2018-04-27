@@ -42,7 +42,7 @@ export default {
         description: record.description,
         price: {value: `${record.discount_price} ${this.$t('rmb')}/${this.$t(`month${record.period}`)}`, type: 'price'},
         project_name: record.project_name,
-        auto_renewal: {value: record.auto_renewal, type: 'status'},
+        expire_dispose: {value: record.expire_dispose, type: 'status'},
         renewal_times: record.renewal_times,
         total_price: {value: `${record.total_price} ${this.$t('rmb')}`, type: 'price'},
         expire_at: this.$dateFormat(record.expire_at),

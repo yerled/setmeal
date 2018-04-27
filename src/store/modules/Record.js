@@ -8,12 +8,12 @@ export default {
           field: 'renewal',
           icon: 'renewal',
           selection: 'single',
-          validStatus: [true],
+          validStatus: ['deleted', 'recover'],
         }, {
           field: 'updateRenewal',
           icon: 'edit',
           selection: 'single',
-          validStatus: [true, false],
+          // validStatus: ['auto_renewal', 'deleted', 'recover'], // yerled
         }
       ],
       columns: [
@@ -31,7 +31,7 @@ export default {
         }, {
           field: 'project_name',
         }, {
-          field: 'auto_renewal',
+          field: 'expire_dispose',
           type: 'status',
         }, {
           field: 'expire_at',

@@ -2,7 +2,13 @@ export default {
   zh: {
     discount_price: '优惠价',
     detail: '查看详情',
+    expire_dispose: '到期处理方式',
     auto_renewal: '自动续约',
+    deleted: '到期删除',
+    recover: '到期还原',
+    desc_auto_renewal: '自动续约',
+    desc_deleted: '删除套餐中资源',
+    desc_recover: '套餐资源还原为普通资源',
     expiration_rules: '套餐资源过期处理规则',
     expiration_rules_desc:
       `实例欠费或到期停机后，实例将进入回收期，即实例的计算资源（vCPU+内存）不再保留，

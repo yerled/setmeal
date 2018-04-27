@@ -1,5 +1,5 @@
 <template>
-  <el-dialog  width="700px"
+  <el-dialog  width="720px"
       :title="$t(`IssueSetmeal.pop.purchase.title`)"
       :close-on-click-modal="false"
       :visible="visible"
@@ -14,9 +14,6 @@
     <div class="body">
       <SetmealPurChaseAllocateInstance v-show="step === 0" ref="instanceForms" :instances="instances"></SetmealPurChaseAllocateInstance>
       <SetmealPurChaseAllocateOther  v-show="step === 1" ref="otherForms" :resources="resources"></SetmealPurChaseAllocateOther>
-      <el-alert type="info" v-show="step === 2"
-        :title="$t('IssueSetmeal.expiration_rules')" 
-        :description="$t('IssueSetmeal.expiration_rules_desc')"></el-alert>
       <SetmealPurChaseForm v-show="step === 2" ref="mainForm" :form="form" :periods="periods"></SetmealPurChaseForm>
     </div>
     <SetmealPopButtons slot="footer" :step.sync="step" :stepLen="steps.length" :loading="loading"
@@ -66,7 +63,7 @@ export default {
       instances: [],
       resources: [],
       form: {
-        auto_renewal: true,
+        expire_dispose: 'auto_renewal',
         period: 1,
       },
       periods: [],
@@ -141,7 +138,7 @@ export default {
 
       return {
         period_id: this.form.period,
-        auto_renewal: this.form.auto_renewal,
+        expire_dispose: this.form.expire_dispose,
         server,
         volume,
         router,

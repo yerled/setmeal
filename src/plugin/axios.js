@@ -4,7 +4,6 @@ import { Notification } from 'element-ui'
 axios.interceptors.response.use(res => {
   return res
 }, err => {
-  console.dir(err)
   let code = err.response.status
   if (code === 401) {
     window.location.href = '/logout'
@@ -19,8 +18,8 @@ axios.interceptors.response.use(res => {
     } else {
       Notification('系统错误，请联系管理员。')
     }
-    console.log(err)
   }
+  return Promise.reject(err)
 })
 
 if (typeof window.axios === 'undefined') {
