@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import $store from '../store'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 import NotFound from '../views/404/NotFound'
 import Setmeal from '../views/setmeal/Setmeal'
 import SetmealDetail from '../views/setmeal/SetmealDetail'
@@ -12,12 +11,8 @@ import RecordDetail from '../views/record/RecordDetail'
 Vue.use(Router)
 
 const router = new Router({
+  mode: 'history',
   routes: [
-    {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
-    },
     {
       path: '/setmeal/issue',
       name: 'IssueSetmeal',
@@ -56,13 +51,17 @@ const router = new Router({
       },
     },
     {
-      path: '/NotFound',
+      path: '/setmeal/NotFound',
       name: 'NotFound',
       component: NotFound
     },
     {
-      path: '*',
-      redirect: '/NotFound',
+      path: '/setmeal/',
+      redirect: '/setmeal/issue',
+    },
+    {
+      path: '/setmeal/*',
+      redirect: '/setmeal/NotFound',
     },
   ]
 })

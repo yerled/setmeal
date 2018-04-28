@@ -1,8 +1,5 @@
 <template>
   <div id="app">
-    <el-header>
-      <Header></Header>
-    </el-header>
     <el-container>
       <el-aside>
         <Menu></Menu>
@@ -16,15 +13,8 @@
 </template>
 
 <style lang="less" scoped>
-#app {
-  display: flex;
-  flex-direction: column;
-  .el-header {
-    padding: 0;
-  }
-  .el-container {
-    height: 100%;
-  }
+.el-container {
+  height: 100%;
   .el-main {
     padding: 0;
   }

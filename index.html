@@ -1,13 +1,92 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>setmeal</title>
-  </head>
-  <body>
-    <div id="app"></div>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>setmeal</title>
+</head>
+
+<body>
+  <div class="main">
+    <div id="header">
+      <div class="navbar">
+        <div class="logo">
+          <a style="background: url('http://7xihjk.com1.z0.glb.clouddn.com/aca3321a28ae405abd7fd523db73eafc') 0 center no-repeat; background-size: contain;"></a>
+        </div>
+        <div class="user-info">
+          <div class="projects">
+            <a href="javascript:;" class="projectSwitcher" id="project_select">
+              <span>yerled91_project</span>
+            </a>
+            <div class="projectSelector">
+              <div>
+                <input type="text" class="J_search" placeholder="请输入项目名称">
+                <a href="javascript:;" class="search"></a>
+              </div>
+              <ul>
+                <li class="leading own-project-leading">我的项目</li>
+                <li class="own-project" data-index="yerled91_project">
+                  <span class="selected">yerled91_project
+                    <strong>(默认项目)</strong>
+                  </span>
+                </li>
+                <li class="own-project" data-index="yerled1">
+                  <a href="javascript:;" data-id="cd692bad8c124435a4bab25ec5f79112">yerled1</a>
+                </li>
+              </ul>
+              <div class="empty hide">暂无搜索结果</div>
+            </div>
+          </div>
+          <div class="region">
+            <a href="javascript:;" class="regionSwitcher" id="region_select">
+              <span>RegionOne</span>
+            </a>
+            <div class="regionSelector">
+              <ul>
+                <li>
+                  <span class="selected">RegionOne</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="profile">
+            <a href="javascript:;">
+              <img id="avatar_placeholder" src="/static/public/img/gravatar_56.png" data-src="http://gravatar.duoshuo.com/avatar/647dd5d20b4cf21c4512f07790ddf0b4?s=56"
+              />
+              <span>yerled91</span>
+              <span class="arrow"></span>
+            </a>
+            <div class="account">
+              <ul>
+                <li>
+                  <a href="javascript:;" class="gotoSetting" wp-type="link">个人设置</a>
+                </li>
+                <li class="lang">
+                  <a href="javascript:;" class="english
+                                        " lang="en-US">English</a>
+                  <span>|</span>
+                  <a href="javascript:;" class="chinese
+                                        selected" lang="zh-CN">中文</a>
+                </li>
+                <li>
+                  <a href="/logout" title='注销'>注销</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="switcher">
+            <a href='/switch/project/b5112f82a3e44f908937fc1c2bd1e191' class="active">控制台</a>
+            <a href='/switch/bill/c284f8b710a6409bb4614f6d2224c127'>消费</a>
+            <a href='/switch/domain/c284f8b710a6409bb4614f6d2224c127'>子账户</a>
+            <a href='/sso/tars' target="_blank">运营平台</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="main_content"></div>
     <!-- built files will be auto injected -->
     <script src="http://at.alicdn.com/t/font_606318_lqhcrcrlnt9h33di.js"></script>
-  </body>
+</body>
+
 </html>

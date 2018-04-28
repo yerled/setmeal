@@ -13,11 +13,8 @@ axios.interceptors.response.use(res => {
     return
   }
   if (code >= 500) {
-    if (window.UOS_LANG === 'en') {
-      Notification('System error. Please contact the administrator.')
-    } else {
-      Notification('系统错误，请联系管理员。')
-    }
+    let message = window.UOS_LANG === 'en' ? 'System error. Please contact the administrator.' : '系统错误，请联系管理员。'
+    Notification.error({message})
   }
   return Promise.reject(err)
 })

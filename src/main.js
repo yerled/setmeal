@@ -16,6 +16,7 @@ import './iconfont'
 import './components'
 import './filter'
 import './plugin'
+import './adaptionGHXW'
 
 Vue.config.productionTip = false
 Vue.use(Element, {size: 'small'})
@@ -32,7 +33,7 @@ const i18n = new VueI18n({
 })
 /* eslint-disable no-new */
 window.yerled = new Vue({
-  el: '#app',
+  el: '#main_content',
   router,
   i18n,
   store,
