@@ -22,7 +22,7 @@ Vue.config.productionTip = false
 Vue.use(Element, {size: 'small'})
 Vue.use(VueI18n)
 
-let locale = 'zh'
+let locale = 'en'
 if (window.UOS && window.UOS.t && window.UOS.t.LANG === 'en-US') {
   window.UOS_LANG = 'en'
   locale = 'en'

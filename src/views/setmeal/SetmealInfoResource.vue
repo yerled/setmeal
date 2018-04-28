@@ -5,7 +5,7 @@
       :key="type">
       <template slot="title">
         <div class="price_title">
-          <span class="resource_name">{{`${$t(type)}${$t('total_price')}`}}</span>
+          <span class="resource_name">{{$t(`${type}_total_price`)}}</span>
           <span class="price">
             <Money :class="['big', 'balance']" prefix="￥" :money="resources.price" unit="hour"></Money>
           </span>

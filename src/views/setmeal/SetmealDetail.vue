@@ -13,7 +13,7 @@
             <Dict :data="basic_attributes" moduleName="Setmeal"></Dict>
           </el-col>
           <el-col :span="12">
-            <Dict :data="periodDict" moduleName="Setmeal">
+            <Dict :data="periodDict" moduleName="Setmeal" labelWidth='100px'>
               <template slot-scope="props">
                 <span>{{props.value.discount}}</span>
                 <Money prefix="￥" :money="props.value.price"></Money>

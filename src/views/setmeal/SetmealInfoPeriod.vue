@@ -2,7 +2,7 @@
   <div class="total_price">
     <div class="price_title">
       <span class="resource_name">
-        {{`${$t('Setmeal.setmeal')}${$t('total_price')}`}}
+        {{$t('setmeal_total_price')}}}
       </span>
       <span class="price">
         <Money :class="['big']" prefix="￥" :money="totalPrice" unit="hour"></Money>

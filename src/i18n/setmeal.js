@@ -4,29 +4,18 @@ export default {
     create: '新建套餐',
     update: '编辑套餐',
     issue: '发布套餐',
-    auto_renewal: '自动续约',
     issueSuccess: '套餐发布成功!',
     issueFaild: '发布失败',
     shelve: '下架套餐',
     shelveSuccess: '套餐下架完成!',
     shelveFaild: '下架失败',
     actionConfirm: '是否确定对该套餐执行{{action}}操作?',
-    purchase: '购买套餐',
-    purchaseSuccess: '套餐购买完成!',
-    purchaseFailed: '购买失败',
     instance_count: '云主机数量',
     volume_count: '云硬盘数量',
     floating_ip_count: '公网IP数量',
     router_count: '路由器数量',
     name: '套餐名称',
     limit: '可购买次数',
-    expiration_rules: '套餐资源过期处理规则',
-    expiration_rules_desc:
-      `实例欠费或到期停机后，实例将进入回收期，即实例的计算资源（vCPU+内存）不再保留，
-        但云盘数据和分配的公网IP地址会保留15天（自停机当日算起）；
-      实例欠费或到期15天后，实例会全部释放，数据和IP地址将无法找回；
-      本地磁盘数据欠费或到期后的保留时间仍为7天，停机7天后，本地盘数据将随计算资源一起释放不再保留；
-        分配的IP地址及挂载到本地磁盘实例的云盘数据，则会继续保留至停机15天后释放。`,
     pop: {
       nameRequired: '请输入套餐名称',
       instanceNameRequired: '请输入主机名称',
@@ -45,12 +34,43 @@ export default {
       update: {
         title: '编辑套餐',
       },
-      purchase: {
-        title: '购买套餐',
-      }
     },
   },
   en: {
-    
+    setmeal: 'Set Meal',
+    create: 'Create',
+    update: 'Edit',
+    issue: 'Issue',
+    issueSuccess: 'Issue Success',
+    issueFaild: 'Issue Faild',
+    shelve: 'Shelve',
+    shelveSuccess: 'Shelve Success',
+    shelveFaild: 'Shelve Faild',
+    actionConfirm: 'Determines whether to {{action}} the set meal execution?',
+    instance_count: 'Instance',
+    volume_count: 'Volume',
+    floating_ip_count: 'Floating Ip',
+    router_count: 'Router',
+    name: 'Name',
+    limit: 'Limits',
+    pop: {
+      nameRequired: 'Name is Required',
+      instanceNameRequired: 'Enter Name',
+      step_main: 'Main Info',
+      step_instance: 'Instance',
+      step_volume: 'Volume',
+      step_floating_ip: 'Floating IP',
+      step_router: 'Router',
+      step_price: 'Price',
+      step_allocateInstance: 'Allocating Instance',
+      step_allocateOther: 'Allocating Others',
+      step_purchase: 'Confirm',
+      create: {
+        title: 'Create',
+      },
+      update: {
+        title: 'Edit',
+      },
+    },
   }
 }

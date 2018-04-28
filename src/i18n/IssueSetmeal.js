@@ -9,13 +9,6 @@ export default {
     desc_auto_renewal: '自动续约',
     desc_deleted: '删除套餐中资源',
     desc_recover: '套餐资源还原为普通资源',
-    expiration_rules: '套餐资源过期处理规则',
-    expiration_rules_desc:
-      `实例欠费或到期停机后，实例将进入回收期，即实例的计算资源（vCPU+内存）不再保留，
-        但云盘数据和分配的公网IP地址会保留15天（自停机当日算起）；
-      实例欠费或到期15天后，实例会全部释放，数据和IP地址将无法找回；
-      本地磁盘数据欠费或到期后的保留时间仍为7天，停机7天后，本地盘数据将随计算资源一起释放不再保留；
-        分配的IP地址及挂载到本地磁盘实例的云盘数据，则会继续保留至停机15天后释放。`,
     pop: {
       step_allocateInstance: '配置云主机',
       step_allocateOther: '其他资源',
@@ -30,6 +23,26 @@ export default {
     },
   },
   en: {
-    
+    discount_price: 'Price',
+    detail: 'Detail',
+    expire_dispose: 'Expire Dispose',
+    auto_renewal: 'Auto Renewal',
+    deleted: 'Delete',
+    recover: 'Recover',
+    desc_auto_renewal: 'Auto Renewal',
+    desc_deleted: 'Deleting the resources in the set meal',
+    desc_recover: 'Restore the resources in the set to ordinary resources',
+    pop: {
+      step_allocateInstance: 'Allocating Instance',
+      step_allocateOther: 'Allocating Others',
+      step_purchase: 'Confirm',
+      instanceNameRequired: 'Enter instance name',
+      purchase: {
+        title: 'Purchase',
+      },
+      detail: {
+        title: 'Detail',
+      },
+    },
   }
 }

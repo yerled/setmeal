@@ -22,5 +22,27 @@ export default {
     'ALLLINE_BGP': '全网BGP线路',
     ratelimit: '带宽',
   },
-  en: {}
+  en: {
+    instance: 'Instance',
+    volume: 'Volume',
+    volume_type: 'Volume Type',
+    size: 'Size',
+    sata: 'SATA',
+    ssd: 'SSD',
+    floating_ip: 'Floating IP',
+    network: 'Network',
+    subnet: 'Subnet',
+    router: 'Router',
+    image: 'Image',
+    snapshot: 'Snapshot',
+    system_image: 'System Image',
+    snap_image: 'Host Snapshot',
+    flavor: 'Flavor',
+    line: 'Line',
+    'doubleLine': 'Double Line',
+    '3LINE_BGP': 'Three Line BGP',
+    '4LINE_BGP': 'Four Line BGP',
+    'ALLLINE_BGP': 'All Line BGP',
+    ratelimit: 'Rate Limit',
+  }
 }

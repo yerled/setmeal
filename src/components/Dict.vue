@@ -3,7 +3,7 @@
     <div class="item"
       v-for="(value, key) of data"
       :key="key">
-      <span class="key">{{i18nKey(key)}}</span>
+      <span :style="keyStyle">{{i18nKey(key)}}</span>
       <span class="value">
         <template v-if="noSlot">
           <Cell :config="getConfig(value)"></Cell>
@@ -20,11 +20,6 @@
     height: 28px;
     span {
       display: inline-block;
-    }
-    .key {
-      width: 80px;
-      color: #738295;
-      text-align: right;
     }
     .value {
       padding-left: 20px;
@@ -50,10 +45,25 @@ export default {
     moduleName: {
       type: String,
     },
+    labelWidth: {
+      type: [String, Number],
+      default: '80px',
+    },
   },
   computed: {
     noSlot () {
       return !this.$scopedSlots.default
+    },
+    keyStyle () {
+      let width = this.$props.labelWidth
+      if (typeof width === 'number') {
+        width += 'px'
+      }
+      return {
+        width,
+        color: '#738295',
+        textAlign: 'right',
+      }
     },
   },
   methods: {

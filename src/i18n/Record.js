@@ -24,6 +24,27 @@ export default {
     },
   },
   en: {
-
+    set_meal_name: 'Name',
+    description: 'Description',
+    expire_dispose: 'Expired',
+    auto_renewal: 'Auto Renewal',
+    deleted: 'Delete',
+    recover: 'Recover',
+    desc_auto_renewal: 'Auto Renewal',
+    desc_deleted: 'Deleting the resources in the set meal',
+    desc_recover: 'Restore the resources in the set to ordinary resources',
+    renewal_times: 'Renewals',
+    renewal: 'Renewal',
+    project_name: 'Project Name',
+    updateRenewal: 'Edit Expire Dispose',
+    total_price: 'Total Price',
+    pop: {
+      renewal: {
+        title: 'Renewal',
+      },
+      updateRenewal: {
+        title: 'Edit Expire Dispose',
+      }
+    },
   },
 }
