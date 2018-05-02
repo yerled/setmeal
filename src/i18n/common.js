@@ -60,6 +60,7 @@ export default {
     updateRenewalFailed: '到期处理方式更新失败',
     searchKeyPlaceholder: '请选择查询字段',
     searchValuePlaceholder: '请输入查询内容',
+    emptyText: '暂无数据',
   },
   en: {
     name: 'Name',
@@ -122,5 +123,6 @@ export default {
     updateRenewalFailed: 'Update Expiration Failed',
     searchKeyPlaceholder: 'Query Field',
     searchValuePlaceholder: 'Query Content',
+    emptyText: 'No Data',
   }
 }
