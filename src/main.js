@@ -27,7 +27,7 @@ Vue.use(Element, {
 })
 Vue.use(VueI18n)
 
-let locale = 'en'
+let locale = 'zh'
 if (window.UOS && window.UOS.t && window.UOS.t.LANG === 'en-US') {
   window.UOS_LANG = 'en'
   locale = 'en'
